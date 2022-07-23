@@ -1,0 +1,3 @@
+* state
+
+The GitOps state of the 00rg universe.
