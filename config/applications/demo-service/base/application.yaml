@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  namespace: demo
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/00org/state.git
+    targetRevision: HEAD
+    path: config/clusters/development-ap-southeast-2
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
