@@ -1,3 +1,11 @@
 * state
 
 The GitOps state of the 00rg universe.
+
+** Tasks
+*** TODO Realistic example [0/1]
+- [ ] Can we avoid making every app have an overlay for every cluster?
+  - Try to use Components to avoid this
+  - Would be good for apps just to need an overlay for each environment class (i.e., development, production, etc), rather than cluster (i.e., development-ap-southeast-2, etc) in general (some apps might need specific overlays and that's probably OK too)
+*** TODO Read https://github.com/kubernetes-sigs/kustomize/issues/1251
+*** TODO Read https://github.com/kubernetes-sigs/kustomize/blob/master/examples/components.md
