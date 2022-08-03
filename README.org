@@ -2,10 +2,34 @@
 
 The GitOps state of the 00rg universe.
 
+** Clusters
+*** init
+This is the cluster that bootstraps everything else. It is a local k3d cluster that is spun up out of some repository within the org. It runs Crossplane (or Cluster API) and is fed CRs so that it creates the first cloud management cluster.
+**** management
+The init cluster creates this cluster on AWS and installs Argo CD on it. An Argo CD Application resource is then applied to the cluster so that it boostraps itself using GitOps. The Git directory path that the Application references will be to this repository under something like =config/clusters/management-ap-southest-2= or =config/clusters/management/overlays/ap-southeast-2= (see TODO below).
+
+This cluster should be on the production network (potentially a shared VPC).
+
+** Local Development
+Apply the following a few times until all CRDs are installed and the corresponding CRs get applied successfully.
+
+#+begin_src bash
+  kustomize build clusters/local-example | kubectl apply -f -
+#+end_src
+
+For pulling private ECR and local images see:
+- https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+- https://medium.com/@danieltse/pull-the-docker-image-from-aws-ecr-in-kubernetes-dc7280d74904
+- https://stackoverflow.com/questions/70837524/k3os-cant-pull-image-from-aws-ecr-private-registry-although-it-can-push
+- https://hackernoon.com/how-to-deploy-apps-to-a-local-k3d-cluster
+- https://www.natarajmb.com/2021/10/kubernetes-local-development-k3d-docker/
+
 ** Tasks
-*** TODO Realistic example [0/1]
-- [ ] Can we avoid making every app have an overlay for every cluster?
-  - Try to use Components to avoid this
-  - Would be good for apps just to need an overlay for each environment class (i.e., development, production, etc), rather than cluster (i.e., development-ap-southeast-2, etc) in general (some apps might need specific overlays and that's probably OK too)
-*** TODO Read https://github.com/kubernetes-sigs/kustomize/issues/1251
-*** TODO Read https://github.com/kubernetes-sigs/kustomize/blob/master/examples/components.md
+*** TODO Get local hello-service image being pulled into k3d
+*** TODO Local experience - with-argocd and without-argocd
+What would these two experiences look like?
+*** TODO Avoid every app needing per-cluster overlay
+- Try using Components
+*** TODO Should clusters have overlays?
+- =kustomize build clusters/development-ap-southeast-2= or
+- =kustomize build clusters/development/overlays/ap-southeast-2=

@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: hello-world
-  namespace: hello-world
+  name: hello
+  namespace: hello
 spec:
   project: default
   source:
@@ -11,4 +11,4 @@ spec:
     path: config/clusters/development-ap-southeast-2
   destination:
     server: https://kubernetes.default.svc
-    namespace: echo
+    namespace: hello

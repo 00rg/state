@@ -1,0 +1,6 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: example-istiocontrolplane
+spec:
+  hub: ghcr.io/resf/istio
