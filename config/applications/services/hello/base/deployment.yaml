@@ -17,10 +17,10 @@ spec:
     spec:
       containers:
       - name: hello
-        image: docker.io/istio/examples-hello-v1
+        image: k3d-local-registry:5555/hello:0.0.1
         resources:
           requests:
             cpu: "100m"
-        imagePullPolicy: IfNotPresent #Always
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000

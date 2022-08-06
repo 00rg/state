@@ -11,6 +11,12 @@ The init cluster creates this cluster on AWS and installs Argo CD on it. An Argo
 This cluster should be on the production network (potentially a shared VPC).
 
 ** Local Development
+There are two primary workflows for local development: /without/ Argo CD /with/ Argo CD. Typically, a developer working on business service won't need or want to use Argo CD locally. It's much simpler to apply resources directly against the local Kubernetes API. Sometimes, however, it is useful to be able to deploy applications locally using the same CI/CD process that you'll encounter when you move beyond your local machine.
+
+*** Local Development Without Argo CD
+
+*** Local Development With Argo CD
+
 Apply the following a few times until all CRDs are installed and the corresponding CRs get applied successfully.
 
 #+begin_src bash

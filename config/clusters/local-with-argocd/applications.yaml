@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: local-applications
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/00rg/state.git
+      revision: HEAD
+      directories:
+      - path: config/applications/platform/istio/overlays/local
+      - path: config/applications/platform/istio-operator/overlays/local
+      - path: config/applications/services/hello/overlays/local
+  template:
+    metadata:
+      name: '{{path[3]}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/00rg/state.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
