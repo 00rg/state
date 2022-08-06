@@ -9,6 +9,7 @@ spec:
       repoURL: https://github.com/00rg/state.git
       revision: HEAD
       directories:
+      - path: config/applications/platform/gateways/overlays/local
       - path: config/applications/platform/istio/overlays/local
       - path: config/applications/platform/istio-operator/overlays/local
       - path: config/applications/services/hello/overlays/local
@@ -23,4 +24,3 @@ spec:
         path: '{{path}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
