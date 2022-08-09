@@ -9,9 +9,9 @@ spec:
       repoURL: https://github.com/00rg/state.git
       revision: HEAD
       directories:
-      - path: config/applications/platform/gateways/overlays/local
-      - path: config/applications/platform/istio/overlays/local
+      - path: config/applications/platform/istio-ingress/overlays/local
       - path: config/applications/platform/istio-operator/overlays/local
+      - path: config/applications/platform/istio-system/overlays/local
       - path: config/applications/services/hello/overlays/local
   template:
     metadata:

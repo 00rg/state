@@ -7,8 +7,9 @@ metadata:
     service: hello
 spec:
   ports:
-  - port: 8080
-    name: http
+  - name: http
+    port: 80
+    targetPort: 8080
   selector:
     app: hello
 ---
@@ -20,7 +21,7 @@ spec:
   hosts:
   - "*"
   gateways:
-  - gateways/http-gateway
+  - istio-system/http-gateway
   http:
   - match:
     - uri:
@@ -28,5 +29,3 @@ spec:
     route:
     - destination:
         host: hello
-        port:
-          number: 8080
