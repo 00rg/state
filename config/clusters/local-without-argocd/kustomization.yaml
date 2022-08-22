@@ -5,6 +5,7 @@ resources:
 - ../../applications/platform/istio-operator/overlays/local
 - ../../applications/platform/istio-system/overlays/local
 - ../../applications/services/hello/overlays/local
+- ../../applications/services/httpbin/overlays/local
 components:
 - ../../components/non-production
 - ../../components/ap-southeast-2

@@ -6,3 +6,4 @@ resources:
 - rate-limit-config.yaml
 - rate-limit-filters.yaml
 - rate-limit-service.yaml
+- request-authentication.yaml

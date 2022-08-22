@@ -17,7 +17,8 @@ banner = \
 k3d-create-registry:
 	@$(call banner,Creating k3d container registry)
 	@if [[ $$(k3d registry list -o=json | jq 'any(.name == "k3d-$(REGISTRY)")') == false ]]; then \
-		k3d registry create $(REGISTRY) --port $(REGISTRY_PORT); \
+		k3d registry create $(REGISTRY) --port $(REGISTRY_PORT) > /dev/null; \
+		echo "Created local registry $(REGISTRY)."; \
 	else \
 		echo "Registry $(REGISTRY) already exists."; \
 	fi
