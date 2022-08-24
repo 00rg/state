@@ -7,6 +7,6 @@ spec:
     matchLabels:
       istio: ingressgateway
   jwtRules:
-  - issuer: https://aeldridge.au.auth0.com/
+  - issuer: https://swyftx-local.au.auth0.com/
     outputPayloadToHeader: X-User-Context
-    jwksUri: https://aeldridge.au.auth0.com/.well-known/jwks.json
+    jwksUri: https://swyftx-local.au.auth0.com/.well-known/jwks.json
