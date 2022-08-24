@@ -1,16 +1,43 @@
 CLUSTER       ?= default
 REGISTRY      ?= local-registry
 REGISTRY_PORT ?= 5555
+SERVICE_DIRS  ?= ../hello-service
 
 ARGOCD_VERSION := v2.4.8
 
 # Colors for pretty printing.
-no_color := \033[0m
-ok_color := \033[38;2;44;220;162m
+color_none := \033[0m
+color_bann := \033[38;2;44;220;162m
+color_mesg := \033[38;2;20;138;222m
 
-## Function for printing a pretty banner.
+## Function for printing a banner.
 banner = \
-	echo "\n$(ok_color)=====> $1$(no_color)"
+	echo "\n$(color_bann)=====> $1$(color_none)"
+
+## Function for printing a message.
+message = \
+	echo "\n$(color_mesg)$1$(color_none)"
+
+## Function for waiting until ENTER is pressed.
+wait-confirm = \
+	while true; do \
+		IFS= read -n 1 -p "Press ENTER to continue..." input; \
+		[[ "$${input}" == "" ]] && break || echo; \
+	done
+
+## Function for applying KRM resources in a layered approach.
+apply-krm-layers = \
+	@for layer in $1/*; do \
+		id=$$(($${id:-0} + 1)); \
+		$(call message,Applying KRM layer $${id}); \
+		kustomize build $${layer} | kubectl apply -f - || break; \
+		$(call message,Waiting for KRM layer $${id}...); \
+		./scripts/wait-ready-all.sh || break; \
+	done
+
+.PHONY: test
+test:
+	@$(call wait-confirm)
 
 ## Creates a local container registry.
 .PHONY: k3d-create-registry
@@ -87,3 +114,44 @@ argocd-port-forward:
 	@printf "You can login to Argo CD at http://localhost:8080\n"
 	@printf "The username is 'admin' and the password has been copied to the clipboard\n\n"
 	@kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+.PHONY: shellcheck
+shellcheck:
+	@$(call banner,Checking shell scripts with ShellCheck)
+	@shellcheck $(shell find . -name '*.sh')
+
+.PHONY: shfmt
+shfmt:
+	@$(call banner,Checking shell scripts with shfmt)
+	@shfmt -i 2 -ci -sr -bn -d $(shell find . -name '*.sh')
+
+.PHONY: lint
+lint: shellcheck shfmt
+
+.PHONY: cluster-wait-ready-all
+cluster-wait-ready-all:
+	@$(call banner,Waiting until all cluster workloads are ready)
+	@./scripts/wait-ready-all.sh
+
+.PHONY: init
+init:
+	@$(call banner,Starting init process)
+	@echo "This feature has not yet been implemented."
+
+.PHONY: push-service-images-local
+push-service-images-local:
+	@$(call banner,Pushing service images to local registry)
+	@for dir in $(SERVICE_DIRS); do \
+		cd $${dir} && $(MAKE) push-image-local; \
+	done
+
+.PHONY: local-without-argocd
+local-without-argocd: k3d-create-all push-service-images-local
+	@$(call banner,Applying KRM resources directly to cluster)
+	@$(call apply-krm-layers,config/clusters/local-without-argocd)
+
+.PHONY: local-with-argocd
+local-with-argocd: k3d-create-all push-service-images-local
+	@$(call banner,Applying Argo CD KRM resources)
+	@$(call apply-krm-layers,config/clusters/local-with-argocd)
+	@printf "\nTo view the Argo CD console run: make argocd-port-forward\n"

@@ -5,19 +5,16 @@ The GitOps state of the 00rg universe.
 ** Clusters
 This process assumes that a basic AWS account structure has been set up using something like AWS Control Tower. The multi-account structure should look similar to the [[https://aws.amazon.com/blogs/security/update-of-aws-security-reference-architecture-is-now-available/][AWS Security Reference Architecture]].
 
+The full bootstrap process is described below.
+
 *** init
-This is the cluster that bootstraps everything else. It is a local k3d cluster that is spun up out of some repository within the org. It runs Crossplane and is fed CRs so that it creates the first cloud cluster. The Crossplane resources are configured so that they absorb existing cloud resources if they already exist so that the init process is idempotent.
+This is the cluster that bootstraps everything else. It is a local [[https://k3d.io][k3d]] cluster that runs Crossplane and is fed CRs so that it creates the first cloud cluster. The Crossplane resources are configured so that they absorb existing cloud resources if they already exist so that the init process is idempotent.
 
-#+begin_src bash
-  make k3d-create-cluster
-  kustomize build config/clusters/init | kubectl apply -f -
-#+end_src
+To start the init process, run =make init= and follow the steps. The result will be a standalone dedicated VPC in some high-level AWS account. The VPC will run a single EKS cluster named =root=. This cluster will run its own dedicated Argo CD instance that it will use to bootstrap itself. How does the =init= cluster (running on my laptop) inject Argo CD into the =root= cluster which will have a private control plane in a standalone VPC?
 
-The above commands will result in the creation of a standalone dedicated VPC in some high-level AWS account. The VPC will run a single EKS cluster named =root=. This cluster will run its own dedicated Argo CD instance that it will use to bootstrap itself. How does the =init= cluster (running on my laptop) inject Argo CD into the =root= cluster which will have a private control plane in a standalone VPC?
-
-**** root
+*** root
 The root cluster is created in a standalone dedicated VPC in some high-level AWS account.
-**** management
+*** management
 The init cluster creates this cluster on AWS and installs Argo CD on it. An Argo CD Application resource is then applied to the cluster so that it boostraps itself using GitOps. The Git directory path that the Application references will be to this repository under something like =config/clusters/management-ap-southest-2= or =config/clusters/management/overlays/ap-southeast-2= (see TODO below).
 
 This cluster should be on the production network (potentially a shared VPC).
@@ -27,32 +24,13 @@ There are two primary workflows for local development: /without/ Argo CD /with/ 
 
 *** Local Development Without Argo CD
 
-*** Local Development With Argo CD
-
-Apply the following a few times until all CRDs are installed and the corresponding CRs get applied successfully.
-
-#+begin_src bash
-  kustomize build clusters/local-example | kubectl apply -f -
+#+begin_src
+  make local-without-argocd
 #+end_src
 
-For pulling private ECR and local images see:
-- https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-- https://medium.com/@danieltse/pull-the-docker-image-from-aws-ecr-in-kubernetes-dc7280d74904
-- https://stackoverflow.com/questions/70837524/k3os-cant-pull-image-from-aws-ecr-private-registry-although-it-can-push
-- https://hackernoon.com/how-to-deploy-apps-to-a-local-k3d-cluster
-- https://www.natarajmb.com/2021/10/kubernetes-local-development-k3d-docker/
+*** Local Development With Argo CD
 
-** Tasks
-*** TODO Local experience - with-argocd and without-argocd
-What would these two experiences look like?
-*** TODO Avoid every app needing per-cluster overlay
-- Try using Components
-*** TODO Should clusters have overlays?
-- =kustomize build clusters/development-ap-southeast-2= or
-- =kustomize build clusters/development/overlays/ap-southeast-2=
-*** TODO Control plane access using Tailscale
-- [[https://kevinholditch.co.uk/2022/03/23/how-to-access-your-home-kubernetes-cluster-from-anywhere-with-tailscale/][How To Access Your Home Kubernetes Cluster From Anywhere With Tailscale – Exc...]]
-- [[https://tailscale.com/kb/1019/subnets/?tab=linux][Subnet routers and traffic relay nodes · Tailscale]]
-- [[https://tailscale.com/kb/1021/install-aws/][Connect to an AWS VPC using subnet routes · Tailscale]]
-*** TODO Logging using vector or fluent-bit or whatever latest hotness is
-*** TODO Prometheus and Grafana
+#+begin_src bash
+  make local-with-argocd
+  make argocd-port-forward
+#+end_src
