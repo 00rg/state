@@ -1,9 +1,14 @@
-CLUSTER       ?= default
 REGISTRY      ?= local-registry
 REGISTRY_PORT ?= 5555
 SERVICE_DIRS  ?= ../hello-service
 
-ARGOCD_VERSION := v2.4.8
+ARGOCD_VERSION := v2.4.11
+
+# List of clusters that can be run locally.
+local_clusters := $(shell find config/clusters \
+	-maxdepth 1 -mindepth 1 \
+	\( -name 'init' -o -name '????-???-loc-xxxxx-????' \) \
+	-printf "%f\n")
 
 # Colors for pretty printing.
 color_none := \033[0m
@@ -17,6 +22,15 @@ banner = \
 ## Function for printing a message.
 message = \
 	echo "\n$(color_mesg)$1$(color_none)"
+
+## Check that the CLUSTER variable has been set appropriately.
+check-cluster = \
+	if [[ -z "$(findstring $(CLUSTER),$(local_clusters),)" ]]; then \
+		printf "CLUSTER must be set to one of the following local clusters:\n"; \
+		printf "%s\n" $(local_clusters); \
+		printf "\n"; \
+		exit 1; \
+	fi
 
 ## Function for waiting until ENTER is pressed.
 wait-confirm = \
@@ -35,10 +49,6 @@ apply-krm-layers = \
 		./scripts/wait-ready-all.sh || break; \
 	done
 
-.PHONY: test
-test:
-	@$(call wait-confirm)
-
 ## Creates a local container registry.
 .PHONY: k3d-create-registry
 k3d-create-registry:
@@ -53,6 +63,7 @@ k3d-create-registry:
 ## Creates a local k3d cluster.
 .PHONY: k3d-create-cluster
 k3d-create-cluster:
+	@$(call check-cluster)
 	@$(call banner,Creating k3d cluster)
 	@if [[ $$(k3d cluster list -o=json | jq 'any(.name == "$(CLUSTER)")') == false ]]; then \
 		k3d cluster create $(CLUSTER) \
@@ -83,6 +94,7 @@ k3d-delete-registry:
 ## Deletes the local k3d cluster.
 .PHONY: k3d-delete-cluster
 k3d-delete-cluster:
+	@$(call check-cluster)
 	@$(call banner,Deleting k3d cluster)
 	@if [[ $$(k3d cluster list -o=json | jq 'any(.name == "$(CLUSTER)")') == true ]]; then \
 		k3d cluster delete $(CLUSTER); \
@@ -145,13 +157,7 @@ push-service-images-local:
 		cd $${dir} && $(MAKE) push-image-local; \
 	done
 
-.PHONY: local-without-argocd
-local-without-argocd: k3d-create-all push-service-images-local
-	@$(call banner,Applying KRM resources directly to cluster)
-	@$(call apply-krm-layers,config/clusters/local-without-argocd)
-
-.PHONY: local-with-argocd
-local-with-argocd: k3d-create-all push-service-images-local
-	@$(call banner,Applying Argo CD KRM resources)
-	@$(call apply-krm-layers,config/clusters/local-with-argocd)
-	@printf "\nTo view the Argo CD console run: make argocd-port-forward\n"
+.PHONY: cluster-build
+cluster-build: k3d-create-all push-service-images-local
+	@$(call banner,Building cluster $(CLUSTER))
+	@$(call apply-krm-layers,config/clusters/$(CLUSTER))
