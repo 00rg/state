@@ -140,11 +140,6 @@ shfmt:
 .PHONY: lint
 lint: shellcheck shfmt
 
-.PHONY: cluster-wait-ready-all
-cluster-wait-ready-all:
-	@$(call banner,Waiting until all cluster workloads are ready)
-	@./scripts/wait-ready-all.sh
-
 .PHONY: init
 init:
 	@$(call banner,Starting init process)
@@ -161,3 +156,8 @@ push-service-images-local:
 cluster-build: k3d-create-all push-service-images-local
 	@$(call banner,Building cluster $(CLUSTER))
 	@$(call apply-krm-layers,config/clusters/$(CLUSTER))
+
+.PHONY: cluster-wait-ready-all
+cluster-wait-ready-all:
+	@$(call banner,Waiting until all cluster workloads are ready)
+	@./scripts/wait-ready-all.sh
