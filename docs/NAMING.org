@@ -1,0 +1,21 @@
+* Naming Schemes
+
+** Cluster Naming
+
+| Cluster Type | Environment | Cloud  | Region         | Variant | Cluster Name            | Comment                                                                        |
+|--------------+-------------+--------+----------------+---------+-------------------------+--------------------------------------------------------------------------------|
+| Init         | Local       | N/A    | =N/A=            | N/A     | =init=                    | The init cluster.                                                              |
+| Root         | Org-Wide    | AWS    | =ap-southeast-2= | bone    | =root-org-aws-apse2-bone= | The root cluster running on AWS in =ap-southeast-2=.                             |
+| Root         | Org-Wide    | Local  | =N/A=            | bone    | =root-org-loc-xxxxx-bone= | The root cluster running locally.                                              |
+| Management   | Org-Wide    | AWS    | =ap-southeast-2= | yang    | =mgmt-org-aws-apse2-yang= | The management cluster running on AWS in =ap-southeast-2=.                       |
+| Management   | Org-Wide    | Local  | =N/A=            | yang    | =mgmt-org-loc-xxxxx-yang= | The management cluster running locally.                                        |
+| Workload     | Production  | AWS    | =ap-southeast-2= | muse    | =work-prd-aws-apse2-muse= | Production workload cluster running on AWS in =ap-southeast-2= ("muse" variant). |
+| Workload     | Production  | AWS    | =ap-southeast-2= | dune    | =work-prd-aws-apse2-dune= | Production workload cluster running on AWS in =ap-southeast-2= ("dune" variant). |
+| Workload     | Development | Google | =us-west-1=      | yoga    | =work-dev-gcp-uswe1-yoga= | Development workload cluster running on GCP in =us-west-1=.                      |
+| Workload     | Staging     | Google | =us-west-1=      | king    | =work-stg-gcp-uswe1-king= | Staging workload cluster running on AWS in =us-west-1=.                          |
+| Workload     | Test        | Azure  | =australiaeast=  | farm    | =work-tst-azr-auest-farm= | Test workload cluster running on Azure in =australiaeast=.                       |
+| Workload     | Test        | Local  | =N/A=            | farm    | =work-tst-loc-xxxxx-farm= | Test workload cluster running locally.                                         |
+| Data/ML      | Production  | AWS    | =ap-southeast-2= | iris    | =data-prd-aws-apse2-iris= | Production data cluster running on AWS in =ap-southeast-2=.                      |
+| Custom       | N/A         | Local  | =N/A=            | boom    | =cust-xxx-loc-xxxxx-boom= | Custom hand-crafted artisinal local cluster.                                   |
+
+Four letter nouns can be found [[https://www.wordexample.com/list/nouns-with-4-letters][here]] and AWS region abbeviations can be found [[https://gist.github.com/colinvh/14e4b7fb6b66c29f79d3][here]].
