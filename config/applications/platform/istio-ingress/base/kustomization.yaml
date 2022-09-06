@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: istio-system
 resources:
 - http-gateway.yaml
-# - rate-limit-config.yaml
-# - rate-limit-filters.yaml
-# - rate-limit-service.yaml
-# - request-authentication.yaml
+- rate-limit-config.yaml
+- rate-limit-filters.yaml
+- rate-limit-service.yaml
+- request-authentication.yaml

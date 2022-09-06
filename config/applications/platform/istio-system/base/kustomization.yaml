@@ -3,4 +3,6 @@ kind: Kustomization
 namespace: istio-system
 resources:
 - installation.yaml
+- kiali-operator.yaml
 - namespace.yaml
+- prometheus.yaml

@@ -2,7 +2,8 @@ REGISTRY      ?= local-registry
 REGISTRY_PORT ?= 5555
 SERVICE_DIRS  ?= ../hello-service
 
-ARGOCD_VERSION := v2.4.11
+ARGOCD_VERSION     := v2.4.11
+CROSSPLANE_VERSION := 1.9.0
 
 # List of clusters that can be run locally.
 local_clusters := $(shell find config/clusters \
@@ -111,9 +112,9 @@ k3d-delete-all: k3d-delete-cluster k3d-delete-registry
 .PHONY: argocd-update-manifests
 argocd-update-manifests:
 	@$(call banner,Updating Argo CD manifests)
-	@curl -sfo config/applications/platform/argocd/overlays/management/ha-install.yaml \
+	@curl -sfo config/applications/platform/argocd/overlays/management/argocd-ha.yaml \
 		https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/ha/install.yaml
-	@curl -sfo config/applications/platform/argocd/overlays/local/non-ha-install.yaml \
+	@curl -sfo config/applications/platform/argocd/overlays/local/argocd-non-ha.yaml \
 		https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/install.yaml
 	@echo "Done."
 
@@ -126,6 +127,14 @@ argocd-port-forward:
 	@printf "You can login to Argo CD at http://localhost:8080\n"
 	@printf "The username is 'admin' and the password has been copied to the clipboard\n\n"
 	@kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+.PHONY: crossplane-update-manifests
+crossplane-update-manifests:
+	@$(call banner,Updating Crossplane manifests)
+	@helm template crossplane --version $(CROSSPLANE_VERSION) \
+		--namespace crossplane-system crossplane-stable/crossplane \
+		> config/applications/platform/crossplane/base/crossplane.yaml
+	@echo "Done."
 
 .PHONY: shellcheck
 shellcheck:

@@ -4,16 +4,6 @@ The GitOps state of the 00rg universe.
 
 ** Cluster Naming
 
-https://www.wordexample.com/list/nouns-with-4-letters
-https://gist.github.com/colinvh/14e4b7fb6b66c29f79d3
-
-#+begin_src bash
-# Two
-
-work-prod-aws-apse2-dune
-#+end_src
-
-
 | Cluster Type | Environment | Cloud Provider | Region         | Identifier | Cluster Name            | Comment                                                                        |
 |--------------+-------------+----------------+----------------+------------+-------------------------+--------------------------------------------------------------------------------|
 | Init         | Local       | N/A            | =N/A=            | N/A        | =init=                    | The init cluster.                                                              |
@@ -30,6 +20,7 @@ work-prod-aws-apse2-dune
 | Data/ML      | Production  | AWS            | =ap-southeast-2= | iris       | =data-prd-aws-apse2-iris= | Production data cluster running on AWS in =ap-southeast-2=.                      |
 | Custom       | N/A         | Local          | =N/A=            | boom       | =cust-xxx-loc-xxxxx-boom= | Custom hand-crafted artisinal local cluster.                                   |
 
+Four letter nouns can be found [[https://www.wordexample.com/list/nouns-with-4-letters][here]] and AWS region abbeviations can be found [[https://gist.github.com/colinvh/14e4b7fb6b66c29f79d3][here]].
 
 ** Clusters
 This process assumes that a basic AWS account structure has been set up using something like AWS Control Tower. The multi-account structure should look similar to the [[https://aws.amazon.com/blogs/security/update-of-aws-security-reference-architecture-is-now-available/][AWS Security Reference Architecture]].
@@ -66,3 +57,6 @@ There are two primary workflows for local development: /without/ Argo CD /with/ 
   make local-with-argocd
   make argocd-port-forward
 #+end_src
+
+** TODOS
+*** TODO Up to [[kubectl crossplane install configuration registry.upbound.io/xp/getting-started-with-aws-with-vpc:latest][here]]
