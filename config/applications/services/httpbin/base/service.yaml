@@ -25,7 +25,9 @@ spec:
   http:
   - match:
     - uri:
-        regex: '.*'
+        prefix: /httpbin/
+    rewrite:
+      uri: /
     route:
     - destination:
         host: httpbin
