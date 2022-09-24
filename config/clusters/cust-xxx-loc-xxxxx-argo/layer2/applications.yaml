@@ -12,7 +12,6 @@ spec:
       - path: config/applications/platform/istio-ingress/overlays/local
       - path: config/applications/platform/istio-operator/overlays/local
       - path: config/applications/platform/istio-system/overlays/local
-      - path: config/applications/platform/kiali/overlays/local
       - path: config/applications/services/hello/overlays/local
       - path: config/applications/services/httpbin/overlays/local
   template:

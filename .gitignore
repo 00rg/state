@@ -1,0 +1,8 @@
+target/
+*.swp
+*.orig
+*.log
+*~
+\#*\#
+.\#*
+.DS_Store

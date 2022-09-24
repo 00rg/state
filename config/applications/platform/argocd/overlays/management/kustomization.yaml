@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: argocd
 resources:
 - ../../base
-- argocd-ha.yaml
+- argocd.gen.yaml

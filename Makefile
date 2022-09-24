@@ -1,9 +1,9 @@
+include .support/make/build-dirs.mk
+include .support/make/third-party.mk
+
 REGISTRY      ?= local-registry
 REGISTRY_PORT ?= 5555
 SERVICE_DIRS  ?= ../hello-service
-
-ARGOCD_VERSION     := v2.4.11
-CROSSPLANE_VERSION := 1.9.0
 
 # List of clusters that can be run locally.
 local_clusters := $(shell find config/clusters \
@@ -40,15 +40,20 @@ wait-confirm = \
 		[[ "$${input}" == "" ]] && break || echo; \
 	done
 
-## Function for applying KRM resources in a layered approach.
-apply-krm-layers = \
-	@for layer in $1/*; do \
-		id=$$(($${id:-0} + 1)); \
-		$(call message,Applying KRM layer $${id}); \
-		kustomize build $${layer} | kubectl apply -f - || break; \
-		$(call message,Waiting for KRM layer $${id}...); \
-		./scripts/wait-ready-all.sh || break; \
-	done
+## Function for applying a Kustomize directory in an optionally layered approach.
+kustomize-apply = \
+	@if [[ -f $1/kustomization.yaml ]]; then \
+		$(call message,Applying Kustomize directory); \
+		kustomize build $1 | kubectl apply -f -; \
+	else \
+		for layer in $1/*; do \
+			id=$$(($${id:-0} + 1)); \
+			$(call message,Applying Kustomize layer $${id}); \
+			kustomize build $${layer} | kubectl apply -f - || break; \
+			$(call message,Waiting for KRM layer $${id}...); \
+			.support/scripts/wait-ready-all.sh || break; \
+		done \
+	fi
 
 ## Creates a local container registry.
 .PHONY: k3d-create-registry
@@ -108,17 +113,6 @@ k3d-delete-cluster:
 .PHONY: k3d-delete-all
 k3d-delete-all: k3d-delete-cluster k3d-delete-registry
 
-## Updates the Argo CD installation manifests to the specified version.
-.PHONY: argocd-update-manifests
-argocd-update-manifests:
-	@$(call banner,Updating Argo CD manifests)
-	@curl -sfo config/applications/platform/argocd/overlays/management/argocd-ha.yaml \
-		https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/ha/install.yaml
-	@curl -sfo config/applications/platform/argocd/overlays/local/argocd-non-ha.yaml \
-		https://raw.githubusercontent.com/argoproj/argo-cd/$(ARGOCD_VERSION)/manifests/install.yaml
-	@echo "Done."
-
-## Updates the Argo CD installation manifests to the specified version.
 .PHONY: argocd-port-forward
 argocd-port-forward:
 	@$(call banner,Port forwarding Argo CD)
@@ -127,14 +121,6 @@ argocd-port-forward:
 	@printf "You can login to Argo CD at http://localhost:8080\n"
 	@printf "The username is 'admin' and the password has been copied to the clipboard\n\n"
 	@kubectl port-forward svc/argocd-server -n argocd 8080:443
-
-.PHONY: crossplane-update-manifests
-crossplane-update-manifests:
-	@$(call banner,Updating Crossplane manifests)
-	@helm template crossplane --version $(CROSSPLANE_VERSION) \
-		--namespace crossplane-system crossplane-stable/crossplane \
-		> config/applications/platform/crossplane/base/crossplane.yaml
-	@echo "Done."
 
 .PHONY: shellcheck
 shellcheck:
@@ -164,9 +150,9 @@ push-service-images-local:
 .PHONY: cluster-build
 cluster-build: k3d-create-all push-service-images-local
 	@$(call banner,Building cluster $(CLUSTER))
-	@$(call apply-krm-layers,config/clusters/$(CLUSTER))
+	@$(call kustomize-apply,config/clusters/$(CLUSTER))
 
 .PHONY: cluster-wait-ready-all
 cluster-wait-ready-all:
 	@$(call banner,Waiting until all cluster workloads are ready)
-	@./scripts/wait-ready-all.sh
+	@.support/scripts/wait-ready-all.sh

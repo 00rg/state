@@ -1,9 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: istio-system
+namespace: istio-ingress
 resources:
-- http-gateway.yaml
-- rate-limit-config.yaml
-- rate-limit-filters.yaml
-- rate-limit-service.yaml
-- request-authentication.yaml
+- external-gateway.yaml
+- namespace.yaml

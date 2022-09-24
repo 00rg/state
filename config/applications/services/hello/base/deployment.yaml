@@ -4,7 +4,7 @@ metadata:
   name: hello
   labels:
     app: hello
-    version: v1
+    tags.00rg.com/mode: auto
 spec:
   replicas: 1
   selector:

@@ -1,0 +1,8 @@
+* Crossplane
+** Upgrade Instructions
+
+#+begin_src bash
+  helm repo add crossplane-stable https://charts.crossplane.io/stable
+  helm repo update
+  helm template crossplane --namespace crossplane-system crossplane-stable/crossplane > crossplane.gen.yaml
+#+end_src

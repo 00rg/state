@@ -1,3 +1,5 @@
+# This file was creating by following https://istio.io/latest/docs/ops/integrations/prometheus/
+# For a full production setup, we should probably use the shared Prometheus? (yet to be installed)
 ---
 # Source: prometheus/templates/server/serviceaccount.yaml
 apiVersion: v1
