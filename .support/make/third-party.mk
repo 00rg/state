@@ -70,10 +70,16 @@ third-party-update-vector: third-party-helm-repos
 	@helm template vector vector/vector \
 		--version $(vector_version) \
 		--namespace vector \
+		--set fullnameOverride=vector-agent \
 		--set role=Agent \
+		--set image.tag=0.24.1-distroless-libc \
+		--set service.enabled=false \
 		> config/applications/platform/vector/components/vector-agent/vector-agent.gen.yaml
 	@helm template vector vector/vector \
 		--version $(vector_version) \
 		--namespace vector \
+		--set fullnameOverride=vector-aggregator \
 		--set role=Aggregator \
+		--set image.tag=0.24.1-distroless-libc \
+		--set service.enabled=false \
 		> config/applications/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml

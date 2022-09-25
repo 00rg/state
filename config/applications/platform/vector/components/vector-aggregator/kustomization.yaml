@@ -1,9 +1,4 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
-images:
-  # Override the Vector image to pin the version used.
-  - name: timberio/vector
-    newName: timberio/vector
-    newTag: 0.24.1-distroless-libc
 resources:
 - vector-aggregator.gen.yaml
