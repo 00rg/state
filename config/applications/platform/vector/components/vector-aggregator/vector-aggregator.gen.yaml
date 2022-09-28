@@ -7,7 +7,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -22,7 +22,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -80,7 +80,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -91,16 +91,16 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: vector
-      app.kubernetes.io/instance: vector
+      app.kubernetes.io/instance: vector-aggregator
       app.kubernetes.io/component: Aggregator
   serviceName: vector-aggregator-headless
   template:
     metadata:
       annotations:
-        checksum/config: 4bb0b211de998472dfa64fe515ba1796c1cc4831af9955b245d6757fb277df8f
+        checksum/config: 2c6ac53f11864245a14b0204b59ae0899a3a86eeb0d60817845f204b6d707fe0
       labels:
         app.kubernetes.io/name: vector
-        app.kubernetes.io/instance: vector
+        app.kubernetes.io/instance: vector-aggregator
         app.kubernetes.io/component: Aggregator
         vector.dev/exclude: "true"
     spec:

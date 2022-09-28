@@ -7,7 +7,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -22,7 +22,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -69,7 +69,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -93,7 +93,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -115,7 +115,7 @@ metadata:
   labels:
     helm.sh/chart: vector-0.16.0
     app.kubernetes.io/name: vector
-    app.kubernetes.io/instance: vector
+    app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
     app.kubernetes.io/version: "0.24.1-distroless-libc"
     app.kubernetes.io/managed-by: Helm
@@ -124,15 +124,15 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: vector
-      app.kubernetes.io/instance: vector
+      app.kubernetes.io/instance: vector-agent
       app.kubernetes.io/component: Agent
   template:
     metadata:
       annotations:
-        checksum/config: 3b1572e6855d545b2d904260eaa84a065d705288781fdb1f142cf6d55c7a2beb
+        checksum/config: 6f85b5da50bc8ea8449d6a2682d4eb89ad25f6bad7bb4ac618d9db1260704416
       labels:
         app.kubernetes.io/name: vector
-        app.kubernetes.io/instance: vector
+        app.kubernetes.io/instance: vector-agent
         app.kubernetes.io/component: Agent
         vector.dev/exclude: "true"
     spec:

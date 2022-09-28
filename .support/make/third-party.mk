@@ -1,7 +1,8 @@
-argocd_version         := 2.4.12
-crossplane_version     := 1.9.1
-istio_version          := 1.15.0
-vector_version         := 0.16.0
+argocd_version       := 2.4.12
+crossplane_version   := 1.9.1
+istio_version        := 1.15.0
+vector_chart_version := 0.16.0
+vector_image_version := 0.24.1-distroless-libc
 
 ##
 ## Updates the third party Helm repos.
@@ -66,20 +67,20 @@ third-party-update-istio-operator: $(third_party_dir)/istio-$(istio_version)/ist
 ##
 .PHONY: third-party-update-vector
 third-party-update-vector: third-party-helm-repos
-	@$(call banner,Updating Vector to version $(vector_version))
-	@helm template vector vector/vector \
-		--version $(vector_version) \
+	@$(call banner,Updating Vector to version $(vector_chart_version))
+	@helm template vector-agent vector/vector \
+		--version $(vector_chart_version) \
 		--namespace vector \
 		--set fullnameOverride=vector-agent \
 		--set role=Agent \
-		--set image.tag=0.24.1-distroless-libc \
+		--set image.tag=$(vector_image_version) \
 		--set service.enabled=false \
 		> config/applications/platform/vector/components/vector-agent/vector-agent.gen.yaml
-	@helm template vector vector/vector \
-		--version $(vector_version) \
+	@helm template vector-aggregator vector/vector \
+		--version $(vector_chart_version) \
 		--namespace vector \
 		--set fullnameOverride=vector-aggregator \
 		--set role=Aggregator \
-		--set image.tag=0.24.1-distroless-libc \
+		--set image.tag=$(vector_image_version) \
 		--set service.enabled=false \
 		> config/applications/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml
