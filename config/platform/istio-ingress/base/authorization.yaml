@@ -2,7 +2,6 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-nothing
-  namespace: istio-system
 spec:
   action: ALLOW
 ---
@@ -10,7 +9,6 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-ingress-to-apps
-  namespace: istio-system
 spec:
   selector:
     matchLabels:
@@ -25,7 +23,6 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: enable-access
-  namespace: httpbin
 spec:
   action: ALLOW
   rules:
@@ -40,7 +37,6 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: enable-access-hello
-  namespace: hello
 spec:
   action: ALLOW
   rules:

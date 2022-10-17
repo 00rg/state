@@ -107,6 +107,78 @@ subjects:
     name: vector-agent
     namespace: vector
 ---
+# Source: vector/templates/service-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vector-agent-headless
+  labels:
+    helm.sh/chart: vector-0.16.0
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/instance: vector-agent
+    app.kubernetes.io/component: Agent
+    app.kubernetes.io/version: "0.24.1-distroless-libc"
+    app.kubernetes.io/managed-by: Helm
+    
+  annotations:
+spec:
+  clusterIP: None
+  ports:
+    - name: datadog-agent
+      port: 8282
+      protocol: TCP
+    - name: fluent
+      port: 24224
+      protocol: TCP
+    - name: logstash
+      port: 5044
+      protocol: TCP
+    - name: splunk-hec
+      port: 8080
+      protocol: TCP
+    - name: statsd
+      port: 8125
+      protocol: TCP
+    - name: syslog
+      port: 9000
+      protocol: TCP
+    - name: vector
+      port: 6000
+      protocol: TCP
+    - name: prom-exporter
+      port: 9090
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/instance: vector-agent
+    app.kubernetes.io/component: Agent
+  type: ClusterIP
+---
+# Source: vector/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: vector-agent
+  labels:
+    helm.sh/chart: vector-0.16.0
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/instance: vector-agent
+    app.kubernetes.io/component: Agent
+    app.kubernetes.io/version: "0.24.1-distroless-libc"
+    app.kubernetes.io/managed-by: Helm
+    
+  annotations:
+spec:
+  ports:
+    - name: prom-exporter
+      port: 9090
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/instance: vector-agent
+    app.kubernetes.io/component: Agent
+  type: ClusterIP
+---
 # Source: vector/templates/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet

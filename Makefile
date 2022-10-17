@@ -12,17 +12,17 @@ local_clusters := $(shell find config/clusters \
 	-printf "%f\n")
 
 # Colors for pretty printing.
-color_none := \033[0m
-color_bann := \033[38;2;44;220;162m
-color_mesg := \033[38;2;20;138;222m
+color_none    := \033[0m
+color_banner  := \033[38;2;44;220;162m
+color_message := \033[38;2;20;138;222m
 
 ## Function for printing a banner.
 banner = \
-	echo "\n$(color_bann)=====> $1$(color_none)"
+	echo "\n$(color_banner)=====> $1$(color_none)"
 
 ## Function for printing a message.
 message = \
-	echo "\n$(color_mesg)$1$(color_none)"
+	echo "\n$(color_message)$1$(color_none)"
 
 ## Check that the CLUSTER variable has been set appropriately.
 check-cluster = \
@@ -80,6 +80,9 @@ k3d-create-cluster:
 			--registry-use k3d-$(REGISTRY):$(REGISTRY_PORT); \
 	else \
 		echo "Cluster $(CLUSTER) already exists."; \
+	fi
+	@if [[ $$(kubectl config current-context) != k3d-$(CLUSTER) ]]; then \
+		kubectl config use-context k3d-$(CLUSTER); \
 	fi
 
 ## Creates the local k3d registry and cluster.

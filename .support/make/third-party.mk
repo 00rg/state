@@ -74,7 +74,7 @@ third-party-update-vector: third-party-helm-repos
 		--set fullnameOverride=vector-agent \
 		--set role=Agent \
 		--set image.tag=$(vector_image_version) \
-		--set service.enabled=false \
+		--set service.enabled=true \
 		> config/applications/platform/vector/components/vector-agent/vector-agent.gen.yaml
 	@helm template vector-aggregator vector/vector \
 		--version $(vector_chart_version) \
