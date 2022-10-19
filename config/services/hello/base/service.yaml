@@ -16,12 +16,31 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: hello
+  name: hello-external
 spec:
   hosts:
-  - "*"
+  - api.00rg.com
   gateways:
   - istio-ingress/external-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /hello/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: hello
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello-internal
+spec:
+  hosts:
+  - api.internal.00rg.com
+  gateways:
+  - istio-ingress/internal-gateway
   http:
   - match:
     - uri:

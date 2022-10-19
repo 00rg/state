@@ -4,4 +4,6 @@ namespace: hello
 resources:
 - deployment.yaml
 - namespace.yaml
+- authorization.yaml
 - service.yaml
+- service-account.yaml

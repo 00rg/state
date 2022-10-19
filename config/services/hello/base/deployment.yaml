@@ -4,7 +4,6 @@ metadata:
   name: hello
   labels:
     app: hello
-    tags.00rg.com/mode: auto
 spec:
   replicas: 1
   selector:
@@ -15,12 +14,11 @@ spec:
       labels:
         app: hello
     spec:
+      serviceAccountName: hello
       containers:
       - name: hello
         image: k3d-local-registry:5555/hello:0.0.1
-        resources:
-          requests:
-            cpu: "100m"
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        # image: ashlineldridge/hello:0.0.1
+        env:
+        - name: EXTERNAL_URL
+          value: http://httpbin.httpbin.svc.cluster.local/get

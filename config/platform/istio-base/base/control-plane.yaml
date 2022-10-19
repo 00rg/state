@@ -1,0 +1,22 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: control-plane
+spec:
+  profile: default
+  components:
+    # Disabled the pre-canned ingress gateway in the default profile.
+    ingressGateways:
+    - enabled: false
+      name: istio-ingressgateway
+  values:
+    istio_cni:
+      # Removes need for elevated RBAC permissions.
+      # See: https://istio.io/latest/docs/setup/additional-setup/cni
+      # enabled: true
+      #
+      # TODO: overlay this locally - doesn't seem to work with k3d.
+      enabled: false
+    sidecarInjectorWebhook:
+      # Inject by default.
+      enableNamespacesByDefault: true

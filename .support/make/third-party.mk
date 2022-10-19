@@ -1,6 +1,6 @@
 argocd_version       := 2.4.12
 crossplane_version   := 1.9.1
-istio_version        := 1.15.0
+istio_version        := 1.15.2
 vector_chart_version := 0.16.0
 vector_image_version := 0.24.1-distroless-libc
 
@@ -48,10 +48,10 @@ third-party-update-argocd: $(third_party_dir)/argocd-$(argocd_version)
 ##
 ## Installs istioctl.
 ##
-$(third_party_dir)/istio-$(istio_version)/istioctl: $(third_party_dir)
-	@mkdir $(third_party_dir)/istio-$(istio_version)
-	@curl -Lsf https://github.com/istio/istio/releases/download/$(istio_version)/istioctl-$(istio_version)-osx-arm64.tar.gz -o istio.tar.gz \
-		| tar -xz -C $@
+$(third_party_dir)/istio-$(istio_version)/istioctl:
+	@$(call banner,Downloading istioctl version $(istio_version))
+	@mkdir -p $(third_party_dir)/istio-$(istio_version)
+	@wget -qO- https://github.com/istio/istio/releases/download/$(istio_version)/istioctl-$(istio_version)-osx-arm64.tar.gz | tar -xz -C $(@:/istioctl=)
 
 ##
 ## Updates the Istio Operator manifests.
@@ -59,8 +59,8 @@ $(third_party_dir)/istio-$(istio_version)/istioctl: $(third_party_dir)
 .PHONY: third-party-update-istio-operator
 third-party-update-istio-operator: $(third_party_dir)/istio-$(istio_version)/istioctl
 	@$(call banner,Updating Istio Operator to version $(istio_version))
-	$(third_party_dir)/istio-$(istio_version)/istioctl operator dump \
-		> config/applications/platform/istio-operator/base/istio-operator.gen.yaml
+	@$(third_party_dir)/istio-$(istio_version)/istioctl operator dump \
+		> config/platform/istio-operator/base/istio-operator.gen.yaml
 
 ##
 ## Update Vector manifests.

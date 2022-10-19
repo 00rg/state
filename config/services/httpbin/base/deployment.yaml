@@ -14,12 +14,7 @@ spec:
       labels:
         app: httpbin
     spec:
+      serviceAccountName: httpbin
       containers:
       - name: httpbin
         image: kennethreitz/httpbin:latest
-        # resources:
-          # requests:
-            # cpu: "100m"
-        # imagePullPolicy: IfNotPresent
-        # ports:
-        # - containerPort: 8080

@@ -2,11 +2,12 @@ apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
   name: jwt-request-authentication
+  namespace: istio-ingress
 spec:
   selector:
     matchLabels:
-      istio: ingressgateway
+      app: external-ingress-gateway
   jwtRules:
   - issuer: https://aeldridge.au.auth0.com/
-    outputPayloadToHeader: X-User-Context
     jwksUri: https://aeldridge.au.auth0.com/.well-known/jwks.json
+    outputPayloadToHeader: X-Auth-Payload

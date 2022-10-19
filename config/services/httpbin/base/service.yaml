@@ -16,12 +16,31 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: httpbin
+  name: httpbin-external
 spec:
   hosts:
-  - "*"
+  - api.00rg.com
   gateways:
   - istio-ingress/external-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /httpbin/
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: httpbin
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: httpbin-internal
+spec:
+  hosts:
+  - api.internal.00rg.com
+  gateways:
+  - istio-ingress/internal-gateway
   http:
   - match:
     - uri:

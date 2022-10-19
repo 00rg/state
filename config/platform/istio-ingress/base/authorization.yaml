@@ -1,48 +1,20 @@
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-nothing
-spec:
-  action: ALLOW
----
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: allow-ingress-to-apps
+  name: user-authorization
+  namespace: istio-ingress
 spec:
   selector:
     matchLabels:
-      app: istio-ingressgateway
-  action: ALLOW
-  rules:
-  - to:
-    - operation:
-        paths: ["/*"]
----
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: enable-access
-spec:
-  action: ALLOW
+      app: external-ingress-gateway
+  action: DENY
   rules:
   - from:
     - source:
-        namespaces: ["istio-system"]
+        notRequestPrincipals: ["https://aeldridge.au.auth0.com/*"]
     to:
     - operation:
-        methods: ["GET"]
----
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: enable-access-hello
-spec:
-  action: ALLOW
-  rules:
-  - from:
-    - source:
-        namespaces: ["istio-system"]
-    to:
-    - operation:
-        methods: ["GET"]
+        # Purely for testing purposes, the following paths do not require
+        # authentication - all other paths do.
+        notPaths:
+        - /hello/external
