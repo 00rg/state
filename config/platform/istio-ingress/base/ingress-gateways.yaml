@@ -13,9 +13,29 @@ spec:
       label:
         app: external-ingress-gateway
         istio: ingress-gateway
+      k8s:
+        hpaSpec:
+          minReplicas: 1
+          maxReplicas: 1
+        service:
+          ports:
+          - name: http2
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
     - name: internal-ingress-gateway
       namespace: istio-ingress
       enabled: true
       label:
         app: internal-ingress-gateway
         istio: ingress-gateway
+      k8s:
+        hpaSpec:
+          minReplicas: 1
+          maxReplicas: 1
+        service:
+          ports:
+          - name: http2
+            port: 9080
+            protocol: TCP
+            targetPort: 8080
