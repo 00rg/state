@@ -73,8 +73,8 @@ k3d-create-cluster:
 	@$(call banner,Creating k3d cluster)
 	@if [[ $$(k3d cluster list -o=json | jq 'any(.name == "$(CLUSTER)")') == false ]]; then \
 		k3d cluster create $(CLUSTER) \
-			--port 8080:8080@loadbalancer \
-			--port 9080:9080@loadbalancer \
+			--port 8080:31000@server:0 \
+			--port 9080:31001@server:0 \
 			--api-port 6443 \
 			--k3s-arg="--disable=traefik@server:0" \
 			--registry-use k3d-$(REGISTRY):$(REGISTRY_PORT); \

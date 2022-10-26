@@ -18,11 +18,13 @@ spec:
           minReplicas: 1
           maxReplicas: 1
         service:
+          type: NodePort
           ports:
           - name: http2
-            port: 8080
             protocol: TCP
+            port: 80
             targetPort: 8080
+            nodePort: 31000
     - name: internal-ingress-gateway
       namespace: istio-ingress
       enabled: true
@@ -34,8 +36,10 @@ spec:
           minReplicas: 1
           maxReplicas: 1
         service:
+          type: NodePort
           ports:
           - name: http2
-            port: 9080
             protocol: TCP
+            port: 80
             targetPort: 8080
+            nodePort: 31001

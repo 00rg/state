@@ -6,12 +6,9 @@ metadata:
 spec:
   selector:
     app: internal-ingress-gateway
-  # TODO: Ideally, just leave these as standard ports: 80, 443, etc
-  # across all gateways. Prefer not to cater for k3d and have separate
-  # ports (or at least do via Kustomize).
   servers:
   - port:
-      number: 9080
+      number: 80
       name: http
       protocol: HTTP
     hosts:
