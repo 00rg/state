@@ -1,0 +1,9 @@
+apiVersion: api.00rg.com/v1alpha1
+kind: Wave
+metadata:
+  name: wave2
+spec:
+  hooks:
+    preApply:
+    - waitForCRD:
+        name: istiooperators.install.istio.io

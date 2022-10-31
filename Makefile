@@ -1,9 +1,11 @@
 include .support/make/build-dirs.mk
 include .support/make/third-party.mk
+include .support/make/crossplane.mk
 
-REGISTRY      ?= local-registry
-REGISTRY_PORT ?= 5555
-SERVICE_DIRS  ?= ../hello-service
+REGISTRY          ?= local-registry
+REGISTRY_PORT     ?= 5555
+SERVICE_DIRS      ?= ../hello-service
+PUSH_LOCAL_IMAGES ?= false
 
 # List of clusters that can be run locally.
 local_clusters := $(shell find config/clusters \
@@ -39,21 +41,6 @@ wait-confirm = \
 		IFS= read -n 1 -p "Press ENTER to continue..." input; \
 		[[ "$${input}" == "" ]] && break || echo; \
 	done
-
-## Function for applying a Kustomize directory in an optionally layered approach.
-kustomize-apply = \
-	@if [[ -f $1/kustomization.yaml ]]; then \
-		$(call message,Applying Kustomize directory); \
-		kustomize build $1 | kubectl apply -f -; \
-	else \
-		for layer in $1/*; do \
-			id=$$(($${id:-0} + 1)); \
-			$(call message,Applying Kustomize layer $${id}); \
-			kustomize build $${layer} | kubectl apply -f - || break; \
-			$(call message,Waiting for KRM layer $${id}...); \
-			.support/scripts/wait-ready-all.sh || break; \
-		done \
-	fi
 
 ## Creates a local container registry.
 .PHONY: k3d-create-registry
@@ -138,24 +125,19 @@ shfmt:
 .PHONY: lint
 lint: shellcheck shfmt
 
-.PHONY: init
-init:
-	@$(call banner,Starting init process)
-	@echo "This feature has not yet been implemented."
+.PHONY: boot-cluster
+boot-cluster: k3d-create-all push-service-images-local
+	@$(call banner,Booting cluster $(CLUSTER))
+ifeq ($(CLUSTER),init)
+	@$(call crossplane-init)
+endif
+	@.support/scripts/wave-apply.sh config/clusters/$(CLUSTER)
 
 .PHONY: push-service-images-local
 push-service-images-local:
+ifeq ($(PUSH_LOCAL_IMAGES),true)
 	@$(call banner,Pushing service images to local registry)
 	@for dir in $(SERVICE_DIRS); do \
 		cd $${dir} && $(MAKE) push-image-local; \
 	done
-
-.PHONY: cluster-build
-cluster-build: k3d-create-all push-service-images-local
-	@$(call banner,Building cluster $(CLUSTER))
-	@$(call kustomize-apply,config/clusters/$(CLUSTER))
-
-.PHONY: cluster-wait-ready-all
-cluster-wait-ready-all:
-	@$(call banner,Waiting until all cluster workloads are ready)
-	@.support/scripts/wait-ready-all.sh
+endif

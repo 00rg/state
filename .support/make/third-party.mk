@@ -1,5 +1,5 @@
 argocd_version       := 2.4.12
-crossplane_version   := 1.9.1
+crossplane_version   := 1.10.0
 istio_version        := 1.15.2
 vector_chart_version := 0.16.0
 vector_image_version := 0.24.1-distroless-libc
@@ -22,7 +22,7 @@ third-party-update-crossplane: third-party-helm-repos
 	@helm template crossplane crossplane-stable/crossplane \
 		--version $(crossplane_version) \
 		--namespace crossplane-system \
-		> config/applications/platform/crossplane/base/crossplane.gen.yaml
+		> config/platform/crossplane-base/base/crossplane.gen.yaml
 
 ##
 ## Clones the Argo CD repository.
@@ -38,12 +38,12 @@ $(third_party_dir)/argocd-$(argocd_version): $(third_party_dir)
 third-party-update-argocd: $(third_party_dir)/argocd-$(argocd_version)
 	@$(call banner,Updating Argo CD to version $(argocd_version))
 	@kustomize build $(third_party_dir)/argocd-$(argocd_version)/manifests/cluster-install \
-		> config/applications/platform/argocd/overlays/local/argocd.gen.yaml
+		> config/platform/argocd/overlays/local/argocd.gen.yaml
 	@kustomize build $(third_party_dir)/argocd-$(argocd_version)/manifests/crds \
-		> config/applications/platform/argocd/overlays/management/argocd.gen.yaml
-	@echo '---' >> config/applications/platform/argocd/overlays/management/argocd.gen.yaml
+		> config/platform/argocd/overlays/management/argocd.gen.yaml
+	@echo '---' >> config/platform/argocd/overlays/management/argocd.gen.yaml
 	@kustomize build $(third_party_dir)/argocd-$(argocd_version)/manifests/ha/namespace-install \
-		>> config/applications/platform/argocd/overlays/management/argocd.gen.yaml
+		>> config/platform/argocd/overlays/management/argocd.gen.yaml
 
 ##
 ## Installs istioctl.
@@ -75,7 +75,7 @@ third-party-update-vector: third-party-helm-repos
 		--set role=Agent \
 		--set image.tag=$(vector_image_version) \
 		--set service.enabled=true \
-		> config/applications/platform/vector/components/vector-agent/vector-agent.gen.yaml
+		> config/platform/vector/components/vector-agent/vector-agent.gen.yaml
 	@helm template vector-aggregator vector/vector \
 		--version $(vector_chart_version) \
 		--namespace vector \
@@ -83,4 +83,4 @@ third-party-update-vector: third-party-helm-repos
 		--set role=Aggregator \
 		--set image.tag=$(vector_image_version) \
 		--set service.enabled=false \
-		> config/applications/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml
+		> config/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml

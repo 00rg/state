@@ -1,0 +1,13 @@
+apiVersion: api.00rg.com/v1alpha1
+kind: Wave
+metadata:
+  name: wave3
+spec:
+  hooks:
+    preApply:
+    - waitForCRD:
+        name: gateways.networking.istio.io
+    - waitForCRD:
+        name: authorizationpolicies.security.istio.io
+    - waitForCRD:
+        name: requestauthentications.security.istio.io

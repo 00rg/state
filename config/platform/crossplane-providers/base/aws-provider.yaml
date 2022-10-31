@@ -1,0 +1,11 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  # The Provider CRD is cluster-scoped.
+  name: aws-provider
+spec:
+  package: crossplane/provider-jet-aws:v0.5.0-preview
+
+  # Error for below: cannot unpack package: failed to fetch package digest from remote: failed to fetch package descriptor with a GET request after a previous HEAD request failure: Get "https://xpkg.upbound.io/v2/": x509: certificate signed by unknown authority: Get "https://xpkg.upbound.io/v2/": x509: certificate signed by unknown authority
+  # package: "xpkg.upbound.io/crossplane-contrib/provider-jet-aws:v0.5.0-preview"
+  # package: "xpkg.upbound.io/crossplane-contrib/provider-aws:v0.33.0"

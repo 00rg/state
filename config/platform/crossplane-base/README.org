@@ -1,0 +1,19 @@
+* Crossplane
+** Upgrade Instructions
+
+#+begin_src bash
+  helm repo add crossplane-stable https://charts.crossplane.io/stable
+  helm repo update
+  helm template crossplane --namespace crossplane-system crossplane-stable/crossplane > crossplane.gen.yaml
+#+end_src
+
+** WIP Links
+- https://github.com/awslabs/crossplane-on-eks/
+- https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/modules/kubernetes-addons/crossplane
+- https://github.com/crossplane-contrib/provider-jet-aws/releases
+- https://github.com/crossplane-contrib/provider-aws/releases
+- https://github.com/crossplane/crossplane/tree/master/docs/snippets/package/aws-with-vpc
+- https://github.com/awslabs/crossplane-on-eks/tree/main/bootstrap/eksctl
+  - Pretty clear example of installing jet-aws-provider
+  - Also example of permission boundary
+  - Also good example of the kubernetes-provider (install stuff into Kubernetes clusters)

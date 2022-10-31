@@ -19,3 +19,8 @@ $(bin_dir):
 ##
 $(third_party_dir):
 	@mkdir -p $(third_party_dir)
+
+## Deletes the build directory.
+.PHONY: clean
+clean:
+	@rm -rf $(build_dir)

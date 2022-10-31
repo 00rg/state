@@ -1,0 +1,9 @@
+apiVersion: api.00rg.com/v1alpha1
+kind: Wave
+metadata:
+  name: wave3
+spec:
+  hooks:
+    preApply:
+    - waitForCRD:
+        name: providerconfigs.aws.jet.crossplane.io
