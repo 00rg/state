@@ -13,7 +13,7 @@ spec:
   selector:
     app: httpbin
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: httpbin-external
@@ -32,7 +32,7 @@ spec:
     - destination:
         host: httpbin
 ---
-apiVersion: networking.istio.io/v1alpha3
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: httpbin-internal
