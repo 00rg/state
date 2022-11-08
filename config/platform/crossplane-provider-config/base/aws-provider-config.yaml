@@ -1,7 +1,6 @@
-apiVersion: aws.jet.crossplane.io/v1alpha1
+apiVersion: aws.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  # The Provider CRD is cluster-scoped.
   name: aws-provider-config
 spec:
   credentials:

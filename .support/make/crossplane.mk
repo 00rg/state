@@ -13,20 +13,24 @@ metadata:
   namespace: crossplane-system
 type: Opaque
 stringData:
-  creds: |
+  credentials: |
     [default]
     aws_access_key_id = $(AWS_ACCESS_KEY_ID)
     aws_secret_access_key = $(AWS_SECRET_ACCESS_KEY)
+    aws_session_token = $(AWS_SESSION_TOKEN)
 endef
 
 export CROSSPLANE_NAMESPACE
 export CROSSPLANE_SECRET
 
+## Ensures that variable is defined.
+ensure-defined = \
+	$(if $(value $1),,$(error Error: Variable $1 is expected but undefined))
+
 ## Create initial Crossplane namespace and cloud provider secret.
 crossplane-init = \
-	if [[ -z "$(AWS_ACCESS_KEY_ID)" || -z "$(AWS_SECRET_ACCESS_KEY)" ]]; then \
-		printf "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set\n"; \
-		exit 1; \
-	fi; \
+	$(call ensure-defined,AWS_ACCESS_KEY_ID) \
+	$(call ensure-defined,AWS_SECRET_ACCESS_KEY) \
+	$(call ensure-defined,AWS_SESSION_TOKEN) \
 	kubectl apply -f - <<< "$$CROSSPLANE_NAMESPACE"; \
 	kubectl apply -f - <<< "$$CROSSPLANE_SECRET"

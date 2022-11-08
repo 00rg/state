@@ -6,4 +6,4 @@ spec:
   hooks:
     preApply:
     - waitForCRD:
-        name: providerconfigs.aws.jet.crossplane.io
+        name: providerconfigs.aws.crossplane.io
