@@ -54,9 +54,9 @@ def istio_operator(name):
     )
 
 def generate_manifests(name, manifests):
-    script = "{}.sh".format(name)
+    script = "{}_runner.sh".format(name)
     write_file(
-        name = "{}_wrapper".format(name),
+        name = "{}_runner".format(name),
         out = script,
         content = [
             "#!/usr/bin/env bash",
@@ -76,12 +76,34 @@ def generate_manifests(name, manifests):
     )
 
 def k3d_all(name):
-    cmd = "$(location @k3d//file)  > $@"
+    create_cluster_script = "{}_create_cluster_runner.sh".format(name)
+    write_file(
+        name = "{}_create_cluster_runner".format(name),
+        out = create_cluster_script,
+        content = [
+            "#!/usr/bin/env bash",
+            "bazel/k3d.sh external/k3d/file/downloaded create_cluster init",
+        ],
+    )
 
-    native.genrule(
+    delete_cluster_script = "{}_delete_cluster_runner.sh".format(name)
+    write_file(
+        name = "{}_delete_cluster_runner".format(name),
+        out = delete_cluster_script,
+        content = [
+            "#!/usr/bin/env bash",
+            "bazel/k3d.sh external/k3d/file/downloaded delete_cluster init",
+        ],
+    )
+
+    native.sh_binary(
         name = "{}_create_cluster".format(name),
-        srcs = [],
-        outs = ["{}.txt".format(name)],
-        tools = ["@k3d//file"],
-        cmd = cmd,
+        srcs = [create_cluster_script],
+        data = ["@k3d//file", "//bazel:k3d.sh"],
+    )
+
+    native.sh_binary(
+        name = "{}_delete_cluster".format(name),
+        srcs = [delete_cluster_script],
+        data = ["@k3d//file", "//bazel:k3d.sh"],
     )
