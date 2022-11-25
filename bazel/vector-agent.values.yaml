@@ -1,0 +1,8 @@
+fullnameOverride: vector-agent
+role: Agent
+# Uses https://github.com/vectordotdev/helm-charts/blob/develop/charts/vector/Chart.yaml#L21
+# by default.
+# image:
+  # tag: 0.25.1-distroless-libc
+service:
+  enabled: true

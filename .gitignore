@@ -1,3 +1,5 @@
+bazel-*
+.bazel-*
 target/
 *.swp
 *.orig
