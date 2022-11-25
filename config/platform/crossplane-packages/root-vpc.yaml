@@ -1,0 +1,33 @@
+apiVersion: api.00rg.com/v1alpha1
+kind: SimpleVPC
+metadata:
+  name: root-vpc
+spec:
+  parameters:
+    region: ap-southeast-2
+    vpcID: vpc-087546bffa9fe49e6
+    vpcName: root
+    vpcCIDRBlock: 10.231.0.0/20
+    publicSubnetCIDRBlocks:
+    - 10.231.0.0/26
+    - 10.231.0.64/26
+    - 10.231.0.128/26
+    privateSubnetCIDRBlocks:
+    - 10.231.4.0/22
+    - 10.231.8.0/22
+    - 10.231.12.0/22
+    publicSubnetIDs:
+    - subnet-0af8074e5bb58ac1e
+    - subnet-0af8074e5bb58ac1e
+    - subnet-0af8074e5bb58ac1e
+    publicSubnetIDs:
+    - subnet-0af8074e5bb58ac1e
+    - subnet-0af8074e5bb58ac1e
+    - subnet-0af8074e5bb58ac1e
+
+  compositionRef:
+    name: simple-vpc
+
+  writeConnectionSecretToRef:
+    namespace: crossplane-system
+    name: root-vpc-connection

@@ -1,0 +1,13 @@
+apiVersion: meta.pkg.crossplane.io/v1alpha1
+kind: Configuration
+metadata:
+  name: simple-vpc
+  # annotations:
+    # provider: aws
+spec:
+  crossplane:
+    version: ">=v1.10.0"
+  dependsOn:
+    - provider: xpkg.upbound.io/crossplane-contrib/provider-aws
+      #provider: public.ecr.aws/awsvijisarathy/crossplane-provider-aws
+      version: ">=v0.33.0"

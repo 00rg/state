@@ -1,0 +1,443 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: simple-vpc
+spec:
+  # writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: api.00rg.com/v1alpha1
+    kind: SimpleVPC
+  patchSets:
+  - name: region-patch
+    patches:
+    - fromFieldPath: spec.parameters.region
+      toFieldPath: spec.forProvider.region
+
+  resources:
+  ##############################################################################
+  ### VPC
+
+  - name: vpc
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: VPC
+      spec:
+        providerConfigRef:
+          name: aws-provider-config
+        forProvider:
+          enableDnsSupport: true
+          enableDnsHostNames: true
+          tags:
+          - key: Name
+    patches:
+    - fromFieldPath: spec.parameters.vpcID
+      toFieldPath: metadata.annotations[crossplane.io/external-name]
+    - type: PatchSet
+      patchSetName: region-patch
+    - fromFieldPath: spec.parameters.vpcCIDRBlock
+      toFieldPath: spec.forProvider.cidrBlock
+    - fromFieldPath: spec.parameters.vpcName
+      toFieldPath: spec.forProvider.tags[0].value
+
+
+  ##############################################################################
+  ### Internet Gateway
+
+  - name: internet-gateway
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: InternetGateway
+      spec:
+        providerConfigRef:
+          name: aws-provider-config
+        forProvider:
+          vpcIdSelector:
+            matchControllerRef: true
+          tags:
+          - key: Name
+    patches:
+    - type: PatchSet
+      patchSetName: region-patch
+    - type: CombineFromComposite
+      combine:
+        variables:
+        - fromFieldPath: spec.parameters.vpcName
+        strategy: string
+        string:
+          fmt: "%s-internet-gateway"
+      toFieldPath: spec.forProvider.tags[0].value
+      policy:
+        fromFieldPath: Required
+
+  ##############################################################################
+  ### Subnet: Public A
+
+  - name: public-subnet-a
+    base:
+      apiVersion: ec2.aws.crossplane.io/v1beta1
+      kind: Subnet
+      spec:
+        providerConfigRef:
+          name: aws-provider-config
+        forProvider:
+          vpcIdSelector:
+            matchControllerRef: true
+          mapPublicIpOnLaunch: true
+          tags:
+          - key: Name
+    patches:
+    - type: PatchSet
+      patchSetName: region-patch
+    - type: CombineFromComposite
+      combine:
+        variables:
+        - fromFieldPath: spec.parameters.vpcName
+        strategy: string
+        string:
+          fmt: "%s-public-a"
+      toFieldPath: spec.forProvider.tags[0].value
+      policy:
+        fromFieldPath: Required
+    - type: CombineFromComposite
+      combine:
+        variables:
+        - fromFieldPath: spec.parameters.region
+        strategy: string
+        string:
+          fmt: "%sa"
+      toFieldPath: spec.forProvider.availabilityZone
+      policy:
+        fromFieldPath: Required
+    - fromFieldPath: spec.parameters.publicSubnetCIDRBlocks[0]
+      toFieldPath: spec.forProvider.cidrBlock
+
+  ##############################################################################
+  ### Subnet: Public B
+
+  # - name: subnet-public-2
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         type: subnet
+  #         visibility: public
+  #     spec:
+  #       forProvider:
+  #         mapPublicIpOnLaunch: true
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         tags:
+  #           - key: Name
+  #           - key: kubernetes.io/role/elb
+  #             value: "1"
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #           - fromFieldPath: spec.parameters.subnet2-public-name
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-%s"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet2-public-cidrBlock
+  #       toFieldPath: spec.forProvider.cidrBlock
+  #     - fromFieldPath: spec.parameters.subnet2-public-availabilityZone
+  #       toFieldPath: spec.forProvider.availabilityZone
+  #     - fromFieldPath: spec.parameters.subnet2-public-availabilityZone
+  #       toFieldPath: metadata.labels.zone
+
+  # - name: subnet-private-1
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         type: subnet
+  #         visibility: private
+  #     spec:
+  #       forProvider:
+  #         mapPublicIpOnLaunch: false
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         tags:
+  #           - key: Name
+  #           - key: kubernetes.io/role/internal-elb
+  #             value: "1"
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #           - fromFieldPath: spec.parameters.subnet1-private-name
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-%s"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet1-private-cidrBlock
+  #       toFieldPath: spec.forProvider.cidrBlock
+  #     - fromFieldPath: spec.parameters.subnet1-private-availabilityZone
+  #       toFieldPath: spec.forProvider.availabilityZone
+  #     - fromFieldPath: spec.parameters.subnet1-private-availabilityZone
+  #       toFieldPath: metadata.labels.zone
+
+  # - name: subnet-private-2
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Subnet
+  #     metadata:
+  #       labels:
+  #         type: subnet
+  #         visibility: private
+  #     spec:
+  #       forProvider:
+  #         mapPublicIpOnLaunch: false
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         tags:
+  #           - key: Name
+  #           - key: kubernetes.io/role/internal-elb
+  #             value: "1"
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #           - fromFieldPath: spec.parameters.subnet2-private-name
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-%s"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet2-private-cidrBlock
+  #       toFieldPath: spec.forProvider.cidrBlock
+  #     - fromFieldPath: spec.parameters.subnet2-private-availabilityZone
+  #       toFieldPath: spec.forProvider.availabilityZone
+  #     - fromFieldPath: spec.parameters.subnet2-private-availabilityZone
+  #       toFieldPath: metadata.labels.zone
+
+  # - name: elastic-ip-1
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Address
+  #     metadata:
+  #       labels:
+  #         type: eip-1
+  #     spec:
+  #       forProvider:
+  #         domain: vpc
+  #   patches:
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+
+  # - name: elastic-ip-2
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: Address
+  #     metadata:
+  #       labels:
+  #         type: eip-2
+  #     spec:
+  #       forProvider:
+  #         domain: vpc
+  #   patches:
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+
+  # - name: natgateway-1
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: NATGateway
+  #     metadata:
+  #       labels:
+  #         type: natgw-1
+  #     spec:
+  #       forProvider:
+  #         allocationIdSelector:
+  #           matchLabels:
+  #             type: eip-1
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         subnetIdSelector:
+  #           matchLabels:
+  #             type: subnet
+  #             visibility: public
+  #         tags:
+  #           - key: Name
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-nat-gateway-1"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet1-public-availabilityZone
+  #       toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
+
+  # - name: natgateway-2
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: NATGateway
+  #     metadata:
+  #       labels:
+  #         type: natgw-2
+  #     spec:
+  #       forProvider:
+  #         allocationIdSelector:
+  #           matchLabels:
+  #             type: eip-2
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         subnetIdSelector:
+  #           matchLabels:
+  #             type: subnet
+  #             visibility: public
+  #         tags:
+  #           - key: Name
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-nat-gateway-2"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet2-public-availabilityZone
+  #       toFieldPath: spec.forProvider.subnetIdSelector.matchLabels.zone
+
+  # - name: routetable-public
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: RouteTable
+  #     spec:
+  #       forProvider:
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         routes:
+  #           - destinationCidrBlock: 0.0.0.0/0
+  #             gatewayIdSelector:
+  #               matchLabels:
+  #                 type: igw
+  #         associations:
+  #           - subnetIdSelector:
+  #               matchLabels:
+  #                 type: subnet
+  #                 visibility: public
+  #           - subnetIdSelector:
+  #               matchLabels:
+  #                 type: subnet
+  #                 visibility: public
+  #         tags:
+  #           - key: Name
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-public-route-table"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet1-public-availabilityZone
+  #       toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
+  #     - fromFieldPath: spec.parameters.subnet2-public-availabilityZone
+  #       toFieldPath: spec.forProvider.associations[1].subnetIdSelector.matchLabels.zone
+
+  # - name: routetable-private-1
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: RouteTable
+  #     spec:
+  #       forProvider:
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         routes:
+  #           - destinationCidrBlock: 0.0.0.0/0
+  #             natGatewayIdSelector:
+  #               matchLabels:
+  #                 type: natgw-1
+  #         associations:
+  #           - subnetIdSelector:
+  #               matchLabels:
+  #                 type: subnet
+  #                 visibility: private
+  #         tags:
+  #           - key: Name
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-private-route-table-1"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet1-public-availabilityZone
+  #       toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone
+
+  # - name: routetable-private-2
+  #   base:
+  #     apiVersion: ec2.aws.crossplane.io/v1beta1
+  #     kind: RouteTable
+  #     spec:
+  #       forProvider:
+  #         vpcIdSelector:
+  #           matchControllerRef: true
+  #         routes:
+  #           - destinationCidrBlock: 0.0.0.0/0
+  #             natGatewayIdSelector:
+  #               matchLabels:
+  #                 type: natgw-2
+  #         associations:
+  #           - subnetIdSelector:
+  #               matchLabels:
+  #                 type: subnet
+  #                 visibility: private
+  #         tags:
+  #           - key: Name
+  #   patches:
+  #     - type: CombineFromComposite
+  #       combine:
+  #         variables:
+  #           - fromFieldPath: spec.parameters.vpcName
+  #         strategy: string
+  #         string:
+  #           fmt: "%s-private-route-table-2"
+  #       toFieldPath: spec.forProvider.tags[0].value
+  #       policy:
+  #         fromFieldPath: Required
+  #     - type: PatchSet
+  #       patchSetName: region-patch
+  #     - fromFieldPath: spec.parameters.subnet2-public-availabilityZone
+  #       toFieldPath: spec.forProvider.associations[0].subnetIdSelector.matchLabels.zone

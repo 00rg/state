@@ -1,0 +1,62 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: simplevpcs.api.00rg.com
+spec:
+  group: api.00rg.com
+  names:
+    kind: SimpleVPC
+    plural: simplevpcs
+  connectionSecretKeys:
+  - cluster-ca
+  - apiserver-endpoint
+  - value
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  region:
+                    description: Region for the VPC
+                    type: string
+                    enum: ["ap-southeast-2"]
+                  vpcName:
+                    description: Name for the VPC
+                    type: string
+                  vpcID:
+                    description: ID of the VPC if it already exists
+                    type: string
+                  vpcCIDRBlock:
+                    description: CIDR block for the VPC
+                    type: string
+                  publicSubnetCIDRBlocks:
+                    description: CIDR blocks for the public subnets in AZA, AZB, and AZC
+                    type: array
+                    items:
+                      type: string
+                    minItems: 3
+                    maxItems: 3
+                  privateSubnetCIDRBlocks:
+                    description: CIDR blocks for the private subnets in AZA, AZB, and AZC
+                    type: array
+                    items:
+                      type: string
+                    minItems: 3
+                    maxItems: 3
+                required:
+                - region
+                - vpcName
+                - vpcCIDRBlock
+                - publicSubnetCIDRBlocks
+                - privateSubnetCIDRBlocks
+            required:
+            - parameters

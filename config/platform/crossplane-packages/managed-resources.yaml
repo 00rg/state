@@ -1,0 +1,61 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: VPC
+metadata:
+  name: root
+  labels:
+    app: root
+  # annotations:
+    # crossplane.io/external-name: vpc-123
+spec:
+  providerConfigRef:
+    name: aws-provider-config
+  forProvider:
+    region: ap-southeast-2
+    cidrBlock: 10.231.0.0/20
+    enableDnsSupport: true
+    enableDnsHostNames: true
+    tags:
+    - key: Name
+      value: root
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: InternetGateway
+metadata:
+  name: root
+spec:
+  providerConfigRef:
+    name: aws-provider-config
+  forProvider:
+    region: ap-southeast-2
+    vpcIdSelector:
+      matchLabels:
+        app: root
+    # vpcIdRef:
+      # name: root
+    tags:
+    - key: Name
+      value: root
+---
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: Subnet
+metadata:
+  name: root-public-a
+spec:
+  providerConfigRef:
+    name: aws-provider-config
+  forProvider:
+    region: ap-southeast-2
+    availabilityZone: ap-southeast-2a
+    cidrBlock: 10.231.0.0/26
+    # Next two:
+    # - 10.231.0.64/26
+    # - 10.231.0.128/26
+    vpcIdSelector:
+      matchLabels:
+        app: root
+    # vpcIdRef:
+      # name: root
+    mapPublicIPOnLaunch: true
+    tags:
+    - key: Name
+      value: root-public-a
