@@ -1,6 +1,6 @@
 """Provides dependency loading functions."""
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 def local_dependencies():
     """Declares external dependencies for this repository."""
@@ -43,6 +43,14 @@ def local_dependencies():
         urls = ["https://github.com/istio/istio/releases/download/{version}/istioctl-{version}-osx-arm64.tar.gz".format(version = istio_version)],
         sha256 = "6089c88b47f24de89ae164afb5d1fc5006d1341b85cb777633a6a599d63414e6",
         build_file = "//bazel:istioctl.BUILD",
+    )
+
+    k3d_version = "5.4.6"
+    http_file(
+        name = "k3d",
+        urls = ["https://github.com/k3d-io/k3d/releases/download/v{}/k3d-darwin-arm64".format(k3d_version)],
+        sha256 = "486baa195157183fb6e32b781dd0a638f662ed5f9c4d80510287ce9630a80081",
+        executable = True,
     )
 
     http_archive(

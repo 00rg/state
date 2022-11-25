@@ -1,5 +1,4 @@
-load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//bazel:rules.bzl", "helm_template", "istio_operator", "kustomize_build")
+load("//bazel:rules.bzl", "generate_manifests", "helm_template", "istio_operator", "k3d_all", "kustomize_build")
 
 _GENERATED_MANIFESTS = {
     "//:argocd_ha_manifest": "config/platform/argocd/overlays/management/argocd.gen.yaml",
@@ -53,25 +52,11 @@ helm_template(
     values_file = "//bazel:vector-aggregator.values.yaml",
 )
 
-write_file(
-    name = "generate_manifests_wrapper",
-    out = "generate_manifests.sh",
-    content = [
-        "#!/usr/bin/env bash",
-    ] + [
-        "cp -f {src}.yaml $BUILD_WORKSPACE_DIRECTORY/{dest}".format(
-            src = k.lstrip("//:"),
-            dest = v,
-        )
-        for [
-            k,
-            v,
-        ] in _GENERATED_MANIFESTS.items()
-    ],
+generate_manifests(
+    name = "generate_manifests",
+    manifests = _GENERATED_MANIFESTS,
 )
 
-sh_binary(
-    name = "generate_manifests",
-    srcs = ["generate_manifests.sh"],
-    data = _GENERATED_MANIFESTS.keys(),
+k3d_all(
+    name = "k3d",
 )
