@@ -1,4 +1,4 @@
-load("//bazel:rules.bzl", "generate_manifests", "helm_template", "istio_operator", "k3d_all", "kustomize_build")
+load("//bazel:rules.bzl", "generate_manifests", "helm_template", "istio_operator", "k3d_targets", "kustomize_build")
 
 _GENERATED_MANIFESTS = {
     "//:argocd_ha_manifest": "config/platform/argocd/overlays/management/argocd.gen.yaml",
@@ -57,6 +57,4 @@ generate_manifests(
     manifests = _GENERATED_MANIFESTS,
 )
 
-k3d_all(
-    name = "k3d",
-)
+k3d_targets(name = "k3d")

@@ -4,44 +4,45 @@ set -euo pipefail
 
 usage() {
   cat << EOF
-Usage: $(basename "${0}") EXECUTABLE OPERATION CLUSTER
+Usage: $(basename "${0}") CLUSTER OPERATION EXE_PATH CONFIG_PATH
 
-Wrapper script for k3d.
+Wrapper script that helps with calling k3d from Bazel.
 
 Arguments:
-    EXECUTABLE: Path to the k3d executable
-    OPERATION:  One of: create_cluster, delete_cluster
-    CLUSTER:    Kubernetes cluster name
-
+    CLUSTER:     Name of the Kubernetes cluster
+    OPERATION:   One of: create_cluster, delete_cluster
+    EXE_PATH:    Path to the k3d executable file
+    CONFIG_PATH: Path to the k3d config file
 EOF
   exit 1
 }
 
-# TODO: Pass in jq exe
-[[ $# != 3 ]] && usage
+[[ $# != 4 ]] && usage
 
-k3d_exe="${1}"
+cluster="${1}"
 operation="${2}"
-cluster="${3}"
-registry=local-registry
-registry_port=5555
+k3d_exe="${3}"
+config="${4}"
+
+cluster_exists() {
+  if "${k3d_exe}" cluster list --no-headers | grep -q "^${cluster}\s"; then
+    return 0
+  fi
+
+  return 1
+}
 
 create_cluster() {
-  if [[ "$("${k3d_exe}" cluster list -o=json | jq 'any(.name == "${cluster}")')" == false ]]; then
-    "${k3d_exe}" cluster create "${cluster}" \
-	--port 8080:31000@server:0 \
-	--port 9080:31001@server:0 \
-	--api-port 6443 \
-	--k3s-arg "--disable=traefik@server:0" \
-	--registry-use "k3d-${registry}:${registry_port}"
-    else
-      echo "Cluster ${cluster} already exists."
-    fi
+  if ! cluster_exists; then
+    "${k3d_exe}" cluster create --config "${config}"
+  else
+    echo "Cluster ${cluster} already exists."
+  fi
 }
 
 delete_cluster() {
-  if [[ "$("${k3d_exe}" cluster list -o=json | jq "any(.name == \"${cluster}\")")" == true ]]; then
-    "${k3d_exe}" cluster delete "${cluster}"
+  if cluster_exists; then
+    "${k3d_exe}" cluster delete --config "${config}"
   else
     echo "Cluster ${cluster} does not exist."
   fi

@@ -1,8 +1,20 @@
 """Common rules used by this repository."""
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 
 def helm_template(name, tarball, values_file, release_name, namespace):
+    """
+    Generates KRM manifests by performing a Helm template operation.
+
+    Args:
+      name: Target name
+      tarball: Label name of the chart tarball
+      values_file: Label name of the chart values file
+      release_name: Helm release name
+      namespace: Namespace to be used
+    """
     cmd = """
         $(location @helm//:helm) template \
             {release_name} $(location {tarball}) \
@@ -24,6 +36,14 @@ def helm_template(name, tarball, values_file, release_name, namespace):
     )
 
 def kustomize_build(name, tarball, dirs):
+    """
+    Generates KRM manifests by performing a Kustomize build.
+
+    Args:
+      name: Target name
+      tarball: Label name of the tarball that contains the directories to be built
+      dirs: List of directory paths within the tarball
+    """
     cmd = """
         tar zxf $(location {tarball})
         for dir in {dirs}; do
@@ -43,6 +63,12 @@ def kustomize_build(name, tarball, dirs):
     )
 
 def istio_operator(name):
+    """
+    Generates the KRM manifests required to install Istio Operator.
+
+    Args:
+      name: Target name
+    """
     cmd = "$(location @istioctl//:istioctl) operator dump > $@"
 
     native.genrule(
@@ -54,9 +80,16 @@ def istio_operator(name):
     )
 
 def generate_manifests(name, manifests):
-    script = "{}_runner.sh".format(name)
+    """
+    Generates third-party KRM manifests into source tree.
+
+    Args:
+      name: Target name
+      manifests: Dict of target name -> manifest file location
+    """
+    script = "{}.sh".format(name)
     write_file(
-        name = "{}_runner".format(name),
+        name = "{}_script".format(name),
         out = script,
         content = [
             "#!/usr/bin/env bash",
@@ -75,35 +108,61 @@ def generate_manifests(name, manifests):
         data = manifests.keys(),
     )
 
-def k3d_all(name):
-    create_cluster_script = "{}_create_cluster_runner.sh".format(name)
-    write_file(
-        name = "{}_create_cluster_runner".format(name),
-        out = create_cluster_script,
-        content = [
-            "#!/usr/bin/env bash",
-            "bazel/k3d.sh external/k3d/file/downloaded create_cluster init",
-        ],
+def _k3d_targets(cluster_name, target_prefix):
+    """
+    Creates create_cluster_xyz and delete_cluster_xyz targets for the specified cluster.
+
+    Args:
+      cluster_name: Name of the Kubernetes cluster
+      target_prefix: Prefix to be used for created targets
+    """
+    cluster_id = cluster_name.replace("-", "_")
+    k3d_config = "{}_{}_config.yaml".format(target_prefix, cluster_id)
+    expand_template(
+        name = "{}_config_{}".format(target_prefix, cluster_id),
+        out = k3d_config,
+        substitutions = {
+            "{cluster}": cluster_name,
+        },
+        template = "//bazel:k3d-config.yaml.tpl",
     )
 
-    delete_cluster_script = "{}_delete_cluster_runner.sh".format(name)
-    write_file(
-        name = "{}_delete_cluster_runner".format(name),
-        out = delete_cluster_script,
-        content = [
-            "#!/usr/bin/env bash",
-            "bazel/k3d.sh external/k3d/file/downloaded delete_cluster init",
-        ],
-    )
+    for operation in ["create_cluster", "delete_cluster"]:
+        script = "{}_{}_{}.sh".format(target_prefix, operation, cluster_id)
 
-    native.sh_binary(
-        name = "{}_create_cluster".format(name),
-        srcs = [create_cluster_script],
-        data = ["@k3d//file", "//bazel:k3d.sh"],
-    )
+        write_file(
+            name = "{}_{}_{}_script".format(target_prefix, operation, cluster_id),
+            out = script,
+            content = [
+                "#!/usr/bin/env bash",
+                "bazel/k3d.sh {} {} external/k3d/file/downloaded {}".format(
+                    cluster_name,
+                    operation,
+                    k3d_config,
+                ),
+            ],
+        )
 
-    native.sh_binary(
-        name = "{}_delete_cluster".format(name),
-        srcs = [delete_cluster_script],
-        data = ["@k3d//file", "//bazel:k3d.sh"],
-    )
+        native.sh_binary(
+            name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
+            srcs = [script],
+            data = ["@k3d//file", "//bazel:k3d.sh", k3d_config],
+        )
+
+def k3d_targets(name):
+    """
+    Creates create_cluster_xyz and delete_cluster_xyz targets for each local cluster.
+
+    Args:
+      name: Name used to prefix created targets
+    """
+    clusters = [
+        paths.basename(d)
+        for d in native.glob(
+            include = ["config/clusters/init", "config/clusters/*-loc-*"],
+            exclude_directories = 0,
+        )
+    ]
+
+    for cluster in clusters:
+        _k3d_targets(cluster, name)
