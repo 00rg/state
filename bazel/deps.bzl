@@ -60,6 +60,14 @@ def local_dependencies():
         build_file = "//bazel:kustomize.BUILD",
     )
 
+    rules_python_version = "0.14.0"
+    http_archive(
+        name = "rules_python",
+        sha256 = "a868059c8c6dd6ad45a205cca04084c652cfe1852e6df2d5aca036f6e5438380",
+        strip_prefix = "rules_python-{}".format(rules_python_version),
+        url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/{}.tar.gz".format(rules_python_version),
+    )
+
     vector_chart_version = "0.17.0"
     http_archive(
         name = "vector",

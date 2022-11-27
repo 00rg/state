@@ -3,6 +3,7 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 def helm_template(name, tarball, values_file, release_name, namespace):
     """
@@ -128,25 +129,17 @@ def _k3d_targets(cluster_name, target_prefix):
     )
 
     for operation in ["create_cluster", "delete_cluster"]:
-        script = "{}_{}_{}.sh".format(target_prefix, operation, cluster_id)
-
-        write_file(
-            name = "{}_{}_{}_script".format(target_prefix, operation, cluster_id),
-            out = script,
-            content = [
-                "#!/usr/bin/env bash",
-                "bazel/k3d.sh {} {} external/k3d/file/downloaded {}".format(
-                    cluster_name,
-                    operation,
-                    k3d_config,
-                ),
-            ],
-        )
-
-        native.sh_binary(
+        py_binary(
             name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
-            srcs = [script],
-            data = ["@k3d//file", "//bazel:k3d.sh", k3d_config],
+            srcs = ["//bazel:k3d_wrapper.py"],
+            main = "//bazel:k3d_wrapper.py",
+            env = {
+                "K3D_BINARY": "$(location @k3d//file)",
+                "K3D_CONFIG": "$(location {})".format(k3d_config),
+                "K3D_COMMAND": "cluster",
+                "K3D_OPERATION": operation,
+            },
+            data = ["@k3d//file", k3d_config],
         )
 
 def k3d_targets(name):
