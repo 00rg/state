@@ -124,6 +124,8 @@ def _k3d_targets(cluster_name, target_prefix):
         out = k3d_config,
         substitutions = {
             "{cluster}": cluster_name,
+            "{registry}": "local-registry",
+            "{registry_port}": "5555",
         },
         template = "//bazel:k3d-config.yaml.tpl",
     )
@@ -135,8 +137,8 @@ def _k3d_targets(cluster_name, target_prefix):
             main = "//bazel:k3d_wrapper.py",
             env = {
                 "K3D_BINARY": "$(location @k3d//file)",
+                "K3D_CLUSTER": cluster_name,
                 "K3D_CONFIG": "$(location {})".format(k3d_config),
-                "K3D_COMMAND": "cluster",
                 "K3D_OPERATION": operation,
             },
             data = ["@k3d//file", k3d_config],
@@ -157,5 +159,19 @@ def k3d_targets(name):
         )
     ]
 
+    # Create per-cluster targets.
     for cluster in clusters:
         _k3d_targets(cluster, name)
+
+    # Create general targets.
+    for operation in ["create_registry", "delete_registry", "delete_all_clusters", "delete_all"]:
+        py_binary(
+            name = "{}_{}".format(name, operation),
+            srcs = ["//bazel:k3d_wrapper.py"],
+            main = "//bazel:k3d_wrapper.py",
+            env = {
+                "K3D_BINARY": "$(location @k3d//file)",
+                "K3D_OPERATION": operation,
+            },
+            data = ["@k3d//file"],
+        )

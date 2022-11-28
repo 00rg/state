@@ -12,13 +12,12 @@ ports:
   nodeFilters:
   - server:0
 registries:
-  create:
-    name: "{cluster}-registry"
-    host: "0.0.0.0"
-    hostPort: "5555"
-options:
-  k3s:
-    extraArgs:
-    - arg: --disable=traefik
-      nodeFilters:
-      - "server:*"
+  use:
+  - "{registry}:{registry_port}"
+env:
+# The Bazel code will only touch clusters that it created. The env var below
+# is used to mark the cluster as having been created by this repository.
+- envVar: 00RG_MANAGED=1
+  nodeFilters:
+  - "agent:*"
+  - "server:*"
