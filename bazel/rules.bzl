@@ -3,61 +3,62 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
-def helm_template(name, tarball, values_file, release_name, namespace):
+def helm_template(name, tarfile, values_file, release_name, namespace):
     """
     Generates KRM manifests by performing a Helm template operation.
 
     Args:
       name: Target name
-      tarball: Label name of the chart tarball
+      tarfile: Label name of the chart tarfile
       values_file: Label name of the chart values file
       release_name: Helm release name
       namespace: Namespace to be used
     """
     cmd = """
         $(location @helm//:helm) template \
-            {release_name} $(location {tarball}) \
+            {release_name} $(location {tarfile}) \
             --values $(location {values_file}) \
             --namespace {namespace} > $@
     """.format(
         release_name = release_name,
-        tarball = tarball,
+        tarfile = tarfile,
         values_file = values_file,
         namespace = namespace,
     )
 
     native.genrule(
         name = name,
-        srcs = [tarball, values_file],
+        srcs = [tarfile, values_file],
         outs = ["{}.yaml".format(name)],
         tools = ["@helm//:helm"],
         cmd = cmd,
     )
 
-def kustomize_build(name, tarball, dirs):
+def kustomize_build(name, tarfile, dirs):
     """
     Generates KRM manifests by performing a Kustomize build.
 
     Args:
       name: Target name
-      tarball: Label name of the tarball that contains the directories to be built
-      dirs: List of directory paths within the tarball
+      tarfile: Label name of the tarfile that contains the directories to be built
+      dirs: List of directory paths within the tarfile
     """
     cmd = """
-        tar zxf $(location {tarball})
+        tar zxf $(location {tarfile})
         for dir in {dirs}; do
             $(location @kustomize//:kustomize) build $$dir
         done > $@
     """.format(
-        tarball = tarball,
+        tarfile = tarfile,
         dirs = " ".join(dirs),
     )
 
     native.genrule(
         name = name,
-        srcs = [tarball],
+        srcs = [tarfile],
         outs = ["{}.yaml".format(name)],
         tools = ["@kustomize//:kustomize"],
         cmd = cmd,
@@ -109,13 +110,14 @@ def generate_manifests(name, manifests):
         data = manifests.keys(),
     )
 
-def _k3d_targets(cluster_name, target_prefix):
+def _k3d_targets(target_prefix, cluster_name, state_tarfile):
     """
     Creates create_cluster_xyz and delete_cluster_xyz targets for the specified cluster.
 
     Args:
       cluster_name: Name of the Kubernetes cluster
       target_prefix: Prefix to be used for created targets
+      state_tarfile: Tarfile containing all KRM manifests
     """
     cluster_id = cluster_name.replace("-", "_")
     k3d_config = "{}_{}_config.yaml".format(target_prefix, cluster_id)
@@ -130,7 +132,7 @@ def _k3d_targets(cluster_name, target_prefix):
         template = "//bazel:k3d-config.yaml.tpl",
     )
 
-    for operation in ["create_cluster", "delete_cluster"]:
+    for operation in ["create_cluster", "delete_cluster", "apply_manifests"]:
         py_binary(
             name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
             srcs = ["//bazel:k3d_wrapper.py"],
@@ -140,8 +142,9 @@ def _k3d_targets(cluster_name, target_prefix):
                 "K3D_CLUSTER": cluster_name,
                 "K3D_CONFIG": "$(location {})".format(k3d_config),
                 "K3D_OPERATION": operation,
+                "K3D_STATE_TARFILE": "$(location {})".format(state_tarfile),
             },
-            data = ["@k3d//file", k3d_config],
+            data = ["@k3d//file", k3d_config, state_tarfile],
         )
 
 def k3d_targets(name):
@@ -151,6 +154,11 @@ def k3d_targets(name):
     Args:
       name: Name used to prefix created targets
     """
+
+    # Tarfile of all KRM manifests to be passed to k3d wrapper to apply.
+    pkg_tar(name = "state_tarfile", srcs = ["//:config"], mode = "0644")
+
+    # Names of clusters that are designed to run locally via k3d.
     clusters = [
         paths.basename(d)
         for d in native.glob(
@@ -161,7 +169,7 @@ def k3d_targets(name):
 
     # Create per-cluster targets.
     for cluster in clusters:
-        _k3d_targets(cluster, name)
+        _k3d_targets(name, cluster, "state_tarfile.tar")
 
     # Create general targets.
     for operation in ["create_registry", "delete_registry", "delete_all_clusters", "delete_all"]:

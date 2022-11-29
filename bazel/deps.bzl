@@ -11,7 +11,7 @@ def local_dependencies():
         urls = ["https://github.com/argoproj/argo-cd/archive/refs/tags/v{}.tar.gz".format(argocd_version)],
         sha256 = "a210784ae3ee017d1bd83772b04ee125e4bdccf0eb6fc15aa796d009b56440ec",
         strip_prefix = "argo-cd-{}/manifests".format(argocd_version),
-        build_file = "//bazel:tarball.BUILD",
+        build_file = "//bazel:tarfile.BUILD",
     )
 
     http_archive(
@@ -26,7 +26,7 @@ def local_dependencies():
         urls = ["https://charts.crossplane.io/stable/crossplane-{}.tgz".format(crossplane_version)],
         sha256 = "0b93a206fd298f9c6c015eaf0cbf66f4235be5e9084abe4aa3d66f57f2c0e40d",
         strip_prefix = "crossplane",
-        build_file = "//bazel:tarball.BUILD",
+        build_file = "//bazel:tarfile.BUILD",
     )
 
     http_archive(
@@ -76,5 +76,5 @@ def local_dependencies():
         )],
         sha256 = "4c12b5d95b03983c42208de2fa2b28f05089c40f518bce0b050a4a3480bafd9a",
         strip_prefix = "vector",
-        build_file = "//bazel:tarball.BUILD",
+        build_file = "//bazel:tarfile.BUILD",
     )

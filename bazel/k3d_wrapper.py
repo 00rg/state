@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+import tarfile
 
 
 def env_var_or_panic(name):
@@ -19,6 +20,7 @@ binary = env_var_or_panic("K3D_BINARY")
 operation = env_var_or_panic("K3D_OPERATION")
 cluster_name = os.environ.get("K3D_CLUSTER")
 config_file = os.environ.get("K3D_CONFIG")
+state_tarfile = os.environ.get("K3D_STATE_TARFILE")
 
 registry_name = "local-registry"
 registry_port = 5555
@@ -82,10 +84,23 @@ def delete_registry():
         print("Deleted image registry {}:{}.".format(registry_name, registry_port))
 
 
+def apply_manifests():
+    """Apply the KRM manifests to the cluster."""
+    tar = tarfile.open(state_tarfile)
+    tar.extractall()
+    tar.close()
+    subprocess.run(["pwd"])
+    subprocess.run(["ls", "-la"])
+    subprocess.run(["kustomize", "build", "config/clusters/init/wave1"])
+
+
 match operation:
+    case "apply_manifests":
+        apply_manifests()
     case "create_cluster":
         create_registry()
         create_cluster()
+        apply_manifests()
     case "delete_cluster":
         delete_cluster()
     case "delete_all_clusters":

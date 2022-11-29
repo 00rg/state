@@ -1,4 +1,4 @@
-workspace(name = "org")
+workspace(name = "state")
 
 load("//bazel:deps.bzl", "local_dependencies")
 

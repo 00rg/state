@@ -1,4 +1,4 @@
-# Build file that creates a tarball from any external repository.
+# Build file that creates a tarfile from any external repository.
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 
@@ -8,9 +8,8 @@ filegroup(
 )
 
 pkg_tar(
-    name = "tarball",
+    name = "tarfile",
     srcs = [":all_files"],
-    extension = "tar.gz",
     mode = "0644",
     strip_prefix = "./",
     visibility = ["//visibility:public"],
