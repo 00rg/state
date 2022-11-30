@@ -15,40 +15,43 @@ istio_operator(
 
 kustomize_build(
     name = "argocd_non_ha_manifest",
-    dirs = ["cluster-install"],
-    tarfile = "@argocd//:tarfile",
+    srcs = ["@argocd//:all_files"],
+    dirs = ["external/argocd/cluster-install"],
 )
 
 kustomize_build(
     name = "argocd_ha_manifest",
+    srcs = ["@argocd//:all_files"],
     dirs = [
-        "crds",
-        "ha/namespace-install",
+        "external/argocd/crds",
+        "external/argocd/ha/namespace-install",
     ],
-    tarfile = "@argocd//:tarfile",
 )
 
 helm_template(
     name = "crossplane_manifest",
+    srcs = ["@crossplane//:all_files"],
+    chart_dir = "external/crossplane",
     namespace = "crossplane-system",
     release_name = "crossplane",
-    tarfile = "@crossplane//:tarfile",
     values_file = "//bazel:crossplane.values.yaml",
 )
 
 helm_template(
     name = "vector_agent_manifest",
+    srcs = ["@vector//:all_files"],
+    chart_dir = "external/vector",
     namespace = "vector",
     release_name = "vector-agent",
-    tarfile = "@vector//:tarfile",
     values_file = "//bazel:vector-agent.values.yaml",
 )
 
 helm_template(
     name = "vector_aggregator_manifest",
+    srcs = ["@vector//:all_files"],
+    chart_dir = "external/vector",
     namespace = "vector",
     release_name = "vector-aggregator",
-    tarfile = "@vector//:tarfile",
     values_file = "//bazel:vector-aggregator.values.yaml",
 )
 

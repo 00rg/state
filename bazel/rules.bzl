@@ -3,65 +3,69 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-
-# load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
-# load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
-def helm_template(name, tarfile, values_file, release_name, namespace):
+def helm_template(name, chart_dir, values_file, release_name, namespace, srcs):
     """
     Generates KRM manifests by performing a Helm template operation.
 
     Args:
       name: Target name
-      tarfile: Label name of the chart tarfile
+      chart_dir: Path to chart directory
       values_file: Label name of the chart values file
       release_name: Helm release name
       namespace: Namespace to be used
+      srcs: Labels to be added to genrule srcs
     """
+
+    # Stderr is silenced due to https://github.com/helm/helm/issues/7019. We could
+    # filter it through grep but then the grep binary would need to be a dependency
+    # to keep things hermetic which doesn't seem worth it.
     cmd = """
         $(location @helm//:helm) template \
-            {release_name} $(location {tarfile}) \
+            {release_name} {chart_dir} \
             --values $(location {values_file}) \
-            --namespace {namespace} > $@
+            --namespace {namespace} > $@ 2> /dev/null
     """.format(
         release_name = release_name,
-        tarfile = tarfile,
+        chart_dir = chart_dir,
         values_file = values_file,
         namespace = namespace,
     )
 
     native.genrule(
         name = name,
-        srcs = [tarfile, values_file],
+        srcs = [values_file] + srcs,
         outs = ["{}.yaml".format(name)],
         tools = ["@helm//:helm"],
         cmd = cmd,
     )
 
-def kustomize_build(name, tarfile, dirs):
+def kustomize_build(name, dirs, srcs):
     """
     Generates KRM manifests by performing a Kustomize build.
 
     Args:
       name: Target name
-      tarfile: Label name of the tarfile that contains the directories to be built
-      dirs: List of directory paths within the tarfile
+      dirs: List of directory paths to build
+      srcs: Labels to be added to genrule srcs
     """
+
+    # The --load-restrictor option needs to be specified to work around this issue:
+    # https://github.com/kubernetes-sigs/kustomize/issues/4420
     cmd = """
-        tar zxf $(location {tarfile})
+        pwd
+        ls -la
         for dir in {dirs}; do
-            $(location @kubectl//file) kustomize $$dir
+            $(location @kubectl//file) kustomize $$dir --load-restrictor=LoadRestrictionsNone
         done > $@
     """.format(
-        tarfile = tarfile,
         dirs = " ".join(dirs),
     )
 
     native.genrule(
         name = name,
-        srcs = [tarfile],
+        srcs = srcs,
         outs = ["{}.yaml".format(name)],
         tools = ["@kubectl//file"],
         cmd = cmd,
