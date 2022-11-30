@@ -53,11 +53,12 @@ def local_dependencies():
         executable = True,
     )
 
-    http_archive(
-        name = "kustomize",
-        urls = ["https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv4.5.7/kustomize_v4.5.7_darwin_arm64.tar.gz"],
-        sha256 = "3c1e8b95cef4ff6e52d5f4b8c65b8d9d06b75f42d1cb40986c1d67729d82411a",
-        build_file = "//bazel:kustomize.BUILD",
+    kubectl_version = "1.25.4"
+    http_file(
+        name = "kubectl",
+        urls = ["https://dl.k8s.io/release/v{}/bin/darwin/arm64/kubectl".format(kubectl_version)],
+        sha256 = "61ee3edabfb4db59c102968bd2801d3f0818cff5381e5cb398b0ac5dc72e2ce9",
+        executable = True,
     )
 
     rules_python_version = "0.14.0"

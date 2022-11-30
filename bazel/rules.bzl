@@ -3,6 +3,9 @@
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
+
+# load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+# load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@rules_python//python:defs.bzl", "py_binary")
 
@@ -49,7 +52,7 @@ def kustomize_build(name, tarfile, dirs):
     cmd = """
         tar zxf $(location {tarfile})
         for dir in {dirs}; do
-            $(location @kustomize//:kustomize) build $$dir
+            $(location @kubectl//file) kustomize $$dir
         done > $@
     """.format(
         tarfile = tarfile,
@@ -60,7 +63,7 @@ def kustomize_build(name, tarfile, dirs):
         name = name,
         srcs = [tarfile],
         outs = ["{}.yaml".format(name)],
-        tools = ["@kustomize//:kustomize"],
+        tools = ["@kubectl//file"],
         cmd = cmd,
     )
 
@@ -110,14 +113,13 @@ def generate_manifests(name, manifests):
         data = manifests.keys(),
     )
 
-def _k3d_targets(target_prefix, cluster_name, state_tarfile):
+def _k3d_targets(target_prefix, cluster_name):
     """
     Creates create_cluster_xyz and delete_cluster_xyz targets for the specified cluster.
 
     Args:
       cluster_name: Name of the Kubernetes cluster
       target_prefix: Prefix to be used for created targets
-      state_tarfile: Tarfile containing all KRM manifests
     """
     cluster_id = cluster_name.replace("-", "_")
     k3d_config = "{}_{}_config.yaml".format(target_prefix, cluster_id)
@@ -138,13 +140,13 @@ def _k3d_targets(target_prefix, cluster_name, state_tarfile):
             srcs = ["//bazel:k3d_wrapper.py"],
             main = "//bazel:k3d_wrapper.py",
             env = {
-                "K3D_BINARY": "$(location @k3d//file)",
-                "K3D_CLUSTER": cluster_name,
-                "K3D_CONFIG": "$(location {})".format(k3d_config),
-                "K3D_OPERATION": operation,
-                "K3D_STATE_TARFILE": "$(location {})".format(state_tarfile),
+                "00RG_K3D_BINARY": "$(location @k3d//file)",
+                "00RG_K3D_CONFIG": "$(location {})".format(k3d_config),
+                "00RG_KUBECTL_BINARY": "$(location @kubectl//file)",
+                "00RG_OPERATION": operation,
+                "00RG_CLUSTER": cluster_name,
             },
-            data = ["@k3d//file", k3d_config, state_tarfile],
+            data = ["@k3d//file", "@kubectl//file", ":config", k3d_config],
         )
 
 def k3d_targets(name):
@@ -154,9 +156,6 @@ def k3d_targets(name):
     Args:
       name: Name used to prefix created targets
     """
-
-    # Tarfile of all KRM manifests to be passed to k3d wrapper to apply.
-    pkg_tar(name = "state_tarfile", srcs = ["//:config"], mode = "0644")
 
     # Names of clusters that are designed to run locally via k3d.
     clusters = [
@@ -169,7 +168,7 @@ def k3d_targets(name):
 
     # Create per-cluster targets.
     for cluster in clusters:
-        _k3d_targets(name, cluster, "state_tarfile.tar")
+        _k3d_targets(name, cluster)
 
     # Create general targets.
     for operation in ["create_registry", "delete_registry", "delete_all_clusters", "delete_all"]:
