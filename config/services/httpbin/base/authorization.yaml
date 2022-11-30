@@ -1,16 +1,31 @@
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: allow-only-ingress-gateways
+  name: allow-nothing
 spec:
   selector:
     matchLabels:
       app: httpbin
-  action: DENY
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-specific
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  action: ALLOW
   rules:
   - from:
     - source:
-        notPrincipals:
+        principals:
         - cluster.local/ns/istio-ingress/sa/external-ingress-gateway-service-account
         - cluster.local/ns/istio-ingress/sa/internal-ingress-gateway-service-account
         - cluster.local/ns/hello/sa/hello
+    to:
+    - operation:
+        paths:
+        - /get
+        methods:
+        - GET
