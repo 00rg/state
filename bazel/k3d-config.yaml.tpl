@@ -21,3 +21,9 @@ env:
   nodeFilters:
   - "agent:*"
   - "server:*"
+options:
+  k3s:
+    extraArgs:
+    - arg: --disable=traefik
+      nodeFilters:
+      - "server:*"

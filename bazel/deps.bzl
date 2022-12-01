@@ -61,6 +61,15 @@ def local_dependencies():
         executable = True,
     )
 
+    pyyaml_version = "6.0"
+    http_archive(
+        name = "py_yaml",
+        url = "https://files.pythonhosted.org/packages/36/2b/61d51a2c4f25ef062ae3f74576b01638bebad5e045f747ff12643df63844/PyYAML-{}.tar.gz".format(pyyaml_version),
+        sha256 = "68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2",
+        strip_prefix = "PyYAML-{}/lib/yaml".format(pyyaml_version),
+        build_file = "//bazel:py_yaml.BUILD",
+    )
+
     rules_python_version = "0.14.0"
     http_archive(
         name = "rules_python",

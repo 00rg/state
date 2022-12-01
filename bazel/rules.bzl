@@ -54,8 +54,6 @@ def kustomize_build(name, dirs, srcs):
     # The --load-restrictor option needs to be specified to work around this issue:
     # https://github.com/kubernetes-sigs/kustomize/issues/4420
     cmd = """
-        pwd
-        ls -la
         for dir in {dirs}; do
             $(location @kubectl//file) kustomize $$dir --load-restrictor=LoadRestrictionsNone
         done > $@
@@ -108,6 +106,9 @@ def generate_manifests(name, manifests):
                 dest = v,
             )
             for [k, v] in manifests.items()
+        ] + [
+            "chmod 644 $BUILD_WORKSPACE_DIRECTORY/{}".format(v)
+            for v in manifests.values()
         ],
     )
 
@@ -151,6 +152,7 @@ def _k3d_targets(target_prefix, cluster_name):
                 "00RG_CLUSTER": cluster_name,
             },
             data = ["@k3d//file", "@kubectl//file", ":config", k3d_config],
+            deps = ["@py_yaml//:lib"],
         )
 
 def k3d_targets(name):
@@ -181,8 +183,9 @@ def k3d_targets(name):
             srcs = ["//bazel:k3d_wrapper.py"],
             main = "//bazel:k3d_wrapper.py",
             env = {
-                "K3D_BINARY": "$(location @k3d//file)",
-                "K3D_OPERATION": operation,
+                "00RG_K3D_BINARY": "$(location @k3d//file)",
+                "00RG_OPERATION": operation,
             },
             data = ["@k3d//file"],
+            deps = ["@py_yaml//:lib"],
         )

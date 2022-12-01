@@ -5,53 +5,58 @@ import json
 import os
 import subprocess
 import sys
+import time
+import py_yaml
 
-k3d_binary = os.environ.get("00RG_K3D_BINARY")
-k3d_config = os.environ.get("00RG_K3D_CONFIG")
-kubectl_binary = os.environ.get("00RG_KUBECTL_BINARY")
-operation = os.environ.get("00RG_OPERATION")
-cluster_name = os.environ.get("00RG_CLUSTER")
+from pathlib import Path
 
-k3d_registry_name = "local-registry"
-k3d_registry_port = 5555
+_K3D_BINARY = os.environ.get("00RG_K3D_BINARY")
+_K3D_CONFIG = os.environ.get("00RG_K3D_CONFIG")
+_KUBECTL_BINARY = os.environ.get("00RG_KUBECTL_BINARY")
+_OPERATION = os.environ.get("00RG_OPERATION")
+_CLUSTER_NAME = os.environ.get("00RG_CLUSTER")
+
+_K3D_REGISTRY_NAME = "local-registry"
+_K3D_REGISTRY_PORT = 5555
+_CRD_WAIT_TIME_SECS = 180
 
 
 def _get_clusters():
     """Get all k3d clusters managed by this repository."""
-    res = subprocess.run([k3d_binary, "cluster", "list", "-o=json"], stdout=subprocess.PIPE)
+    res = subprocess.run([_K3D_BINARY, "cluster", "list", "-o=json"], stdout=subprocess.PIPE)
     clusters = json.loads(res.stdout)
     return [c for c in clusters if any("00RG_MANAGED=1" in n["env"] for n in c["nodes"])]
 
 
 def _cluster_exists():
     """Get whether the specified k3d cluster exists."""
-    return any([c["name"] == cluster_name for c in _get_clusters()])
+    return any([c["name"] == _CLUSTER_NAME for c in _get_clusters()])
 
 
 def _registry_exists():
     """Get whether the specified k3d registry exists."""
-    res = subprocess.run([k3d_binary, "registry", "list", "-o=json"], stdout=subprocess.PIPE)
+    res = subprocess.run([_K3D_BINARY, "registry", "list", "-o=json"], stdout=subprocess.PIPE)
     registries = json.loads(res.stdout)
-    return any([r["name"] == "k3d-{}".format(k3d_registry_name) for r in registries])
+    return any([r["name"] == "k3d-{}".format(_K3D_REGISTRY_NAME) for r in registries])
 
 
 def create_cluster():
     """Create the k3d cluster if it does not exist."""
     if not _cluster_exists():
-        subprocess.run([k3d_binary, "cluster", "create", "--config", k3d_config])
-        print("Created cluster {}.".format(cluster_name))
+        subprocess.run([_K3D_BINARY, "cluster", "create", "--config", _K3D_CONFIG])
+        print("Created cluster {}.".format(_CLUSTER_NAME))
 
 
 def _delete_cluster_no_check(cluster_name):
     """Delete the k3d cluster without checking whether it exists."""
-    subprocess.run([k3d_binary, "cluster", "delete", cluster_name])
+    subprocess.run([_K3D_BINARY, "cluster", "delete", cluster_name])
     print("Deleted cluster {}.".format(cluster_name))
 
 
 def delete_cluster():
     """Delete the k3d cluster if it exists."""
     if _cluster_exists():
-        _delete_cluster_no_check(cluster_name)
+        _delete_cluster_no_check(_CLUSTER_NAME)
 
 
 def delete_all_clusters():
@@ -63,35 +68,67 @@ def delete_all_clusters():
 def create_registry():
     """Create the k3d image registry if it does not exist."""
     if not _registry_exists():
-        subprocess.run([k3d_binary, "registry", "create", k3d_registry_name, "--port", str(k3d_registry_port)], stdout=subprocess.DEVNULL)
-        print("Created image registry {}:{}.".format(k3d_registry_name, k3d_registry_port))
+        subprocess.run([_K3D_BINARY, "registry", "create", _K3D_REGISTRY_NAME, "--port", str(_K3D_REGISTRY_PORT)], stdout=subprocess.DEVNULL)
+        print("Created image registry {}:{}.".format(_K3D_REGISTRY_NAME, _K3D_REGISTRY_PORT))
 
 
 def delete_registry():
     """Delete the k3d image registry if it exists."""
     if _registry_exists():
-        subprocess.run([k3d_binary, "registry", "delete", k3d_registry_name])
-        print("Deleted image registry {}:{}.".format(k3d_registry_name, k3d_registry_port))
+        subprocess.run([_K3D_BINARY, "registry", "delete", _K3D_REGISTRY_NAME])
+        print("Deleted image registry {}:{}.".format(_K3D_REGISTRY_NAME, _K3D_REGISTRY_PORT))
+
+
+def _run_wave_hooks(wave_info, hook_type):
+    """Run the wave hooks of the specified type."""
+    print("Running {} hooks".format(hook_type))
+    try:
+        hooks = wave_info["spec"]["hooks"][hook_type]
+    except KeyError:
+        return
+
+    for hook in hooks:
+        if wait_for_crd_hook := hook.get("waitForCRD"):
+            crd = wait_for_crd_hook["name"]
+            print("Waiting for CRD {} to exist".format(crd))
+            deadline = time.time() + _CRD_WAIT_TIME_SECS
+            while time.time() < deadline:
+                res = subprocess.run([_KUBECTL_BINARY, "get", "crd", crd], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                if res.returncode == 0:
+                    time_left = deadline - time.time()
+                    res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd])
+                    if res.returncode != 0:
+                        sys.exit("Error waiting for CRD {}".format(crd))
+                    return
+
+            sys.exit("Timed out waiting for CRD {}".format(crd))
+        else:
+            sys.exit("Unrecognized {} wave hook: {}".format(hook_type, json.dumps(hook)))
+
+
+def _apply_wave(wave_dir):
+    """Apply wave of local manifests to the cluster."""
+    wave_file = "{}/wave.yaml".format(wave_dir)
+    if os.path.exists(wave_file):
+        wave_info = py_yaml.safe_load(Path(wave_file).read_text())
+
+    print("Applying KRM wave: {}".format(wave_dir))
+    _run_wave_hooks(wave_info, "preApply")
+    subprocess.run([_KUBECTL_BINARY, "apply", "-k", wave_dir])
+    _run_wave_hooks(wave_info, "postApply")
 
 
 def apply_manifests():
     """Apply the KRM manifests to the cluster."""
-    # print("=======================>")
-    # subprocess.run(["pwd"])
-    # subprocess.run(["ls", "-la"])
-    # subprocess.run(["find", "config"])
-    # subprocess.run(["ls", "-la", "config/"])
-
-    cluster_dir = "config/clusters/{}".format(cluster_name)
+    cluster_dir = "config/clusters/{}".format(_CLUSTER_NAME)
     if os.path.exists("{}/kustomization.yaml".format(cluster_dir)):
-        subprocess.run([kubectl_binary, "apply", "-k", cluster_dir])
+        subprocess.run([_KUBECTL_BINARY, "apply", "-k", cluster_dir])
     else:
         for wave_dir in sorted(glob.glob("{}/wave*".format(cluster_dir))):
-            print("I just found: {}".format(wave_dir))
-            # TODO: Apply and then obey wave.yaml (or other way around)
-            # subprocess.run([kubectl_binary, "apply", "-k", wave_dir])
+            _apply_wave(wave_dir)
 
-match operation:
+
+match _OPERATION:
     case "apply_manifests":
         apply_manifests()
     case "create_cluster":
@@ -110,4 +147,4 @@ match operation:
         delete_all_clusters()
         delete_registry()
     case _:
-        sys.exit("Unknown operation: {}".format(operation))
+        sys.exit("Unknown operation: {}".format(_OPERATION))
