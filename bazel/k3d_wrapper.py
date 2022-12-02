@@ -47,6 +47,13 @@ def create_cluster():
         print("Created cluster {}.".format(_CLUSTER_NAME))
 
 
+def list_clusters():
+    """List the k3d clusters managed by this repository."""
+    print("Clusters managed by this repository:")
+    for cluster in _get_clusters():
+        print(cluster["name"])
+
+
 def _delete_cluster_no_check(cluster_name):
     """Delete the k3d cluster without checking whether it exists."""
     subprocess.run([_K3D_BINARY, "cluster", "delete", cluster_name])
@@ -70,6 +77,13 @@ def create_registry():
     if not _registry_exists():
         subprocess.run([_K3D_BINARY, "registry", "create", _K3D_REGISTRY_NAME, "--port", str(_K3D_REGISTRY_PORT)], stdout=subprocess.DEVNULL)
         print("Created image registry {}:{}.".format(_K3D_REGISTRY_NAME, _K3D_REGISTRY_PORT))
+
+
+def list_registries():
+    """List the k3d registries managed by this repository."""
+    print("Registries managed by this repository:")
+    if _registry_exists():
+        print(_K3D_REGISTRY_NAME)
 
 
 def delete_registry():
@@ -135,12 +149,16 @@ match _OPERATION:
         create_registry()
         create_cluster()
         apply_manifests()
+    case "list_clusters":
+        list_clusters()
     case "delete_cluster":
         delete_cluster()
     case "delete_all_clusters":
         delete_all_clusters()
     case "create_registry":
         create_registry()
+    case "list_registries":
+        list_registries()
     case "delete_registry":
         delete_registry()
     case "delete_all":

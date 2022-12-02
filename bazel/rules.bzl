@@ -177,7 +177,7 @@ def k3d_targets(name):
         _k3d_targets(name, cluster)
 
     # Create general targets.
-    for operation in ["create_registry", "delete_registry", "delete_all_clusters", "delete_all"]:
+    for operation in ["list_clusters", "delete_all_clusters", "delete_all", "create_registry", "delete_registry", "list_registries"]:
         py_binary(
             name = "{}_{}".format(name, operation),
             srcs = ["//bazel:k3d_wrapper.py"],
