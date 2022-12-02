@@ -11,7 +11,7 @@ def local_dependencies():
         urls = ["https://github.com/argoproj/argo-cd/archive/refs/tags/v{}.tar.gz".format(argocd_version)],
         sha256 = "a210784ae3ee017d1bd83772b04ee125e4bdccf0eb6fc15aa796d009b56440ec",
         strip_prefix = "argo-cd-{}/manifests".format(argocd_version),
-        build_file = "//bazel:all_files.BUILD",
+        build_file = "//bazel/third_party/argocd:BUILD.ext.bazel",
     )
 
     http_archive(
@@ -26,7 +26,7 @@ def local_dependencies():
         urls = ["https://charts.crossplane.io/stable/crossplane-{}.tgz".format(crossplane_version)],
         sha256 = "0b93a206fd298f9c6c015eaf0cbf66f4235be5e9084abe4aa3d66f57f2c0e40d",
         strip_prefix = "crossplane",
-        build_file = "//bazel:all_files.BUILD",
+        build_file = "//bazel/third_party/crossplane:BUILD.ext.bazel",
     )
 
     http_archive(
@@ -34,7 +34,7 @@ def local_dependencies():
         urls = ["https://get.helm.sh/helm-v3.10.2-darwin-arm64.tar.gz"],
         sha256 = "460441eea1764ca438e29fa0e38aa0d2607402f753cb656a4ab0da9223eda494",
         strip_prefix = "darwin-arm64",
-        build_file = "//bazel:helm.BUILD",
+        build_file = "//bazel/third_party/helm:BUILD.ext.bazel",
     )
 
     istio_version = "1.16.0"
@@ -42,7 +42,7 @@ def local_dependencies():
         name = "istioctl",
         urls = ["https://github.com/istio/istio/releases/download/{version}/istioctl-{version}-osx-arm64.tar.gz".format(version = istio_version)],
         sha256 = "6089c88b47f24de89ae164afb5d1fc5006d1341b85cb777633a6a599d63414e6",
-        build_file = "//bazel:istioctl.BUILD",
+        build_file = "//bazel/third_party/istioctl:BUILD.ext.bazel",
     )
 
     k3d_version = "5.4.6"
@@ -67,7 +67,7 @@ def local_dependencies():
         url = "https://files.pythonhosted.org/packages/36/2b/61d51a2c4f25ef062ae3f74576b01638bebad5e045f747ff12643df63844/PyYAML-{}.tar.gz".format(pyyaml_version),
         sha256 = "68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2",
         strip_prefix = "PyYAML-{}/lib/yaml".format(pyyaml_version),
-        build_file = "//bazel:py_yaml.BUILD",
+        build_file = "//bazel/third_party/py_yaml:BUILD.ext.bazel",
     )
 
     rules_python_version = "0.14.0"
@@ -86,5 +86,5 @@ def local_dependencies():
         )],
         sha256 = "4c12b5d95b03983c42208de2fa2b28f05089c40f518bce0b050a4a3480bafd9a",
         strip_prefix = "vector",
-        build_file = "//bazel:all_files.BUILD",
+        build_file = "//bazel/third_party/vector:BUILD.ext.bazel",
     )

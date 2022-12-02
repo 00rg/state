@@ -95,7 +95,6 @@ def delete_registry():
 
 def _run_wave_hooks(wave_info, hook_type):
     """Run the wave hooks of the specified type."""
-    print("Running {} hooks".format(hook_type))
     try:
         hooks = wave_info["spec"]["hooks"][hook_type]
     except KeyError:
