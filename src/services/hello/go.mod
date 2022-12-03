@@ -1,8 +1,11 @@
 module github.com/00rg/state/src/services/hello
 
-go 1.18
+go 1.19
 
-require github.com/labstack/echo/v4 v4.7.2
+require (
+	github.com/google/go-cmp v0.5.9
+	github.com/labstack/echo/v4 v4.7.2
+)
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
