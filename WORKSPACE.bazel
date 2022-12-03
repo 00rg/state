@@ -2,20 +2,21 @@ workspace(name = "state")
 
 load(
     "//bazel:deps.bzl",
-    "base_dependencies",
-    "binary_dependencies",
-    "go_dependencies",
-    "manifest_dependencies",
-    "python_dependencies",
+    "state_base_dependencies",
+    "state_binary_dependencies",
+    "state_container_dependencies",
+    "state_go_dependencies",
+    "state_manifest_dependencies",
+    "state_python_dependencies",
 )
 
-base_dependencies()
+state_base_dependencies()
 
-binary_dependencies()
+state_binary_dependencies()
 
-manifest_dependencies()
+state_manifest_dependencies()
 
-python_dependencies()
+state_python_dependencies()
 
 load("@rules_python//python:repositories.bzl", "python_register_toolchains")
 
@@ -24,7 +25,7 @@ python_register_toolchains(
     python_version = "3.10.6",
 )
 
-go_dependencies()
+state_go_dependencies()
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 
@@ -43,32 +44,34 @@ gazelle_dependencies(
     go_repository_default_config = "@//:WORKSPACE.bazel",
 )
 
-load("//bazel:go_lib_deps.bzl", "go_lib_dependencies")
+load("//bazel:go_lib_deps.bzl", "state_go_lib_dependencies")
 
-# gazelle:repository_macro bazel/go_lib_deps.bzl%go_lib_dependencies
-go_lib_dependencies()
+# gazelle:repository_macro bazel/go_lib_deps.bzl%state_go_lib_dependencies
+state_go_lib_dependencies()
 
-# container_dependencies()
+state_container_dependencies()
 
-# load("@rules_docker//repositories:repositories.bzl", container_repositories = "repositories")
+load("@io_bazel_rules_docker//repositories:repositories.bzl", container_repositories = "repositories")
 
-# container_repositories()
+container_repositories()
 
-# load("@rules_docker//repositories:go_repositories.bzl", container_go_deps = "go_deps")
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+# The following macro invocation is only required if go_image is used as the invocation below
+# will declare the standard Go base image dependencies. If we use container_image (better practice?)
+# to fully define our own base images then the following can be omitted.
+load("@io_bazel_rules_docker//go:image.bzl", go_image_repositories = "repositories")
+
+go_image_repositories()
+
+load("//bazel:container_deps.bzl", "state_base_container_dependencies")
+
+state_base_container_dependencies()
+
+# load("@io_bazel_rules_docker//repositories:go_repositories.bzl", container_go_deps = "go_deps")
 
 # container_go_deps()
 
-# load("@rules_docker//go:image.bzl", go_image_repositories = "repositories")
-
-# go_image_repositories()
-
-# load("@rules_docker//container:pull.bzl", "container_pull")
-
-# container_pull(
-#     name = "alpine_linux_amd64",
-#     digest = "sha256:954b378c375d852eb3c63ab88978f640b4348b01c1b3456a024a81536dafbbf4",
-#     registry = "index.docker.io",
-#     repository = "library/alpine",
-#     # tag field is ignored since digest is set
-#     tag = "3.8",
-# )
+# load("@io_bazel_rules_docker//container:pull.bzl", "container_pull")

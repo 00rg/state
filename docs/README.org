@@ -1,3 +1,17 @@
 * state
 
 The GitOps state of the 00rg universe.
+
+** Commands
+
+To generate the =go_binary=, =go_library=, and =go_test= targets run the following command. It will generate and update existing target definitions.
+
+#+begin_src bash
+  bazel run //src/services/hello:gazelle
+#+end_src
+
+To update the macro that declares all of the Go library dependencies run the following command.
+
+#+begin_src bash
+  bazel run //src/services/hello:gazelle_update_repos
+#+end_src

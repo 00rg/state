@@ -3,7 +3,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def base_dependencies():
+def state_base_dependencies():
     """Declare base dependencies."""
 
     bazel_skylib_version = "1.3.0"
@@ -14,7 +14,7 @@ def base_dependencies():
         sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
 
-def binary_dependencies():
+def state_binary_dependencies():
     """Declare binary tool dependencies."""
 
     helm_version = "3.10.2"
@@ -52,7 +52,7 @@ def binary_dependencies():
         executable = True,
     )
 
-def manifest_dependencies():
+def state_manifest_dependencies():
     """Declare Kubernetes manifest dependencies."""
 
     argocd_version = "2.5.2"
@@ -87,7 +87,7 @@ def manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.vector.bazel",
     )
 
-def python_dependencies():
+def state_python_dependencies():
     """Declare Python dependencies."""
 
     pyyaml_version = "6.0"
@@ -110,7 +110,7 @@ def python_dependencies():
         url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/{}.tar.gz".format(rules_python_version),
     )
 
-def go_dependencies():
+def state_go_dependencies():
     """Declare Go dependencies."""
 
     # Golang stuff which is required for building Golang code but is also required
@@ -138,7 +138,7 @@ def go_dependencies():
         urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/v{version}/bazel-gazelle-v{version}.tar.gz".format(version = bazel_gazelle_version)],
     )
 
-def container_dependencies():
+def state_container_dependencies():
     """Declare container dependencies."""
 
     rules_docker_version = "0.25.0"

@@ -1,1 +1,8 @@
+# Hide bazel-* directories.
 build --symlink_prefix=.bazel-
+# Create build configuration named "macos" to be used below.
+build --config=macos
+
+# Fix cgo errors when building Go container images.
+# See: https://github.com/bazelbuild/rules_docker/issues/2052
+build:macos --@io_bazel_rules_docker//transitions:enable=false

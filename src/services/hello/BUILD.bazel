@@ -1,5 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 # gazelle:prefix github.com/00rg/state/src/services/hello
 gazelle(name = "gazelle")
@@ -39,4 +41,25 @@ go_test(
     embed = [":hello_lib"],
     visibility = ["//visibility:public"],
     deps = ["@com_github_google_go_cmp//cmp"],
+)
+
+# Below won't use the alpine_linux_amd64 base container defined in container_deps.bzl.
+# Instead, it'll use the standard (distroless I think?) language-specific base image.
+
+go_image(
+    name = "hello_image",
+    embed = [":hello_lib"],
+)
+
+# When the following target is run it must use the linux_amd64 toolchain so
+# that the binary can run inside the Linux container.
+# bazel run //src/services/hello:push_local_hello_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
+
+container_push(
+    name = "push_local_hello_image",
+    format = "Docker",
+    image = ":hello_image",
+    registry = "localhost:5555",
+    repository = "hello",
+    tag = "0.0.1",
 )
