@@ -43,10 +43,10 @@ gazelle_dependencies(
     go_repository_default_config = "@//:WORKSPACE.bazel",
 )
 
-## load("//:deps.bzl", "go_dependencies")
+load("//bazel:go_lib_deps.bzl", "go_lib_dependencies")
 
-# # zzzgazelle:repository_macro deps.bzl%go_dependencies
-# go_dependencies()
+# gazelle:repository_macro bazel/go_lib_deps.bzl%go_lib_dependencies
+go_lib_dependencies()
 
 # container_dependencies()
 
