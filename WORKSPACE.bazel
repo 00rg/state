@@ -1,12 +1,21 @@
 workspace(name = "state")
 
-load("//bazel:deps.bzl", "binary_dependencies", "build_dependencies", "manifest_dependencies")
+load(
+    "//bazel:deps.bzl",
+    "base_dependencies",
+    "binary_dependencies",
+    "go_dependencies",
+    "manifest_dependencies",
+    "python_dependencies",
+)
 
-build_dependencies()
+base_dependencies()
 
 binary_dependencies()
 
 manifest_dependencies()
+
+python_dependencies()
 
 load("@rules_python//python:repositories.bzl", "python_register_toolchains")
 
@@ -14,3 +23,52 @@ python_register_toolchains(
     name = "python3_10_6",
     python_version = "3.10.6",
 )
+
+go_dependencies()
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains(version = "1.19.3")
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+
+# The following Gazelle annotation is required since we pull in bazel_gazelle
+# via a macro rather than directly within this file.
+# gazelle:repo bazel_gazelle
+gazelle_dependencies(
+    # By default, Gazelle only looks for WORKSPACE.
+    # See https://github.com/bazelbuild/bazel-gazelle/issues/678.
+    go_repository_default_config = "@//:WORKSPACE.bazel",
+)
+
+## load("//:deps.bzl", "go_dependencies")
+
+# # zzzgazelle:repository_macro deps.bzl%go_dependencies
+# go_dependencies()
+
+# container_dependencies()
+
+# load("@rules_docker//repositories:repositories.bzl", container_repositories = "repositories")
+
+# container_repositories()
+
+# load("@rules_docker//repositories:go_repositories.bzl", container_go_deps = "go_deps")
+
+# container_go_deps()
+
+# load("@rules_docker//go:image.bzl", go_image_repositories = "repositories")
+
+# go_image_repositories()
+
+# load("@rules_docker//container:pull.bzl", "container_pull")
+
+# container_pull(
+#     name = "alpine_linux_amd64",
+#     digest = "sha256:954b378c375d852eb3c63ab88978f640b4348b01c1b3456a024a81536dafbbf4",
+#     registry = "index.docker.io",
+#     repository = "library/alpine",
+#     # tag field is ignored since digest is set
+#     tag = "3.8",
+# )

@@ -122,9 +122,20 @@ def install_third_party_manifests(name, manifests):
         data = manifests.keys(),
     )
 
-def _k3d_targets(target_prefix, cluster_name):
+def _k3d_binary(name, env, data):
+    """Declare k3d binary target."""
+    py_binary(
+        name = name,
+        srcs = ["//bazel/third_party/k3d:wrapper.py"],
+        main = "//bazel/third_party/k3d:wrapper.py",
+        env = env,
+        data = data,
+        deps = ["@yaml//:lib"],
+    )
+
+def _k3d_cluster_targets(target_prefix, cluster_name):
     """
-    Creates create_cluster_xyz and delete_cluster_xyz targets for the specified cluster.
+    Create k3d cluster targets.
 
     Args:
       cluster_name: Name of the Kubernetes cluster
@@ -144,10 +155,8 @@ def _k3d_targets(target_prefix, cluster_name):
     )
 
     for operation in ["create_cluster", "delete_cluster", "apply_manifests"]:
-        py_binary(
+        _k3d_binary(
             name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
-            srcs = ["//bazel/third_party/k3d:wrapper.py"],
-            main = "//bazel/third_party/k3d:wrapper.py",
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_K3D_CONFIG": "$(location {})".format(k3d_config),
@@ -156,15 +165,14 @@ def _k3d_targets(target_prefix, cluster_name):
                 "00RG_CLUSTER": cluster_name,
             },
             data = ["@k3d//file", "@kubectl//file", ":config", k3d_config],
-            deps = ["@py_yaml//:lib"],
         )
 
 def k3d_targets(name):
     """
-    Creates create_cluster_xyz and delete_cluster_xyz targets for each local cluster.
+    Creates k3d-related targets.
 
     Args:
-      name: Name used to prefix created targets
+      name: Name used to prefix targets
     """
 
     # Names of clusters that are designed to run locally via k3d.
@@ -178,18 +186,15 @@ def k3d_targets(name):
 
     # Create per-cluster targets.
     for cluster in clusters:
-        _k3d_targets(name, cluster)
+        _k3d_cluster_targets(name, cluster)
 
     # Create general targets.
     for operation in ["list_clusters", "delete_all_clusters", "delete_all", "create_registry", "delete_registry", "list_registries"]:
-        py_binary(
+        _k3d_binary(
             name = "{}_{}".format(name, operation),
-            srcs = ["//bazel/third_party/k3d:wrapper.py"],
-            main = "//bazel/third_party/k3d:wrapper.py",
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_OPERATION": operation,
             },
             data = ["@k3d//file"],
-            deps = ["@py_yaml//:lib"],
         )

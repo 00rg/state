@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 import time
-import py_yaml
+import yaml
 
 from pathlib import Path
 
@@ -123,7 +123,7 @@ def _apply_wave(wave_dir):
     """Apply wave of local manifests to the cluster."""
     wave_file = "{}/wave.yaml".format(wave_dir)
     if os.path.exists(wave_file):
-        wave_info = py_yaml.safe_load(Path(wave_file).read_text())
+        wave_info = yaml.safe_load(Path(wave_file).read_text())
 
     print("Applying KRM wave: {}".format(wave_dir))
     _run_wave_hooks(wave_info, "preApply")
