@@ -1,8 +1,12 @@
 workspace(name = "state")
 
-load("//bazel:deps.bzl", "local_dependencies")
+load("//bazel:deps.bzl", "binary_dependencies", "build_dependencies", "manifest_dependencies")
 
-local_dependencies()
+build_dependencies()
+
+binary_dependencies()
+
+manifest_dependencies()
 
 load("@rules_python//python:repositories.bzl", "python_register_toolchains")
 
