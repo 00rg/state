@@ -1,4 +1,4 @@
 exports_files([
-    "k3d_wrapper.py",
-    "k3d-config.yaml.tpl",
+    "config.yaml.tpl",
+    "wrapper.py",
 ])

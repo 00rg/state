@@ -94,7 +94,6 @@ def install_third_party_manifests(name, manifests):
       name: Target name
       manifests: Dict of target name -> manifest file location
     """
-    script = "{}.sh".format(name)
     commands = [
         """
         cp -f {src} $BUILD_WORKSPACE_DIRECTORY/{dest}
@@ -106,6 +105,9 @@ def install_third_party_manifests(name, manifests):
         )
         for [k, v] in manifests.items()
     ]
+
+    script = "{}.sh".format(name)
+
     write_file(
         name = "{}_script".format(name),
         out = script,
@@ -138,14 +140,14 @@ def _k3d_targets(target_prefix, cluster_name):
             "{registry}": "local-registry",
             "{registry_port}": "5555",
         },
-        template = "//bazel/third_party/k3d:k3d-config.yaml.tpl",
+        template = "//bazel/third_party/k3d:config.yaml.tpl",
     )
 
     for operation in ["create_cluster", "delete_cluster", "apply_manifests"]:
         py_binary(
             name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
-            srcs = ["//bazel/third_party/k3d:k3d_wrapper.py"],
-            main = "//bazel/third_party/k3d:k3d_wrapper.py",
+            srcs = ["//bazel/third_party/k3d:wrapper.py"],
+            main = "//bazel/third_party/k3d:wrapper.py",
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_K3D_CONFIG": "$(location {})".format(k3d_config),
@@ -182,8 +184,8 @@ def k3d_targets(name):
     for operation in ["list_clusters", "delete_all_clusters", "delete_all", "create_registry", "delete_registry", "list_registries"]:
         py_binary(
             name = "{}_{}".format(name, operation),
-            srcs = ["//bazel/third_party/k3d:k3d_wrapper.py"],
-            main = "//bazel/third_party/k3d:k3d_wrapper.py",
+            srcs = ["//bazel/third_party/k3d:wrapper.py"],
+            main = "//bazel/third_party/k3d:wrapper.py",
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_OPERATION": operation,
