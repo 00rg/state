@@ -17,8 +17,9 @@ spec:
       serviceAccountName: hello
       containers:
       - name: hello
-        image: k3d-local-registry:5555/hello:0.0.1
         # image: ashlineldridge/hello:0.0.1
+        image: k3d-local-registry:5555/hello:0.0.1
+        imagePullPolicy: Always
         env:
         - name: EXTERNAL_URL
           value: http://httpbin.httpbin.svc.cluster.local/get

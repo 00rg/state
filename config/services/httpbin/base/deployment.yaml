@@ -17,4 +17,6 @@ spec:
       serviceAccountName: httpbin
       containers:
       - name: httpbin
-        image: kennethreitz/httpbin:latest
+        # image: kennethreitz/httpbin:latest
+        image: k3d-local-registry:5555/httpbin:1.0.0
+        imagePullPolicy: Always
