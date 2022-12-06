@@ -8,6 +8,7 @@ load(
     "state_go_dependencies",
     "state_manifest_dependencies",
     "state_python_dependencies",
+    "state_rust_dependencies",
 )
 
 state_base_dependencies()
@@ -49,6 +50,32 @@ load("//bazel:go_lib_deps.bzl", "state_go_lib_dependencies")
 # gazelle:repository_macro bazel/go_lib_deps.bzl%state_go_lib_dependencies
 state_go_lib_dependencies()
 
+state_rust_dependencies()
+
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+
+rules_rust_dependencies()
+
+rust_register_toolchains(
+    edition = "2021",
+    version = "1.65.0",
+)
+
+# Use the following for the nightly toolchain:
+# rust_register_toolchains(version = "nightly", iso_date = "2022-12-04", edition="2021")
+
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+
+crate_universe_dependencies()
+
+load("//bazel:rust_lib_deps.bzl", "state_rust_lib_dependencies")
+
+state_rust_lib_dependencies()
+
+load("@crate_index//:defs.bzl", "crate_repositories")
+
+crate_repositories()
+
 state_container_dependencies()
 
 load("@io_bazel_rules_docker//repositories:repositories.bzl", container_repositories = "repositories")
@@ -69,9 +96,3 @@ go_image_repositories()
 load("//bazel:container_deps.bzl", "state_base_container_dependencies")
 
 state_base_container_dependencies()
-
-# load("@io_bazel_rules_docker//repositories:go_repositories.bzl", container_go_deps = "go_deps")
-
-# container_go_deps()
-
-# load("@io_bazel_rules_docker//container:pull.bzl", "container_pull")
