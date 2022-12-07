@@ -3,7 +3,7 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-def state_base_dependencies():
+def org_base_dependencies():
     """Declare base dependencies."""
 
     bazel_skylib_version = "1.3.0"
@@ -14,7 +14,7 @@ def state_base_dependencies():
         sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
 
-def state_binary_dependencies():
+def org_binary_dependencies():
     """Declare binary tool dependencies."""
 
     helm_version = "3.10.2"
@@ -52,7 +52,7 @@ def state_binary_dependencies():
         executable = True,
     )
 
-def state_manifest_dependencies():
+def org_manifest_dependencies():
     """Declare Kubernetes manifest dependencies."""
 
     argocd_version = "2.5.2"
@@ -85,7 +85,7 @@ def state_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.vector.bazel",
     )
 
-def state_python_dependencies():
+def org_python_dependencies():
     """Declare Python dependencies."""
 
     rules_python_version = "0.14.0"
@@ -97,7 +97,7 @@ def state_python_dependencies():
         url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/{v}.tar.gz".format(v = rules_python_version),
     )
 
-def state_go_dependencies():
+def org_go_dependencies():
     """Declare Go dependencies."""
 
     # Golang stuff which is required for building Golang code but is also required
@@ -125,7 +125,7 @@ def state_go_dependencies():
         urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/v{v}/bazel-gazelle-v{v}.tar.gz".format(v = bazel_gazelle_version)],
     )
 
-def state_rust_dependencies():
+def org_rust_dependencies():
     """Declare Rust dependencies."""
 
     # Note: I have tried unsuccesfully to get Cargo Raze working through Bazel as described in
@@ -141,7 +141,7 @@ def state_rust_dependencies():
         urls = ["https://github.com/bazelbuild/rules_rust/releases/download/{v}/rules_rust-v{v}.tar.gz".format(v = rules_rust_version)],
     )
 
-def state_container_dependencies():
+def org_container_dependencies():
     """Declare container dependencies."""
 
     rules_docker_version = "0.25.0"

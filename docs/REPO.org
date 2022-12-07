@@ -1,9 +1,0 @@
-* Repository Layout
-
-This page describes the layout of this repository.
-
-** Kustomize Components
-One use-case of components seems to be to create re-usable patches that are "mixed in". E.g. an =ap-southeast-2= component that changes all =AWS_REGION= environment variables to "ap-southeast-2". The problem is that Kustomize makes it hard to target certain parts of resources - e.g. how do I target all containers or all Deployment resources? Kustomize [[https://github.com/kubernetes-sigs/kustomize/blob/master/examples/patchMultipleObjects.md][provides the ability]] to target patches at, for example, a =kind= and/or =group= (perhaps also using label/annotation filtering) but [[https://github.com/kubernetes-sigs/kustomize/issues/1493][it doesn't seem possible]] to target patches at all elements in an array (given env vars are one of the most useful things to manage in a standardised, general way this is unfortunate).
-
-
-Worth reading: https://www.innoq.com/en/blog/advanced-kustomize-features/

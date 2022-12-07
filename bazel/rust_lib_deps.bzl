@@ -2,7 +2,7 @@
 
 load("@rules_rust//crate_universe:defs.bzl", "crates_repository")
 
-def state_rust_lib_dependencies():
+def org_rust_lib_dependencies():
     """Declare Rust library dependencies."""
 
     crates_repository(

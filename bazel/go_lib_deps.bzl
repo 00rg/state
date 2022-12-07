@@ -2,7 +2,7 @@
 
 load("@bazel_gazelle//:deps.bzl", "go_repository")
 
-def state_go_lib_dependencies():
+def org_go_lib_dependencies():
     """Declare Go library dependencies (maintained by Gazelle)."""
 
     go_repository(

@@ -2,7 +2,7 @@
 
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
-def state_base_container_dependencies():
+def org_base_container_dependencies():
     """Declare base image container dependencies."""
 
     container_pull(

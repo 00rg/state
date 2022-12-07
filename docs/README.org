@@ -1,6 +1,6 @@
-* state
+* org
 
-The GitOps state of the 00rg universe.
+Welcome to the 00rg monorepo.
 
 ** Commands
 
