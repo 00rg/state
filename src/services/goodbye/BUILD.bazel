@@ -1,5 +1,7 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 load("@crate_index//:defs.bzl", "aliases", "all_crate_deps")
+load("@io_bazel_rules_docker//rust:image.bzl", "rust_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 rust_binary(
     name = "goodbye",
@@ -11,4 +13,25 @@ rust_binary(
     deps = all_crate_deps(
         normal = True,
     ),
+)
+
+rust_image(
+    name = "goodbye_image",
+    srcs = ["src/main.rs"],
+    aliases = aliases(),
+    proc_macro_deps = all_crate_deps(
+        proc_macro = True,
+    ),
+    deps = all_crate_deps(
+        normal = True,
+    ),
+)
+
+container_push(
+    name = "push_local_goodbye_image",
+    format = "Docker",
+    image = ":goodbye_image",
+    registry = "localhost:5555",
+    repository = "goodbye",
+    tag = "0.0.1",
 )

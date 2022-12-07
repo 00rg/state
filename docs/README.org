@@ -4,14 +4,28 @@ The GitOps state of the 00rg universe.
 
 ** Commands
 
+*** Go
+
 To generate the =go_binary=, =go_library=, and =go_test= targets run the following command. It will generate and update existing target definitions.
 
 #+begin_src bash
   bazel run //src/services/hello:gazelle
 #+end_src
 
-To update the macro that declares all of the Go library dependencies run the following command.
+To update the macro invocation that declares all of the Go library dependencies run the following command.
 
 #+begin_src bash
   bazel run //src/services/hello:gazelle_update_repos
 #+end_src
+
+*** Rust
+
+To add a new Rust service or library, create the crate under =src/services= or =src/libs= and add a reference to the new crates =Cargo.toml= file to the =manifests= property of the =crates_repository= declaration. You'll then need to refresh the Cargo dependencies as below.
+
+To refresh Cargo dependencies into =Cargo.bazel.lock= (which is read by [[http://bazelbuild.github.io/rules_rust/crate_universe.html][crate_universe]]) run the following command.
+
+#+begin_src bash
+  CARGO_BAZEL_REPIN=1 bazel sync --only=crate_index
+#+end_src
+
+The command above can also be used to drive other Cargo commands - see [[http://bazelbuild.github.io/rules_rust/crate_universe.html#repinning--updating-dependencies][here]].

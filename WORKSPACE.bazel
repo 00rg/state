@@ -11,11 +11,27 @@ load(
     "state_rust_dependencies",
 )
 
+###############################################################################
+# B A S E   D E P E N D E N C I E S
+###############################################################################
+
 state_base_dependencies()
+
+###############################################################################
+# B I N A R Y   D E P E N D E N C I E S
+###############################################################################
 
 state_binary_dependencies()
 
+###############################################################################
+# K U B E R N E T E S   M A N I F E S T   D E P E N D E N C I E S
+###############################################################################
+
 state_manifest_dependencies()
+
+###############################################################################
+# P Y T H O N   T O O L C H A I N   D E P E N D E N C I E S
+###############################################################################
 
 state_python_dependencies()
 
@@ -25,6 +41,18 @@ python_register_toolchains(
     name = "python3_10_6",
     python_version = "3.10.6",
 )
+
+###############################################################################
+# P Y T H O N   L I B R A R Y   D E P E N D E N C I E S
+###############################################################################
+
+load("//bazel:python_lib_deps.bzl", "state_python_lib_dependencies")
+
+state_python_lib_dependencies()
+
+###############################################################################
+# G O   T O O L C H A I N   D E P E N D E N C I E S
+###############################################################################
 
 state_go_dependencies()
 
@@ -45,10 +73,18 @@ gazelle_dependencies(
     go_repository_default_config = "@//:WORKSPACE.bazel",
 )
 
+###############################################################################
+# G O   L I B R A R Y   D E P E N D E N C I E S
+###############################################################################
+
 load("//bazel:go_lib_deps.bzl", "state_go_lib_dependencies")
 
 # gazelle:repository_macro bazel/go_lib_deps.bzl%state_go_lib_dependencies
 state_go_lib_dependencies()
+
+###############################################################################
+# R U S T  T O O L C H A I N  D E P E N D E N C I E S
+###############################################################################
 
 state_rust_dependencies()
 
@@ -68,6 +104,10 @@ load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencie
 
 crate_universe_dependencies()
 
+###############################################################################
+# R U S T   L I B R A R Y   D E P E N D E N C I E S
+###############################################################################
+
 load("//bazel:rust_lib_deps.bzl", "state_rust_lib_dependencies")
 
 state_rust_lib_dependencies()
@@ -75,6 +115,10 @@ state_rust_lib_dependencies()
 load("@crate_index//:defs.bzl", "crate_repositories")
 
 crate_repositories()
+
+###############################################################################
+# C O N T A I N E R   T O O L C H A I N   D E P E N D E N C I E S
+###############################################################################
 
 state_container_dependencies()
 
@@ -86,12 +130,21 @@ load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
 
 container_deps()
 
-# The following macro invocation is only required if go_image is used as the invocation below
-# will declare the standard Go base image dependencies. If we use container_image (better practice?)
+###############################################################################
+# C O N T A I N E R   B A S E   I M A G E   D E P E N D E N C I E S
+###############################################################################
+
+# The following macro invocations (go_image_repositories and rust_image_repositories) are
+# only required if go_image/rust_image is used as the invocations below will declare the
+# standard Go/Rust base image dependencies. If we use container_image (better practice?)
 # to fully define our own base images then the following can be omitted.
 load("@io_bazel_rules_docker//go:image.bzl", go_image_repositories = "repositories")
 
 go_image_repositories()
+
+load("@io_bazel_rules_docker//rust:image.bzl", rust_image_repositories = "repositories")
+
+rust_image_repositories()
 
 load("//bazel:container_deps.bzl", "state_base_container_dependencies")
 

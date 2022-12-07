@@ -10,13 +10,3 @@ serde_json = "1.0.89"
 tokio = { version = "1.22.0", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
-
-[package.metadata.raze]
-workspace_path = "//src/services/goodbye"
-package_aliases_dir = "."
-targets = [
-    "x86_64-apple-darwin",
-    "aarch64-apple-darwin",
-    "x86_64-unknown-linux-gnu",
-]
-genmode = "Remote"

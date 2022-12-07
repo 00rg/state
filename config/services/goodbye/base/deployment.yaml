@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goodbye
+  labels:
+    app: goodbye
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goodbye
+  template:
+    metadata:
+      labels:
+        app: goodbye
+    spec:
+      serviceAccountName: goodbye
+      containers:
+      - name: goodbye
+        # image: ashlineldridge/goodbye:0.0.1
+        image: k3d-local-registry:5555/goodbye:0.0.1
+        imagePullPolicy: Always

@@ -4,6 +4,7 @@ resources:
 - ../../../platform/istio-ingress/overlays/local
 # - ../../../platform/vector/overlays/local
 - ../../../services/hello/overlays/local
+- ../../../services/goodbye/overlays/local
 - ../../../services/httpbin/overlays/local
 components:
 - ../../../components/common-labels
