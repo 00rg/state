@@ -12,5 +12,6 @@ def org_rust_lib_dependencies():
         manifests = [
             "//:Cargo.toml",
             "//src/app/goodbye:Cargo.toml",
+            "//src/lib/farewell:Cargo.toml",
         ],
     )
