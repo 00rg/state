@@ -1,4 +1,4 @@
-module github.com/00rg/state/src/services/hello
+module github.com/00rg/state/src/app/hello
 
 go 1.19
 

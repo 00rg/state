@@ -11,6 +11,6 @@ def org_rust_lib_dependencies():
         lockfile = "//:Cargo.bazel.lock",
         manifests = [
             "//:Cargo.toml",
-            "//src/services/goodbye:Cargo.toml",
+            "//src/app/goodbye:Cargo.toml",
         ],
     )

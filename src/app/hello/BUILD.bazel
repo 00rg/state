@@ -3,13 +3,13 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
-# gazelle:prefix github.com/00rg/state/src/services/hello
+# gazelle:prefix github.com/00rg/state/src/app/hello
 gazelle(name = "gazelle")
 
 gazelle(
     name = "gazelle_update_repos",
     args = [
-        "-from_file=src/services/hello/go.mod",
+        "-from_file=src/app/hello/go.mod",
         "-to_macro=bazel/go_lib_deps.bzl%go_lib_dependencies",
         "-prune",
     ],
@@ -17,11 +17,11 @@ gazelle(
 )
 
 # The following two targets are created by running:
-# bazel run //src/services/hello:gazelle
+# bazel run //src/app/hello:gazelle
 go_library(
     name = "hello_lib",
     srcs = ["main.go"],
-    importpath = "github.com/00rg/state/src/services/hello",
+    importpath = "github.com/00rg/state/src/app/hello",
     visibility = ["//visibility:private"],
     deps = [
         "@com_github_labstack_echo_v4//:echo",
@@ -52,7 +52,7 @@ go_image(
 
     # Note that if GOOS and GOARCH aren't hardcoded below the --platforms argument must
     # be specified when building the image that is pushed to the registry. E.g.:
-    # bazel run //src/services/hello:push_local_hello_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
+    # bazel run //src/app/hello:push_local_hello_image --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64
     goarch = "amd64",
     goos = "linux",
 )
