@@ -1,0 +1,23 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+# gazelle:prefix github.com/00rg/org/src/go/pkg/greet
+
+gazelle(
+    name = "gazelle_generate_targets",
+)
+
+go_library(
+    name = "greet",
+    srcs = ["greet.go"],
+    importpath = "github.com/00rg/org/src/go/pkg/greet",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_thanhpk_randstr//:randstr"],
+)
+
+go_test(
+    name = "greet_test",
+    srcs = ["greet_test.go"],
+    embed = [":greet"],
+    deps = ["@com_github_google_go_cmp//cmp"],
+)

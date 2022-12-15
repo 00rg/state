@@ -1,5 +1,5 @@
 {
-  "checksum": "eaf0c23b654cb125e64212a9181def2684dec7001de9b4c1424dae540649db06",
+  "checksum": "8ca767a489cd705ee7a0d9b701bfef4176a4d0f89f51b13f12400f57e193d846",
   "crates": {
     "async-trait 0.1.59": {
       "name": "async-trait",
@@ -942,9 +942,9 @@
       },
       "license": "MIT OR Apache-2.0"
     },
-    "goodbye 0.1.0": {
+    "goodbye 0.0.1": {
       "name": "goodbye",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "repository": null,
       "targets": [
         {
@@ -995,7 +995,7 @@
           "selects": {}
         },
         "edition": "2021",
-        "version": "0.1.0"
+        "version": "0.0.1"
       },
       "license": null
     },
@@ -5396,8 +5396,8 @@
   },
   "binary_crates": [],
   "workspace_members": {
-    "farewell 0.0.1": "src/lib/farewell",
-    "goodbye 0.1.0": "src/app/goodbye"
+    "farewell 0.0.1": "src/rust/crates/farewell",
+    "goodbye 0.0.1": "src/rust/crates/goodbye"
   },
   "conditions": {
     "aarch64-pc-windows-gnullvm": [],

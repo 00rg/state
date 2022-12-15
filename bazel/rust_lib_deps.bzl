@@ -7,11 +7,11 @@ def org_rust_lib_dependencies():
 
     crates_repository(
         name = "crate_index",
-        cargo_lockfile = "//:Cargo.lock",
-        lockfile = "//:Cargo.bazel.lock",
+        cargo_lockfile = "//src/rust:Cargo.lock",
+        lockfile = "//src/rust:Cargo.bazel.lock",
         manifests = [
-            "//:Cargo.toml",
-            "//src/app/goodbye:Cargo.toml",
-            "//src/lib/farewell:Cargo.toml",
+            "//src/rust:Cargo.toml",
+            "//src/rust/crates/goodbye:Cargo.toml",
+            "//src/rust/crates/farewell:Cargo.toml",
         ],
     )

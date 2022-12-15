@@ -7,7 +7,7 @@ rust_binary(
     name = "goodbye",
     srcs = ["src/main.rs"],
     deps = [
-        "//src/lib/farewell",
+        "//src/rust/crates/farewell",
     ] + all_crate_deps(),
 )
 
@@ -15,7 +15,7 @@ rust_image(
     name = "goodbye_image",
     srcs = ["src/main.rs"],
     deps = [
-        "//src/lib/farewell",
+        "//src/rust/crates/farewell",
     ] + all_crate_deps(),
 )
 

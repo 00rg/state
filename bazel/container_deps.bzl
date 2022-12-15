@@ -11,10 +11,3 @@ def org_base_container_dependencies():
         registry = "index.docker.io",
         repository = "library/alpine",
     )
-
-    container_pull(
-        name = "httpbin_linux_amd64",
-        digest = "sha256:599fe5e5073102dbb0ee3dbb65f049dab44fa9fc251f6835c9990f8fb196a72b",
-        registry = "index.docker.io",
-        repository = "kennethreitz/httpbin",
-    )

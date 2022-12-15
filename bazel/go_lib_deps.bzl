@@ -66,6 +66,12 @@ def org_go_lib_dependencies():
         version = "v1.7.0",
     )
     go_repository(
+        name = "com_github_thanhpk_randstr",
+        importpath = "github.com/thanhpk/randstr",
+        sum = "h1:IN78qu/bR+My+gHCvMEXhR/i5oriVHcTB/BJJIRTsNo=",
+        version = "v1.0.4",
+    )
+    go_repository(
         name = "com_github_valyala_bytebufferpool",
         importpath = "github.com/valyala/bytebufferpool",
         sum = "h1:GqA5TC/0021Y/b9FG4Oi9Mr3q7XYx6KllzawFIhcdPw=",

@@ -7,6 +7,11 @@ load(
     "kustomize_build",
 )
 
+# The following directive is required to prevent Gazelle errors when calling the
+# :gazelle_generate_targets target against packages (not entirely sure why but see
+# https://github.com/bazelbuild/bazel-gazelle/issues/378#issuecomment-440432250).
+# gazelle:prefix
+
 # Mapping of third-party manifest targets to where they should be installed.
 _THIRD_PARTY_MANIFESTS = {
     "//:argocd_ha_manifest": "config/platform/argocd/overlays/management/argocd.gen.yaml",

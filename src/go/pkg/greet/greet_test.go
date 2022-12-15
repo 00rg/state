@@ -1,4 +1,4 @@
-package main
+package greet
 
 import (
 	"testing"
@@ -6,9 +6,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestPennyName(t *testing.T) {
-	want := "Penny2"
-	got := "Penny"
+func TestGreet(t *testing.T) {
+	want := "Greet"
+	got := "Greet"
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("(-want +got)\n%s", diff)
 	}

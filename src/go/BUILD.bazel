@@ -1,0 +1,11 @@
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+gazelle(
+    name = "gazelle_update_repos",
+    args = [
+        "-from_file=src/go/go.mod",
+        "-to_macro=bazel/go_lib_deps.bzl%org_go_lib_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)

@@ -1,5 +1,0 @@
-[workspace]
-members = [
-    "src/app/goodbye",
-    "src/lib/farewell",
-]

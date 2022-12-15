@@ -1,29 +1,21 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
-# gazelle:prefix github.com/00rg/state/src/app/hello
-gazelle(name = "gazelle")
+# gazelle:prefix github.com/00rg/org/src/go/cmd/hello
 
 gazelle(
-    name = "gazelle_update_repos",
-    args = [
-        "-from_file=src/app/hello/go.mod",
-        "-to_macro=bazel/go_lib_deps.bzl%go_lib_dependencies",
-        "-prune",
-    ],
-    command = "update-repos",
+    name = "gazelle_generate_targets",
 )
 
-# The following two targets are created by running:
-# bazel run //src/app/hello:gazelle
 go_library(
     name = "hello_lib",
     srcs = ["main.go"],
-    importpath = "github.com/00rg/state/src/app/hello",
+    importpath = "github.com/00rg/org/src/go/cmd/hello",
     visibility = ["//visibility:private"],
     deps = [
+        "//src/go/pkg/greet",
         "@com_github_labstack_echo_v4//:echo",
         "@com_github_labstack_echo_v4//middleware",
     ],
@@ -39,7 +31,6 @@ go_test(
     name = "hello_test",
     srcs = ["main_test.go"],
     embed = [":hello_lib"],
-    visibility = ["//visibility:public"],
     deps = ["@com_github_google_go_cmp//cmp"],
 )
 

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/00rg/org/src/go/pkg/greet"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -29,7 +31,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello!")
+		greet := greet.New("Ash")
+		return c.String(http.StatusOK, greet.Say())
 	})
 
 	e.GET("/version", func(c echo.Context) error {
