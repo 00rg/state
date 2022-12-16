@@ -12,3 +12,14 @@ impl Farewell {
         format!("Goodbye, {} ({})!", self.subject, v)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::Farewell;
+
+    #[test]
+    fn test_farewell() {
+        let farewell = Farewell::new("Pineapple");
+        assert!(farewell.say().starts_with("Goodbye, Pineapple "));
+    }
+}
