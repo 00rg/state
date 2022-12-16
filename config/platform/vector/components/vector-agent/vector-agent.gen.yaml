@@ -5,11 +5,11 @@ kind: ServiceAccount
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 automountServiceAccountToken: true
@@ -20,11 +20,11 @@ kind: ConfigMap
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 data:
@@ -67,11 +67,11 @@ kind: ClusterRole
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 rules:
@@ -91,11 +91,11 @@ kind: ClusterRoleBinding
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 roleRef:
@@ -113,11 +113,11 @@ kind: Service
 metadata:
   name: vector-agent-headless
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
   annotations:
@@ -160,11 +160,11 @@ kind: Service
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
   annotations:
@@ -185,11 +185,11 @@ kind: DaemonSet
 metadata:
   name: vector-agent
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-agent
     app.kubernetes.io/component: Agent
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 spec:
@@ -201,7 +201,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: ec65478b1c798d7f56d2a289f019eedf08cb26d446968d361b4230056f8c8277
+        checksum/config: 249b45a758f2b3db00907053d1bf7c9a6115290afe408828aeb542664857dc72
       labels:
         app.kubernetes.io/name: vector
         app.kubernetes.io/instance: vector-agent
@@ -212,7 +212,7 @@ spec:
       dnsPolicy: ClusterFirst
       containers:
         - name: vector
-          image: "timberio/vector:0.25.1-distroless-libc"
+          image: "timberio/vector:0.26.0-distroless-libc"
           imagePullPolicy: IfNotPresent
           args:
             - --config-dir

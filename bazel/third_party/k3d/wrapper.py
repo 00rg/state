@@ -113,6 +113,7 @@ def _run_wave_hooks(wave_info, hook_type):
                     if res.returncode != 0:
                         sys.exit("Error waiting for CRD {}".format(crd))
                     return
+                time.sleep(1)
 
             sys.exit("Timed out waiting for CRD {}".format(crd))
         else:
@@ -133,6 +134,12 @@ def _apply_wave(wave_dir):
 
 def apply_manifests():
     """Apply the KRM manifests to the cluster."""
+    # Before proceeding with the wave apply, wait until the metrics-server is ready.
+    # If we don't do this, kubectl 1.26.0+ will produce a warning.
+    subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", "kube-system", "deployment/metrics-server"], stderr=subprocess.DEVNULL)
+
+    # If the cluster directory does not contain wave subdirectories, then apply it directly.
+    # Otherwise, apply each wave subdirectory in order.
     cluster_dir = "config/clusters/{}".format(_CLUSTER_NAME)
     if os.path.exists("{}/kustomization.yaml".format(cluster_dir)):
         subprocess.run([_KUBECTL_BINARY, "apply", "-k", cluster_dir])

@@ -5,11 +5,11 @@ kind: ServiceAccount
 metadata:
   name: vector-aggregator
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 automountServiceAccountToken: true
@@ -20,11 +20,11 @@ kind: ConfigMap
 metadata:
   name: vector-aggregator
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 data:
@@ -78,11 +78,11 @@ kind: Service
 metadata:
   name: vector-aggregator-headless
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
   annotations:
@@ -125,11 +125,11 @@ kind: StatefulSet
 metadata:
   name: vector-aggregator
   labels:
-    helm.sh/chart: vector-0.17.0
+    helm.sh/chart: vector-0.18.0
     app.kubernetes.io/name: vector
     app.kubernetes.io/instance: vector-aggregator
     app.kubernetes.io/component: Aggregator
-    app.kubernetes.io/version: "0.25.1-distroless-libc"
+    app.kubernetes.io/version: "0.26.0-distroless-libc"
     app.kubernetes.io/managed-by: Helm
     
 spec:
@@ -144,7 +144,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 9060010ea80875d1e54d740362247036b52397201feb0ab20fefc1019f476179
+        checksum/config: cd6d053bc77ec05fb65e6311410ab3f32073f223cf40567805f4ec41afccb2ed
       labels:
         app.kubernetes.io/name: vector
         app.kubernetes.io/instance: vector-aggregator
@@ -155,7 +155,7 @@ spec:
       dnsPolicy: ClusterFirst
       containers:
         - name: vector
-          image: "timberio/vector:0.25.1-distroless-libc"
+          image: "timberio/vector:0.26.0-distroless-libc"
           imagePullPolicy: IfNotPresent
           args:
             - --config-dir

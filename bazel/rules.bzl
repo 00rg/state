@@ -100,7 +100,9 @@ def install_third_party_manifests(name, manifests):
         chmod 644 $BUILD_WORKSPACE_DIRECTORY/{dest}
         echo Installed {dest}
         """.format(
-            src = k.lstrip("//:") + ".yaml",
+            # The expression below converts the label name to a YAML file
+            # name and handles both //:bar and //foo:bar.
+            src = k.lstrip("//").lstrip(":").replace(":", "/") + ".yaml",
             dest = v,
         )
         for [k, v] in manifests.items()
@@ -164,22 +166,33 @@ def _k3d_cluster_targets(target_prefix, cluster_name):
                 "00RG_OPERATION": operation,
                 "00RG_CLUSTER": cluster_name,
             },
-            data = ["@k3d//file", "@kubectl//file", ":config", k3d_config],
+            data = [
+                "@k3d//file",
+                "@kubectl//file",
+                # TODO: There must be a better way to express that everything under config/
+                # is a data depdency of these tasks...
+                ":clusters",
+                ":components",
+                ":platform",
+                ":services",
+                k3d_config,
+            ],
         )
 
-def k3d_targets(name):
+def k3d_targets(name, cluster_dirs):
     """
     Creates k3d-related targets.
 
     Args:
       name: Name used to prefix targets
+      cluster_dirs: Cluster directory glob inclusions
     """
 
     # Names of clusters that are designed to run locally via k3d.
     clusters = [
         paths.basename(d)
         for d in native.glob(
-            include = ["config/clusters/init", "config/clusters/*-loc-*"],
+            include = cluster_dirs,
             exclude_directories = 0,
         )
     ]

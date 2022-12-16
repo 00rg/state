@@ -9954,7 +9954,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: argocd-applicationset-controller
         ports:
@@ -10035,7 +10035,7 @@ spec:
               key: dexserver.disable.tls
               name: argocd-cmd-params-cm
               optional: true
-        image: ghcr.io/dexidp/dex:v2.35.3-distroless
+        image: ghcr.io/dexidp/dex:v2.35.3
         imagePullPolicy: Always
         name: dex
         ports:
@@ -10064,7 +10064,7 @@ spec:
         - -n
         - /usr/local/bin/argocd
         - /shared/argocd-dex
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: copyutil
         securityContext:
@@ -10117,7 +10117,7 @@ spec:
       containers:
       - command:
         - argocd-notifications
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           tcpSocket:
@@ -10370,7 +10370,7 @@ spec:
           value: /helm-working-dir
         - name: HELM_DATA_HOME
           value: /helm-working-dir
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
@@ -10421,7 +10421,7 @@ spec:
         - -n
         - /usr/local/bin/argocd
         - /var/run/argocd/argocd-cmp-server
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         name: copyutil
         securityContext:
           allowPrivilegeEscalation: false
@@ -10690,7 +10690,7 @@ spec:
               key: application.namespaces
               name: argocd-cmd-params-cm
               optional: true
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -10923,7 +10923,7 @@ spec:
               key: application.namespaces
               name: argocd-cmd-params-cm
               optional: true
-        image: quay.io/argoproj/argocd:v2.5.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: argocd-application-controller
         ports:
@@ -11054,9 +11054,6 @@ spec:
       protocol: UDP
     - port: 53
       protocol: TCP
-    to:
-    - ipBlock:
-        cidr: 0.0.0.0/0
   ingress:
   - from:
     - podSelector:

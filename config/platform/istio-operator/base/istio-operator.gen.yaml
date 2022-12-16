@@ -150,7 +150,7 @@ spec:
       serviceAccountName: istio-operator
       containers:
         - name: istio-operator
-          image: docker.io/istio/operator:1.16.0
+          image: docker.io/istio/operator:1.16.1
           command:
           - operator
           - server

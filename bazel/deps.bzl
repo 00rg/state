@@ -17,22 +17,22 @@ def org_base_dependencies():
 def org_binary_dependencies():
     """Declare binary tool dependencies."""
 
-    helm_version = "3.10.2"
+    helm_version = "3.10.3"
     maybe(
         http_archive,
         name = "helm",
         urls = ["https://get.helm.sh/helm-v{v}-darwin-arm64.tar.gz".format(v = helm_version)],
-        sha256 = "460441eea1764ca438e29fa0e38aa0d2607402f753cb656a4ab0da9223eda494",
+        sha256 = "4f3490654349d6fee8d4055862efdaaf9422eca1ffd2a15393394fd948ae3377",
         strip_prefix = "darwin-arm64",
         build_file = "//bazel/third_party:BUILD.helm.bazel",
     )
 
-    istio_version = "1.16.0"
+    istio_version = "1.16.1"
     maybe(
         http_archive,
         name = "istioctl",
         urls = ["https://github.com/istio/istio/releases/download/{v}/istioctl-{v}-osx-arm64.tar.gz".format(v = istio_version)],
-        sha256 = "6089c88b47f24de89ae164afb5d1fc5006d1341b85cb777633a6a599d63414e6",
+        sha256 = "119cccb9398bb78ad34f3db1dbda778b3e88ac0dbbd089f1f6353d2caf07955b",
         build_file = "//bazel/third_party:BUILD.istioctl.bazel",
     )
 
@@ -44,23 +44,23 @@ def org_binary_dependencies():
         executable = True,
     )
 
-    kubectl_version = "1.25.4"
+    kubectl_version = "1.26.0"
     http_file(
         name = "kubectl",
         urls = ["https://dl.k8s.io/release/v{v}/bin/darwin/arm64/kubectl".format(v = kubectl_version)],
-        sha256 = "61ee3edabfb4db59c102968bd2801d3f0818cff5381e5cb398b0ac5dc72e2ce9",
+        sha256 = "cc7542dfe67df1982ea457cc6e15c171e7ff604a93b41796a4f3fa66bd151f76",
         executable = True,
     )
 
 def org_manifest_dependencies():
     """Declare Kubernetes manifest dependencies."""
 
-    argocd_version = "2.5.2"
+    argocd_version = "2.5.5"
     maybe(
         http_archive,
         name = "argocd",
         urls = ["https://github.com/argoproj/argo-cd/archive/refs/tags/v{v}.tar.gz".format(v = argocd_version)],
-        sha256 = "a210784ae3ee017d1bd83772b04ee125e4bdccf0eb6fc15aa796d009b56440ec",
+        sha256 = "f8611c4934079662b0465f17c070838d7ac51fd953b8812099d50b62051770d8",
         strip_prefix = "argo-cd-{}/manifests".format(argocd_version),
         build_file = "//bazel/third_party:BUILD.argocd.bazel",
     )
@@ -75,12 +75,12 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.crossplane.bazel",
     )
 
-    vector_chart_version = "0.17.0"
+    vector_chart_version = "0.18.0"
     maybe(
         http_archive,
         name = "vector",
         urls = ["https://github.com/vectordotdev/helm-charts/releases/download/vector-{v}/vector-{v}.tgz".format(v = vector_chart_version)],
-        sha256 = "4c12b5d95b03983c42208de2fa2b28f05089c40f518bce0b050a4a3480bafd9a",
+        sha256 = "2d116b627175fe61a5dbafae05be6ec49c8a74e6f794e8e1062fe9615d389bfc",
         strip_prefix = "vector",
         build_file = "//bazel/third_party:BUILD.vector.bazel",
     )
