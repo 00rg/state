@@ -1,0 +1,8 @@
+load("//bazel:rules.bzl", "k3d_targets")
+
+k3d_targets(
+    cluster_dirs = [
+        "clusters/init",
+        "clusters/*-loc-*",
+    ],
+)

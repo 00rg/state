@@ -49,10 +49,11 @@ go_image(
 )
 
 container_push(
-    name = "push_local_hello_image",
+    name = "push_local_image",
     format = "Docker",
     image = ":hello_image",
     registry = "localhost:5555",
     repository = "hello",
     tag = "0.0.1",
+    visibility = ["//visibility:public"],
 )

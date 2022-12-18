@@ -86,9 +86,9 @@ def istio_operator(name):
         cmd = cmd,
     )
 
-def install_third_party_manifests(name, manifests):
+def update_third_party_manifests(name, manifests):
     """
-    Installs third-party KRM manifests into source tree.
+    Updates/installs third-party KRM manifests into source tree.
 
     Args:
       name: Target name
@@ -135,18 +135,17 @@ def _k3d_binary(name, env, data):
         deps = ["@yaml//:lib"],
     )
 
-def _k3d_cluster_targets(target_prefix, cluster_name):
+def _k3d_cluster_targets(cluster_name):
     """
     Create k3d cluster targets.
 
     Args:
       cluster_name: Name of the Kubernetes cluster
-      target_prefix: Prefix to be used for created targets
     """
     cluster_id = cluster_name.replace("-", "_")
-    k3d_config = "{}_{}_config.yaml".format(target_prefix, cluster_id)
+    k3d_config = "{}_config.yaml".format(cluster_id)
     expand_template(
-        name = "{}_config_{}".format(target_prefix, cluster_id),
+        name = "{}_config".format(cluster_id),
         out = k3d_config,
         substitutions = {
             "{cluster}": cluster_name,
@@ -158,7 +157,7 @@ def _k3d_cluster_targets(target_prefix, cluster_name):
 
     for operation in ["create_cluster", "delete_cluster", "apply_manifests"]:
         _k3d_binary(
-            name = "{}_{}_{}".format(target_prefix, operation, cluster_id),
+            name = "{}_{}".format(operation, cluster_id),
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_K3D_CONFIG": "$(location {})".format(k3d_config),
@@ -179,12 +178,11 @@ def _k3d_cluster_targets(target_prefix, cluster_name):
             ],
         )
 
-def k3d_targets(name, cluster_dirs):
+def k3d_targets(cluster_dirs):
     """
     Creates k3d-related targets.
 
     Args:
-      name: Name used to prefix targets
       cluster_dirs: Cluster directory glob inclusions
     """
 
@@ -199,12 +197,12 @@ def k3d_targets(name, cluster_dirs):
 
     # Create per-cluster targets.
     for cluster in clusters:
-        _k3d_cluster_targets(name, cluster)
+        _k3d_cluster_targets(cluster)
 
     # Create general targets.
     for operation in ["list_clusters", "delete_all_clusters", "delete_all", "create_registry", "delete_registry", "list_registries"]:
         _k3d_binary(
-            name = "{}_{}".format(name, operation),
+            name = operation,
             env = {
                 "00RG_K3D_BINARY": "$(location @k3d//file)",
                 "00RG_OPERATION": operation,

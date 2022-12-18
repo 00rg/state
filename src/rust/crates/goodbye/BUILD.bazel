@@ -20,10 +20,11 @@ rust_image(
 )
 
 container_push(
-    name = "push_local_goodbye_image",
+    name = "push_local_image",
     format = "Docker",
     image = ":goodbye_image",
     registry = "localhost:5555",
     repository = "goodbye",
     tag = "0.0.1",
+    visibility = ["//visibility:public"],
 )

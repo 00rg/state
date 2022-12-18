@@ -2,20 +2,20 @@ workspace(name = "org")
 
 load(
     "//bazel:deps.bzl",
-    "org_base_dependencies",
     "org_binary_dependencies",
     "org_container_dependencies",
     "org_go_dependencies",
     "org_manifest_dependencies",
     "org_python_dependencies",
     "org_rust_dependencies",
+    "org_util_dependencies",
 )
 
 ###############################################################################
-# B A S E   D E P E N D E N C I E S
+# U T I L   D E P E N D E N C I E S
 ###############################################################################
 
-org_base_dependencies()
+org_util_dependencies()
 
 ###############################################################################
 # B I N A R Y   D E P E N D E N C I E S
