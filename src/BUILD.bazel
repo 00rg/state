@@ -6,4 +6,5 @@ multirun(
         "//src/go/cmd/hello:push_local_image",
         "//src/rust/crates/goodbye:push_local_image",
     ],
+    visibility = ["//visibility:public"],
 )

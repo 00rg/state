@@ -17,7 +17,7 @@ registries:
 env:
 # The Bazel code will only touch clusters that it created. The env var below
 # is used to mark the cluster as having been created by this repository.
-- envVar: 00RG_MANAGED=1
+- envVar: ORG_MANAGED=1
   nodeFilters:
   - "agent:*"
   - "server:*"

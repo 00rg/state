@@ -159,17 +159,17 @@ def _k3d_cluster_targets(cluster_name):
         _k3d_binary(
             name = "{}_{}".format(operation, cluster_id),
             env = {
-                "00RG_K3D_BINARY": "$(location @k3d//file)",
-                "00RG_K3D_CONFIG": "$(location {})".format(k3d_config),
-                "00RG_KUBECTL_BINARY": "$(location @kubectl//file)",
-                "00RG_OPERATION": operation,
-                "00RG_CLUSTER": cluster_name,
+                "ORG_K3D_BINARY": "$(location @k3d//file)",
+                "ORG_K3D_CONFIG": "$(location {})".format(k3d_config),
+                "ORG_KUBECTL_BINARY": "$(location @kubectl//file)",
+                "ORG_OPERATION": operation,
+                "ORG_CLUSTER": cluster_name,
             },
             data = [
                 "@k3d//file",
                 "@kubectl//file",
                 # TODO: There must be a better way to express that everything under config/
-                # is a data depdency of these tasks...
+                # is a data dependency of these tasks...
                 ":clusters",
                 ":components",
                 ":platform",
@@ -204,8 +204,8 @@ def k3d_targets(cluster_dirs):
         _k3d_binary(
             name = operation,
             env = {
-                "00RG_K3D_BINARY": "$(location @k3d//file)",
-                "00RG_OPERATION": operation,
+                "ORG_K3D_BINARY": "$(location @k3d//file)",
+                "ORG_OPERATION": operation,
             },
             data = ["@k3d//file"],
         )

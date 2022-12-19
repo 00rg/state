@@ -4,7 +4,20 @@ Welcome to the 00rg monorepo.
 
 ** Basics
 
-*** Go
+*** Running Kubernetes Clusters Locally
+
+The following series of commands creates a local container registry, builds the source code for the services defined in this repository and publishes the images to the local registry, creates the k3d Kubernetes cluster, and then applies the Kubernetes manifests to the cluster. Following these commands you should have a working local Kubernetes environment that is running all of the applications defined in the Kustomize configuration.
+
+#+begin_src bash
+  bazel run //kube:create_registry
+  bazel run //src:push_local_images
+  bazel run //kube:create_cluster_cust_xxx_loc_xxxxx_kapp
+  bazel run //kube:apply_manifests_cust_xxx_loc_xxxxx_kapp
+#+end_src
+
+*** Managing Source Code
+
+**** Go
 
 All Go source code is stored under =src/go= with a single =src/go/go.mod= file. This allows the Go code to work as normal with the Go CLI and IDEs.
 
@@ -23,7 +36,7 @@ If you are adding a new binary or library, you'll likely want to use Gazelle to 
   bazel run //src/go/pkg/farewell:gazelle_generate_targets
 #+end_src
 
-*** Rust
+**** Rust
 
 All Rust source code is stored under =src/rust= with a single =src/rust/Cargo.toml= Cargo workspace file. As with the Go code, this allows the Rust code to work well with the Cargo CLI and IDEs.
 

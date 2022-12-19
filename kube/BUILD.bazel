@@ -6,3 +6,18 @@ k3d_targets(
         "clusters/*-loc-*",
     ],
 )
+
+# Waiting on https://github.com/keith/rules_multirun/issues/3 to implement
+# pattern below (would need to generate via macro as I don't want to hardcode
+# cluster names here).
+#
+# load("@rules_multirun//:defs.bzl", "multirun")
+# multirun(
+#     name = "boot_cluster_cust_xxx_loc_xxxxx_kapp",
+#     commands = [
+#         "//kube:create_registry",
+#         "//src:push_local_images",
+#         ":create_cluster_cust_xxx_loc_xxxxx_kapp",
+#         ":apply_manifests_cust_xxx_loc_xxxxx_kapp",
+#     ],
+# )

@@ -10,22 +10,21 @@ import yaml
 
 from pathlib import Path
 
-_K3D_BINARY = os.environ.get("00RG_K3D_BINARY")
-_K3D_CONFIG = os.environ.get("00RG_K3D_CONFIG")
-_KUBECTL_BINARY = os.environ.get("00RG_KUBECTL_BINARY")
-_OPERATION = os.environ.get("00RG_OPERATION")
-_CLUSTER_NAME = os.environ.get("00RG_CLUSTER")
+_K3D_BINARY = os.environ.get("ORG_K3D_BINARY")
+_K3D_CONFIG = os.environ.get("ORG_K3D_CONFIG")
+_KUBECTL_BINARY = os.environ.get("ORG_KUBECTL_BINARY")
+_OPERATION = os.environ.get("ORG_OPERATION")
+_CLUSTER_NAME = os.environ.get("ORG_CLUSTER")
 
 _K3D_REGISTRY_NAME = "local-registry"
 _K3D_REGISTRY_PORT = 5555
 _CRD_WAIT_TIME_SECS = 180
 
-
 def _get_clusters():
     """Get all k3d clusters managed by this repository."""
     res = subprocess.run([_K3D_BINARY, "cluster", "list", "-o=json"], stdout=subprocess.PIPE)
     clusters = json.loads(res.stdout)
-    return [c for c in clusters if any("00RG_MANAGED=1" in n["env"] for n in c["nodes"])]
+    return [c for c in clusters if any("ORG_MANAGED=1" in n["env"] for n in c["nodes"])]
 
 
 def _cluster_exists():
@@ -136,11 +135,12 @@ def apply_manifests():
     """Apply the KRM manifests to the cluster."""
     # Before proceeding with the wave apply, wait until the metrics-server is ready.
     # If we don't do this, kubectl 1.26.0+ will produce a warning.
-    subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", "kube-system", "deployment/metrics-server"], stderr=subprocess.DEVNULL)
+    subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", "kube-system", "deployment/metrics-server"],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     # If the cluster directory does not contain wave subdirectories, then apply it directly.
     # Otherwise, apply each wave subdirectory in order.
-    cluster_dir = "config/clusters/{}".format(_CLUSTER_NAME)
+    cluster_dir = "kube/clusters/{}".format(_CLUSTER_NAME)
     if os.path.exists("{}/kustomization.yaml".format(cluster_dir)):
         subprocess.run([_KUBECTL_BINARY, "apply", "-k", cluster_dir])
     else:
@@ -152,9 +152,7 @@ match _OPERATION:
     case "apply_manifests":
         apply_manifests()
     case "create_cluster":
-        create_registry()
         create_cluster()
-        apply_manifests()
     case "list_clusters":
         list_clusters()
     case "delete_cluster":
