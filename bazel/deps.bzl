@@ -84,6 +84,21 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.crossplane.bazel",
     )
 
+    kube_prometheus_chart_version = "43.1.2"
+    maybe(
+        http_archive,
+        name = "kube_prometheus",
+        urls = ["https://github.com/prometheus-community/helm-charts/releases/download/kube-prometheus-stack-{v}/kube-prometheus-stack-{v}.tgz".format(v = kube_prometheus_chart_version)],
+        sha256 = "59e49de5da26c095276ce344ffab0038fed91f198da9ca14c78f8f4fb40c5c9b",
+        strip_prefix = "kube-prometheus-stack",
+        build_file = "//bazel/third_party:BUILD.kube_prometheus.bazel",
+        patch_args = ["-p1"],
+        patches = [
+            "//bazel/third_party/kube_prometheus:Chart.yaml.patch",
+            "//bazel/third_party/kube_prometheus:Chart.lock.patch",
+        ],
+    )
+
     vector_chart_version = "0.18.0"
     maybe(
         http_archive,

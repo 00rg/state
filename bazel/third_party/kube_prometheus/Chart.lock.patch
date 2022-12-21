@@ -1,0 +1,20 @@
+diff --git a/Chart.lock b/Chart.lock
+index 2ae8538..822013b 100644
+--- a/Chart.lock
++++ b/Chart.lock
+@@ -1,12 +1,12 @@
+ dependencies:
+ - name: kube-state-metrics
+-  repository: https://prometheus-community.github.io/helm-charts
++  repository: file://charts
+   version: 4.24.0
+ - name: prometheus-node-exporter
+-  repository: https://prometheus-community.github.io/helm-charts
++  repository: file://charts
+   version: 4.8.0
+ - name: grafana
+-  repository: https://grafana.github.io/helm-charts
++  repository: file://charts
+   version: 6.48.0
+ digest: sha256:f768bd8d7fd88dc6504cabf177246707916cd528971bdf3b13917b8d7b5f490d
+ generated: "2022-12-13T08:40:16.30438+01:00"

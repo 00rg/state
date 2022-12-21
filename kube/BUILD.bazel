@@ -10,8 +10,14 @@ k3d_targets(
 # Waiting on https://github.com/keith/rules_multirun/issues/3 to implement
 # pattern below (would need to generate via macro as I don't want to hardcode
 # cluster names here).
-#
-# load("@rules_multirun//:defs.bzl", "multirun")
+
+# load("@rules_multirun//:defs.bzl", "command", "multirun")
+
+# command(
+#     name = "create_registry_command",
+#     command = ":create_registry",
+# )
+
 # multirun(
 #     name = "boot_cluster_cust_xxx_loc_xxxxx_kapp",
 #     commands = [
