@@ -13,6 +13,7 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:crossplane_manifest": "kube/platform/crossplane-base/base/crossplane.gen.yaml",
     "//bazel/third_party:istio_operator_manifest": "kube/platform/istio-operator/base/istio-operator.gen.yaml",
     "//bazel/third_party:kube_prometheus_manifest": "kube/platform/kube-prometheus/base/kube-prometheus.gen.yaml",
+    "//bazel/third_party:prometheus_operator_crds_manifest": "kube/platform/prometheus-operator-crds/base/prometheus-operator-crds.gen.yaml",
     "//bazel/third_party:vector_agent_manifest": "kube/platform/vector/components/vector-agent/vector-agent.gen.yaml",
     "//bazel/third_party:vector_aggregator_manifest": "kube/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml",
 }
@@ -49,9 +50,15 @@ helm_template(
     name = "kube_prometheus_manifest",
     srcs = ["@kube_prometheus//:all"],
     chart_dir = "external/kube_prometheus",
-    namespace = "kube-prometheus",
     release_name = "kube-prometheus",
     values_file = "//bazel/third_party/kube_prometheus:kube-prometheus.values.yaml",
+)
+
+helm_template(
+    name = "prometheus_operator_crds_manifest",
+    srcs = ["@prometheus_operator_crds//:all"],
+    chart_dir = "external/prometheus_operator_crds",
+    release_name = "prometheus-operator-crds",
 )
 
 helm_template(

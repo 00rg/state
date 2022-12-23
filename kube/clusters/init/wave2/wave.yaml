@@ -5,5 +5,5 @@ metadata:
 spec:
   hooks:
     preApply:
-    - waitForCRD:
-        name: providers.pkg.crossplane.io
+      waitForCRDs:
+      - providers.pkg.crossplane.io

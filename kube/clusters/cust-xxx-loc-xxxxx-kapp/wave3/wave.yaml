@@ -5,9 +5,18 @@ metadata:
 spec:
   hooks:
     preApply:
-    - waitForCRD:
-        name: gateways.networking.istio.io
-    - waitForCRD:
-        name: authorizationpolicies.security.istio.io
-    - waitForCRD:
-        name: requestauthentications.security.istio.io
+      waitForCRDs:
+      - gateways.networking.istio.io
+      - authorizationpolicies.security.istio.io
+      - requestauthentications.security.istio.io
+      - alertmanagerconfigs.monitoring.coreos.com
+      - alertmanagers.monitoring.coreos.com
+      - podmonitors.monitoring.coreos.com
+      - probes.monitoring.coreos.com
+      - prometheuses.monitoring.coreos.com
+      - prometheusrules.monitoring.coreos.com
+      - servicemonitors.monitoring.coreos.com
+      - thanosrulers.monitoring.coreos.com
+      waitForRollouts:
+      # Need to wait for istiod otherwise subsequent webhook invocations will fail.
+      - istio-system/istiod

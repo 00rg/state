@@ -18,7 +18,7 @@ _CLUSTER_NAME = os.environ.get("ORG_CLUSTER")
 
 _K3D_REGISTRY_NAME = "local-registry"
 _K3D_REGISTRY_PORT = 5555
-_CRD_WAIT_TIME_SECS = 180
+_WAVE_WAIT_TIME_SECS = 180
 
 def _get_clusters():
     """Get all k3d clusters managed by this repository."""
@@ -94,29 +94,51 @@ def delete_registry():
 
 def _run_wave_hooks(wave_info, hook_type):
     """Run the wave hooks of the specified type."""
-    try:
-        hooks = wave_info["spec"]["hooks"][hook_type]
-    except KeyError:
-        return
+    deadline = time.time() + _WAVE_WAIT_TIME_SECS
 
-    for hook in hooks:
-        if wait_for_crd_hook := hook.get("waitForCRD"):
-            crd = wait_for_crd_hook["name"]
-            print("Waiting for CRD {} to exist".format(crd))
-            deadline = time.time() + _CRD_WAIT_TIME_SECS
-            while time.time() < deadline:
-                res = subprocess.run([_KUBECTL_BINARY, "get", "crd", crd], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+    try:
+        wait_for_crds = wave_info["spec"]["hooks"][hook_type]["waitForCRDs"]
+    except KeyError:
+        wait_for_crds = []
+
+    for crd in wait_for_crds:
+        print("Waiting for CRD {} to exist".format(crd))
+        while True:
+            res = subprocess.run([_KUBECTL_BINARY, "get", "crd", crd], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            if res.returncode == 0:
+                time_left = deadline - time.time()
+                res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd])
                 if res.returncode == 0:
-                    time_left = deadline - time.time()
-                    res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd])
-                    if res.returncode != 0:
-                        sys.exit("Error waiting for CRD {}".format(crd))
-                    return
+                    break
+                sys.exit("Error waiting for CRD {}".format(crd))
+            elif time.time() >= deadline:
+                sys.exit("Timed out waiting for CRD {}".format(crd))
+            else:
                 time.sleep(1)
 
-            sys.exit("Timed out waiting for CRD {}".format(crd))
-        else:
-            sys.exit("Unrecognized {} wave hook: {}".format(hook_type, json.dumps(hook)))
+    try:
+        wait_for_rollouts = wave_info["spec"]["hooks"][hook_type]["waitForRollouts"]
+    except KeyError:
+        wait_for_rollouts = []
+
+    for res in wait_for_rollouts:
+        print("Waiting for rollout of {}".format(res))
+        splat = res.split("/")
+        namespace = splat[0]
+        deployment = splat[1]
+        time_left = deadline - time.time()
+        res = subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", namespace, "--timeout={}s".format(time_left), "deployment/{}".format(deployment)],
+                             stderr=subprocess.DEVNULL)
+        if res.returncode == 0:
+            return
+        sys.exit("Error waiting for rollout of {}".format(res))
+
+
+def _kubectl_apply(dir):
+    """Use kubectl to server-side apply specified Kustomize directory."""
+    res = subprocess.run([_KUBECTL_BINARY, "apply", "--server-side", "-k", dir])
+    if res.returncode != 0:
+        sys.exit("Error applying Kustomize directory: {}".format(dir))
 
 
 def _apply_wave(wave_dir):
@@ -127,22 +149,18 @@ def _apply_wave(wave_dir):
 
     print("Applying KRM wave: {}".format(wave_dir))
     _run_wave_hooks(wave_info, "preApply")
-    subprocess.run([_KUBECTL_BINARY, "apply", "-k", wave_dir])
+    _kubectl_apply(wave_dir)
     _run_wave_hooks(wave_info, "postApply")
 
 
 def apply_manifests():
     """Apply the KRM manifests to the cluster."""
-    # Before proceeding with the wave apply, wait until the metrics-server is ready.
-    # If we don't do this, kubectl 1.26.0+ will produce a warning.
-    subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", "kube-system", "deployment/metrics-server"],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
     # If the cluster directory does not contain wave subdirectories, then apply it directly.
     # Otherwise, apply each wave subdirectory in order.
     cluster_dir = "kube/clusters/{}".format(_CLUSTER_NAME)
     if os.path.exists("{}/kustomization.yaml".format(cluster_dir)):
-        subprocess.run([_KUBECTL_BINARY, "apply", "-k", cluster_dir])
+        _kubectl_apply(cluster_dir)
     else:
         for wave_dir in sorted(glob.glob("{}/wave*".format(cluster_dir))):
             _apply_wave(wave_dir)

@@ -99,6 +99,16 @@ def org_manifest_dependencies():
         ],
     )
 
+    prometheus_operator_crds_chart_version = "0.1.0"
+    maybe(
+        http_archive,
+        name = "prometheus_operator_crds",
+        urls = ["https://github.com/prometheus-community/helm-charts/releases/download/prometheus-operator-crds-{v}/prometheus-operator-crds-{v}.tgz".format(v = prometheus_operator_crds_chart_version)],
+        sha256 = "1ae1b64279ad7db1f413d93357820d7918ddef74eb0bfbeda595d520a5042cc8",
+        strip_prefix = "prometheus-operator-crds",
+        build_file = "//bazel/third_party:BUILD.prometheus_operator_crds.bazel",
+    )
+
     vector_chart_version = "0.18.0"
     maybe(
         http_archive,

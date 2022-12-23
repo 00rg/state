@@ -5,37 +5,41 @@ load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_python//python:defs.bzl", "py_binary")
 
-def helm_template(name, chart_dir, values_file, release_name, namespace, srcs):
+def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None):
     """
     Generates KRM manifests by performing a Helm template operation.
 
     Args:
       name: Target name
       chart_dir: Path to chart directory
-      values_file: Label name of the chart values file
       release_name: Helm release name
+      srcs: Files to be added to genrule srcs
       namespace: Namespace to be used
-      srcs: Labels to be added to genrule srcs
+      values_file: Label name of the chart values file
     """
+
+    args = [
+        "$(location @helm//:helm)",
+        "template",
+        release_name,
+        chart_dir,
+    ]
+
+    if values_file:
+        args.extend(["--values", "$(location {})".format(values_file)])
+        srcs.append(values_file)
+
+    if namespace:
+        args.extend(["--namespace", namespace])
 
     # Stderr is silenced due to https://github.com/helm/helm/issues/7019. We could
     # filter it through grep but then the grep binary would need to be a dependency
     # to keep things hermetic which doesn't seem worth it.
-    cmd = """
-        $(location @helm//:helm) template \
-            {release_name} {chart_dir} \
-            --values $(location {values_file}) \
-            --namespace {namespace} > $@ 2> /dev/null
-    """.format(
-        release_name = release_name,
-        chart_dir = chart_dir,
-        values_file = values_file,
-        namespace = namespace,
-    )
+    cmd = "{} > $@ 2> /dev/null".format(" ".join(args))
 
     native.genrule(
         name = name,
-        srcs = [values_file] + srcs,
+        srcs = srcs,
         outs = ["{}.yaml".format(name)],
         tools = ["@helm//:helm"],
         cmd = cmd,
