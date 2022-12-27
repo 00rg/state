@@ -1,3 +1,5 @@
+# This gateway is used to serve internal private traffic (e.g. from outside the cluster
+# but from within the private network).
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:

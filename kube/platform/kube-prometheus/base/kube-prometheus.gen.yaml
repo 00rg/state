@@ -195,6 +195,7 @@ data:
     provisioning = /etc/grafana/provisioning
     [server]
     domain = ''
+    root_url = http://office.00rg.com:8082/grafana
 ---
 # Source: kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
 apiVersion: v1
@@ -40128,7 +40129,7 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus
       annotations:
-        checksum/config: eefc509d8eb801934a0dc3d8f91a0705b2eb3d1a2f0851287ef7fc2514e7d644
+        checksum/config: 601f0d03402d5e25e446febe9b1070a1435517f28401475fd6c8d90044bfa92d
         checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/sc-dashboard-provider-config: 6f56d61ec49525ad365bb13bf8fa862aecd5c1a763b86a33d792e5eb2bbdf2e2
         checksum/secret: 15eefa1ec4959ecf94ba9c48d28afdffee9e06504005601d0262ca7337af2cfd
@@ -40417,7 +40418,7 @@ spec:
   replicas: 1
   listenLocal: false
   serviceAccountName: kube-prometheus-kube-prome-alertmanager
-  externalUrl: http://kube-prometheus-kube-prome-alertmanager.default:9093
+  externalUrl: "http://office.00rg.com:8082/alertmanager"
   paused: false
   logFormat: "logfmt"
   logLevel:  "info"
@@ -40458,7 +40459,7 @@ spec:
         apiVersion: v2
   image: "quay.io/prometheus/prometheus:v2.40.5"
   version: v2.40.5
-  externalUrl: http://kube-prometheus-kube-prome-prometheus.default:9090
+  externalUrl: "http://office.00rg.com:8082/prometheus"
   paused: false
   replicas: 1
   shards: 1

@@ -43,3 +43,21 @@ spec:
             port: 80
             targetPort: 8080
             nodePort: 31001
+    - name: office-ingress-gateway
+      namespace: istio-ingress
+      enabled: true
+      label:
+        app: office-ingress-gateway
+        istio: ingress-gateway
+      k8s:
+        hpaSpec:
+          minReplicas: 1
+          maxReplicas: 1
+        service:
+          type: NodePort
+          ports:
+          - name: http2
+            protocol: TCP
+            port: 80
+            targetPort: 8080
+            nodePort: 31002

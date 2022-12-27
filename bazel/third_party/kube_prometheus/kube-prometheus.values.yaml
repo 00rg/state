@@ -11,8 +11,20 @@ prometheusOperator:
     # use the v1beta1 API group of MutatingWebhookConfiguration rather than v1 which is now
     # standard. So disabling for now and will replace with cert-manager later.
     enabled: false
+
+prometheus:
+  prometheusSpec:
+    externalUrl: http://office.00rg.com:8082/prometheus
+
+alertmanager:
+  alertmanagerSpec:
+    externalUrl: http://office.00rg.com:8082/alertmanager
+
 grafana:
   # Disable the Grafana chart tests as because we're not using Helm to do the deployment the
   # tests will start running immediately and then fail.
   testFramework:
     enabled: false
+  grafana.ini:
+    server:
+      root_url: http://office.00rg.com:8082/grafana

@@ -2,6 +2,3 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: kube-prometheus
-  labels:
-    # TODO: Disable Istio to get everything working for now. Look at re-enabling.
-    istio-injection: disabled

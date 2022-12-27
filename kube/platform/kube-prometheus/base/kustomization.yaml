@@ -4,3 +4,4 @@ namespace: kube-prometheus
 resources:
 - namespace.yaml
 - kube-prometheus.gen.yaml
+- virtual-services.yaml

@@ -1,0 +1,67 @@
+# When running locally, this routes require a "127.0.0.1 office.00rg.com" entry in /etc/hosts.
+# The URI prefix matches seem to require both /abc/ and /abc so that redirects work (e.g.
+# redirecting from /abc to /abc/xyz which is pretty common with these UI apps).
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana-office
+spec:
+  hosts:
+  - office.00rg.com
+  gateways:
+  - istio-ingress/office-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /grafana/
+    - uri:
+        prefix: /grafana
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: kube-prometheus-grafana
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: alertmanager-office
+spec:
+  hosts:
+  - office.00rg.com
+  gateways:
+  - istio-ingress/office-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /alertmanager/
+    - uri:
+        prefix: /alertmanager
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: alertmanager-operated
+        port:
+          number: 9093
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prometheus-office
+spec:
+  hosts:
+  - office.00rg.com
+  gateways:
+  - istio-ingress/office-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /prometheus/
+    - uri:
+        prefix: /prometheus
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: prometheus-operated

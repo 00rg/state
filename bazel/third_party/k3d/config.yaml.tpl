@@ -5,10 +5,16 @@ metadata:
 servers: 1
 agents: 1
 ports:
+# External ingress gateway
 - port: 8080:31000
   nodeFilters:
   - server:0
-- port: 9080:31001
+# Internal ingress gateway
+- port: 8081:31001
+  nodeFilters:
+  - server:0
+# Office ingress gateway
+- port: 8082:31002
   nodeFilters:
   - server:0
 registries:

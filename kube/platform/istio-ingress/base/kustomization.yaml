@@ -7,3 +7,4 @@ resources:
 - authorization.yaml
 - external-gateway.yaml
 - internal-gateway.yaml
+- office-gateway.yaml

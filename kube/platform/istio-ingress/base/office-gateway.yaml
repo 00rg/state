@@ -1,16 +1,16 @@
-# This gateway is used to serve external internet traffic.
+# This gateway is used to serve back-office traffic.
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: external-gateway
+  name: office-gateway
   namespace: istio-ingress
 spec:
   selector:
-    app: external-ingress-gateway
+    app: office-ingress-gateway
   servers:
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - api.00rg.com
+    - office.00rg.com
