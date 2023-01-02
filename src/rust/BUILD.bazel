@@ -1,0 +1,6 @@
+# I still haven't gotten cross-compilation working properly for Rust.
+# This Slack thread seems promising: https://bazelbuild.slack.com/archives/CSV56UT0F/p1652874268091119
+# See also:
+# - https://john-millikin.com/notes-on-cross-compiling-rust
+# - https://github.com/ttiurani/bazel-rust-raspberry-pi-cross-compile
+# - https://sr.ht/~motiejus/bazel-zig-cc/
