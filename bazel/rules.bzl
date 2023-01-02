@@ -5,7 +5,7 @@ load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_python//python:defs.bzl", "py_binary")
 
-def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None):
+def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None, include_crds = False):
     """
     Generates KRM manifests by performing a Helm template operation.
 
@@ -16,6 +16,7 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
       srcs: Files to be added to genrule srcs
       namespace: Namespace to be used
       values_file: Label name of the chart values file
+      include_crds: Whether CRDs should also be exported
     """
 
     args = [
@@ -31,6 +32,9 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
 
     if namespace:
         args.extend(["--namespace", namespace])
+
+    if include_crds:
+        args.append("--include-crds")
 
     # Stderr is silenced due to https://github.com/helm/helm/issues/7019. We could
     # filter it through grep but then the grep binary would need to be a dependency

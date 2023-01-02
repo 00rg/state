@@ -1,0 +1,13 @@
+loki:
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
+test:
+  enabled: false
+minio:
+  enabled: false
+monitoring:
+  selfMonitoring:
+    grafanaAgent:
+      installOperator: false

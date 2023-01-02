@@ -14,6 +14,10 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:istio_operator_manifest": "kube/platform/istio-operator/base/istio-operator.gen.yaml",
     "//bazel/third_party:kube_prometheus_manifest": "kube/platform/kube-prometheus/base/kube-prometheus.gen.yaml",
     "//bazel/third_party:prometheus_operator_crds_manifest": "kube/platform/prometheus-operator-crds/base/prometheus-operator-crds.gen.yaml",
+    "//bazel/third_party:promtail": "kube/platform/promtail/base/promtail.gen.yaml",
+    "//bazel/third_party:loki": "kube/platform/loki/base/loki.gen.yaml",
+
+    # TODO: Remove
     "//bazel/third_party:vector_agent_manifest": "kube/platform/vector/components/vector-agent/vector-agent.gen.yaml",
     "//bazel/third_party:vector_aggregator_manifest": "kube/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml",
 }
@@ -59,6 +63,24 @@ helm_template(
     srcs = ["@prometheus_operator_crds//:all"],
     chart_dir = "external/prometheus_operator_crds",
     release_name = "prometheus-operator-crds",
+)
+
+helm_template(
+    name = "promtail",
+    srcs = ["@promtail//:all"],
+    chart_dir = "external/promtail",
+    namespace = "promtail",
+    release_name = "promtail",
+    values_file = "//bazel/third_party/promtail:promtail.values.yaml",
+)
+
+helm_template(
+    name = "loki",
+    srcs = ["@loki//:all"],
+    chart_dir = "external/loki",
+    namespace = "loki",
+    release_name = "loki",
+    values_file = "//bazel/third_party/loki:loki.values.yaml",
 )
 
 helm_template(

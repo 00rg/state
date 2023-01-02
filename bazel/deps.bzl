@@ -109,6 +109,26 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.prometheus_operator_crds.bazel",
     )
 
+    promtail_chart_version = "6.7.4"
+    maybe(
+        http_archive,
+        name = "promtail",
+        urls = ["https://github.com/grafana/helm-charts/releases/download/promtail-{v}/promtail-{v}.tgz".format(v = promtail_chart_version)],
+        sha256 = "c08d43dfe25a57857c3eaeb1a0b01aca45ccc77a3026e60ba776884e00f34ec7",
+        strip_prefix = "promtail",
+        build_file = "//bazel/third_party:BUILD.promtail.bazel",
+    )
+
+    loki_chart_version = "3.8.0"
+    maybe(
+        http_archive,
+        name = "loki",
+        urls = ["https://github.com/grafana/helm-charts/releases/download/helm-loki-{v}/loki-{v}.tgz".format(v = loki_chart_version)],
+        sha256 = "81fcfe9bfc7334f5feeefb0b2ff7ba489135d82da3f77a0076d650ef2c5aba6f",
+        strip_prefix = "loki",
+        build_file = "//bazel/third_party:BUILD.loki.bazel",
+    )
+
     vector_chart_version = "0.18.0"
     maybe(
         http_archive,

@@ -19,8 +19,35 @@ prometheus:
     externalUrl: http://office.00rg.com:8082/prometheus
 
 alertmanager:
+  # Note: to manage the Alertmanager config properly as a secret you need to use the
+  # alertmanagerSpec field to map in the config as a volume rather than it being specified
+  # verbatim in the config field. Could probably use a standard Kubernetes secret or the
+  # Secret Store CSI Driver and different secret backends depending on whether you're on
+  # the cloud (e.g. https://github.com/aws/secrets-store-csi-driver-provider-aws) or running
+  # locally (e.g. https://github.com/hashicorp/vault-csi-provider). Would be ideal to be able
+  # to specify the non-secret parts of the config as raw YAML in this repo (see
+  # https://github.com/machinezone/configmapsecrets).
   alertmanagerSpec:
     externalUrl: http://office.00rg.com:8082/alertmanager
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      routes:
+      - match:
+          alertname: InstanceLowMemory
+          severity: critical
+        receiver: blackhole
+      - match:
+        receiver: pagerduty
+        continue: true
+    receivers:
+    - name: blackhole
+    - name: pagerduty
 
 grafana:
   namespaceOverride: kube-prometheus
