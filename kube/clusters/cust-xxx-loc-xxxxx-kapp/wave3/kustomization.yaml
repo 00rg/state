@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
 - ../../../platform/istio-ingress/overlays/local
 - ../../../platform/kube-prometheus/overlays/local
+- ../../../platform/promtail/overlays/local
+- ../../../platform/loki/overlays/local
 - ../../../services/hello/overlays/local
 - ../../../services/httpbin/overlays/local
 

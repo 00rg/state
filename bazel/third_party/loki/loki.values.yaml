@@ -1,4 +1,5 @@
 loki:
+  auth_enabled: false
   commonConfig:
     replication_factor: 1
   storage:
@@ -8,6 +9,12 @@ test:
 minio:
   enabled: false
 monitoring:
+  # TODO: We will want to enable this later but it depends on grafana-agent-operator
+  # and at the moment we are just using promtail (grafana-agent wraps promtail and
+  # provides a bunch of other stuff I haven't figured out yet).
   selfMonitoring:
+    enabled: false
     grafanaAgent:
       installOperator: false
+  lokiCanary:
+    enabled: false

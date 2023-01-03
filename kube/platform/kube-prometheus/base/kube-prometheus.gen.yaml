@@ -196,6 +196,12 @@ data:
     [server]
     domain = ''
     root_url = http://office.00rg.com:8082/grafana
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Loki
+      type: loki
+      url: http://loki.loki:3100
 ---
 # Source: kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
 apiVersion: v1
@@ -40129,7 +40135,7 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus
       annotations:
-        checksum/config: 67118effc8f9353bdab18ef70073da1e23d06c44a017909516f943d8789a2a3e
+        checksum/config: dbd68e2655f816842d019747b20ffab7fe420aa2bbdd92e62f807899386fe308
         checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
         checksum/sc-dashboard-provider-config: b737e272aecd9db9c5efb276385287986265e8260e6d660eb351e9d8f205938f
         checksum/secret: f4fa4281e39dd65e682e314029aca7aa07679c837444559048c7950aa25ad8a5
@@ -40214,6 +40220,9 @@ spec:
               subPath: grafana.ini
             - name: storage
               mountPath: "/var/lib/grafana"
+            - name: config
+              mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
+              subPath: "datasources.yaml"
             - name: sc-dashboard-volume
               mountPath: "/tmp/dashboards"
             - name: sc-dashboard-provider

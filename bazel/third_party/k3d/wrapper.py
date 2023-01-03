@@ -18,7 +18,8 @@ _CLUSTER_NAME = os.environ.get("ORG_CLUSTER")
 
 _K3D_REGISTRY_NAME = "local-registry"
 _K3D_REGISTRY_PORT = 5555
-_WAVE_WAIT_TIME_SECS = 180
+_WAVE_WAIT_TIME_SECS = 300
+
 
 def _get_clusters():
     """Get all k3d clusters managed by this repository."""
@@ -107,12 +108,12 @@ def _run_wave_hooks(wave_info, hook_type):
             res = subprocess.run([_KUBECTL_BINARY, "get", "crd", crd], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if res.returncode == 0:
                 time_left = deadline - time.time()
-                res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd])
+                res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 if res.returncode == 0:
                     break
-                sys.exit("Error waiting for CRD {}".format(crd))
+                sys.exit("Error waiting for CRD {}: {}".format(crd, res.stdout))
             elif time.time() >= deadline:
-                sys.exit("Timed out waiting for CRD {}".format(crd))
+                sys.exit("Timed out waiting for CRD {} to exist".format(crd))
             else:
                 time.sleep(1)
 
@@ -127,11 +128,9 @@ def _run_wave_hooks(wave_info, hook_type):
         namespace = splat[0]
         deployment = splat[1]
         time_left = deadline - time.time()
-        res = subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", namespace, "--timeout={}s".format(time_left), "deployment/{}".format(deployment)],
-                             stderr=subprocess.DEVNULL)
-        if res.returncode == 0:
-            return
-        sys.exit("Error waiting for rollout of {}".format(res))
+        res = subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", namespace, "--timeout={}s".format(time_left), "deployment/{}".format(deployment)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if res.returncode != 0:
+            sys.exit("Error waiting for rollout of {}/{}: {}".format(namespace, deployment, res.stdout))
 
 
 def _kubectl_apply(dir):
@@ -155,7 +154,6 @@ def _apply_wave(wave_dir):
 
 def apply_manifests():
     """Apply the KRM manifests to the cluster."""
-
     # If the cluster directory does not contain wave subdirectories, then apply it directly.
     # Otherwise, apply each wave subdirectory in order.
     cluster_dir = "kube/clusters/{}".format(_CLUSTER_NAME)

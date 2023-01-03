@@ -32,7 +32,7 @@ stringData:
       
     
     clients:
-      - url: http://loki-gateway/loki/api/v1/push
+      - url: http://loki.loki:3100/loki/api/v1/push
     
     positions:
       filename: /run/promtail/positions.yaml
@@ -184,7 +184,7 @@ spec:
         app.kubernetes.io/name: promtail
         app.kubernetes.io/instance: promtail
       annotations:
-        checksum/config: a267e8eee09fd9eb8626581becfc6958dfc493e78118747add6e8f68ce55e70d
+        checksum/config: 89d1ab2ccec452606e7f00497201180e84e560d8dfd9970f260a8c62d5aabb5b
     spec:
       serviceAccountName: promtail
       enableServiceLinks: true

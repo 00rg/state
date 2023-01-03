@@ -58,6 +58,13 @@ grafana:
   grafana.ini:
     server:
       root_url: http://office.00rg.com:8082/grafana
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+      - name: Loki
+        type: loki
+        url: http://loki.loki:3100
 
 kube-state-metrics:
   namespaceOverride: kube-prometheus

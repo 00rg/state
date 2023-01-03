@@ -1,26 +1,4 @@
 ---
-# Source: loki/templates/loki-canary/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: loki-canary
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: canary
-  annotations:
-automountServiceAccountToken: true
----
-# Source: loki/templates/monitoring/grafana-agent.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: loki-grafana-agent
-  namespace: loki
----
 # Source: loki/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -47,7 +25,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |
-    auth_enabled: true
+    auth_enabled: false
     common:
       path_prefix: /var/loki
       replication_factor: 1
@@ -83,78 +61,6 @@ data:
         at: 250ms
         max_per_second: 20
         up_to: 3
----
-# Source: loki/templates/monitoring/grafana-agent.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: loki-grafana-agent
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - nodes
-  - nodes/proxy
-  - nodes/metrics
-  - services
-  - endpoints
-  - pods
-  - events
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingresses
-  verbs:
-  - get
-  - list
-  - watch
-- nonResourceURLs:
-  - /metrics
-  - /metrics/cadvisor
-  verbs:
-  - get
----
-# Source: loki/templates/monitoring/grafana-agent.yaml
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: loki-grafana-agent
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: loki-grafana-agent
-subjects:
-- kind: ServiceAccount
-  name: loki-grafana-agent
-  namespace: loki
----
-# Source: loki/templates/loki-canary/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: loki-canary
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: canary
-spec:
-  type: ClusterIP
-  ports:
-    - name: http-metrics
-      port: 3500
-      targetPort: http-metrics
-      protocol: TCP
-  selector:
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/component: canary
 ---
 # Source: loki/templates/service-memberlist.yaml
 apiVersion: v1
@@ -232,72 +138,6 @@ spec:
     app.kubernetes.io/instance: loki
     app.kubernetes.io/component: single-binary
 ---
-# Source: loki/templates/loki-canary/daemonset.yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: loki-canary
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: canary
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: loki
-      app.kubernetes.io/instance: loki
-      app.kubernetes.io/component: canary
-  template:
-    metadata:
-      annotations:
-      labels:
-        app.kubernetes.io/name: loki
-        app.kubernetes.io/instance: loki
-        app.kubernetes.io/component: canary
-    spec:
-      serviceAccountName: loki-canary
-      
-      securityContext:
-        fsGroup: 10001
-        runAsGroup: 10001
-        runAsNonRoot: true
-        runAsUser: 10001
-      containers:
-        - name: loki-canary
-          image: docker.io/grafana/loki-canary:2.7.0
-          imagePullPolicy: IfNotPresent
-          args:
-            - -addr=loki-gateway.loki.svc.cluster.local.
-            - -labelname=pod
-            - -labelvalue=$(POD_NAME)
-            - -user=self-monitoring
-            - -tenant-id=self-monitoring
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-              - ALL
-            readOnlyRootFilesystem: true
-          ports:
-            - name: http-metrics
-              containerPort: 3500
-              protocol: TCP
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: http-metrics
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
----
 # Source: loki/templates/single-binary/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
@@ -327,7 +167,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 0c0fa5bc2c9cc7642e4b637b29dd88426d184c5c9e33e54a0eb964f53be002ac
+        checksum/config: 87821bd5c189d36003eeacc677d8a3f4314dc02b2822375a19cb5ae4a16374de
       labels:
         app.kubernetes.io/name: loki
         app.kubernetes.io/instance: loki
@@ -406,90 +246,3 @@ spec:
         resources:
           requests:
             storage: "10Gi"
----
-# Source: loki/templates/monitoring/grafana-agent.yaml
-apiVersion: monitoring.grafana.com/v1alpha1
-kind: GrafanaAgent
-metadata:
-  name: loki
-  namespace: loki
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  serviceAccountName: loki-grafana-agent
-  enableConfigReadAPI: false
-  logs:
-    instanceSelector:
-      matchLabels:
-        app.kubernetes.io/name: loki
-        app.kubernetes.io/instance: loki
----
-# Source: loki/templates/monitoring/logs-instance.yaml
-apiVersion: monitoring.grafana.com/v1alpha1
-kind: LogsInstance
-metadata:
-  name: loki
-  namespace: loki
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  clients:
-    - url: http://loki.loki.svc.cluster.local:3100/loki/api/v1/push
-      externalLabels:
-        cluster: loki
-      tenantId: self-monitoring
-
-  podLogsNamespaceSelector: {}
-
-  podLogsSelector:
-    matchLabels:
-      app.kubernetes.io/name: loki
-      app.kubernetes.io/instance: loki
----
-# Source: loki/templates/monitoring/pod-logs.yaml
-apiVersion: monitoring.grafana.com/v1alpha1
-kind: PodLogs
-metadata:
-  name: loki
-  namespace: loki
-  labels:
-    helm.sh/chart: loki-3.8.0
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
-    app.kubernetes.io/managed-by: Helm
-spec:
-  pipelineStages:
-    - cri: { }
-  relabelings:
-    - sourceLabels:
-        - __meta_kubernetes_pod_node_name
-      targetLabel: __host__
-    - action: labelmap
-      regex: __meta_kubernetes_pod_label_(.+)
-    - action: replace
-      replacement: "loki/$1"
-      sourceLabels:
-        - __meta_kubernetes_pod_controller_name
-      targetLabel: job
-    - action: replace
-      sourceLabels:
-        - __meta_kubernetes_pod_container_name
-      targetLabel: container
-    - replacement: "loki"
-      targetLabel: cluster
-  namespaceSelector:
-    matchNames:
-      - loki
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: loki
-      app.kubernetes.io/instance: loki
