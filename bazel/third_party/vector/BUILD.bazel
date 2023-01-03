@@ -1,4 +1,0 @@
-exports_files([
-    "vector-agent.values.yaml",
-    "vector-aggregator.values.yaml",
-])

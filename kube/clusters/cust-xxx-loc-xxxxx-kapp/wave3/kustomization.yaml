@@ -3,9 +3,11 @@ kind: Kustomization
 resources:
 - ../../../platform/istio-ingress/overlays/local
 - ../../../platform/kube-prometheus/overlays/local
-# - ../../../platform/vector/overlays/local
 - ../../../services/hello/overlays/local
-# - ../../../services/goodbye/overlays/local
 - ../../../services/httpbin/overlays/local
+
+# TODO: Add back when cross-compilation is working (see links in src/rust/BUILD.bazel).
+# - ../../../services/goodbye/overlays/local
+
 components:
 - ../../../components/common-labels

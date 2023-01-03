@@ -16,10 +16,6 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:prometheus_operator_crds_manifest": "kube/platform/prometheus-operator-crds/base/prometheus-operator-crds.gen.yaml",
     "//bazel/third_party:promtail": "kube/platform/promtail/base/promtail.gen.yaml",
     "//bazel/third_party:loki": "kube/platform/loki/base/loki.gen.yaml",
-
-    # TODO: Remove
-    "//bazel/third_party:vector_agent_manifest": "kube/platform/vector/components/vector-agent/vector-agent.gen.yaml",
-    "//bazel/third_party:vector_aggregator_manifest": "kube/platform/vector/components/vector-aggregator/vector-aggregator.gen.yaml",
 }
 
 istio_operator(
@@ -81,24 +77,6 @@ helm_template(
     namespace = "loki",
     release_name = "loki",
     values_file = "//bazel/third_party/loki:loki.values.yaml",
-)
-
-helm_template(
-    name = "vector_agent_manifest",
-    srcs = ["@vector//:all"],
-    chart_dir = "external/vector",
-    namespace = "vector",
-    release_name = "vector-agent",
-    values_file = "//bazel/third_party/vector:vector-agent.values.yaml",
-)
-
-helm_template(
-    name = "vector_aggregator_manifest",
-    srcs = ["@vector//:all"],
-    chart_dir = "external/vector",
-    namespace = "vector",
-    release_name = "vector-aggregator",
-    values_file = "//bazel/third_party/vector:vector-aggregator.values.yaml",
 )
 
 update_third_party_manifests(

@@ -129,16 +129,6 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.loki.bazel",
     )
 
-    vector_chart_version = "0.18.0"
-    maybe(
-        http_archive,
-        name = "vector",
-        urls = ["https://github.com/vectordotdev/helm-charts/releases/download/vector-{v}/vector-{v}.tgz".format(v = vector_chart_version)],
-        sha256 = "2d116b627175fe61a5dbafae05be6ec49c8a74e6f794e8e1062fe9615d389bfc",
-        strip_prefix = "vector",
-        build_file = "//bazel/third_party:BUILD.vector.bazel",
-    )
-
 def org_python_dependencies():
     """Declare Python dependencies."""
 
