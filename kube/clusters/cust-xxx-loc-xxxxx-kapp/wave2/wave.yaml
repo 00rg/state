@@ -4,6 +4,6 @@ metadata:
   name: wave2
 spec:
   hooks:
-    preApply:
-      waitForCRDs:
-      - istiooperators.install.istio.io
+    preApply: {}
+      # waitForCRDs:
+      # - istiooperators.install.istio.io

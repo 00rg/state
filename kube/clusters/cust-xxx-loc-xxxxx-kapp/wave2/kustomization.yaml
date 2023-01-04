@@ -1,7 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+
+# Only resources that don't require Istio sidecar injection should be provisioned
+# in this wave as this wave provisions Istiod, the mutating webhook configuration, etc.
 resources:
 - ../../../platform/istio-base/overlays/local
-- ../../../platform/prometheus-operator-crds/overlays/local
+- ../../../platform/grafana-stack-crds/overlays/local
+
 components:
 - ../../../components/common-labels

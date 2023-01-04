@@ -2,9 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - ../../../platform/istio-ingress/overlays/local
-- ../../../platform/kube-prometheus/overlays/local
-- ../../../platform/promtail/overlays/local
-- ../../../platform/loki/overlays/local
+- ../../../platform/grafana-stack/overlays/local
 - ../../../services/hello/overlays/local
 - ../../../services/httpbin/overlays/local
 

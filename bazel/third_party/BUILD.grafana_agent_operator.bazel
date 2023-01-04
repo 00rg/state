@@ -1,0 +1,9 @@
+# Exclude CRDs that are also included in kube-prometheus otherwise Kustomize will panic.
+filegroup(
+    name = "all",
+    srcs = glob(
+         include = ["**"],
+         exclude = ["crds/monitoring.coreos.com_*.yaml"],
+    ),
+    visibility = ["//visibility:public"],
+)

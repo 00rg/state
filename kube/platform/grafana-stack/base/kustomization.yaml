@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grafana-stack
+resources:
+- namespace.yaml
+- grafana-agent-operator.gen.yaml
+- kube-prometheus.gen.yaml
+- loki.gen.yaml
+- virtual-services.yaml
+
+# Grafana agent monitoring.
+- grafana-agent.yaml
+- metrics-instance.yaml
+- kubelet-service-monitor.yaml

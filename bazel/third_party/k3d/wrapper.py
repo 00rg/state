@@ -107,15 +107,20 @@ def _run_wave_hooks(wave_info, hook_type):
         while True:
             res = subprocess.run([_KUBECTL_BINARY, "get", "crd", crd], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             if res.returncode == 0:
-                time_left = deadline - time.time()
-                res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "crd", crd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                if res.returncode == 0:
-                    break
-                sys.exit("Error waiting for CRD {}: {}".format(crd, res.stdout))
+                print("CRD {} exists".format(crd))
+                break
             elif time.time() >= deadline:
                 sys.exit("Timed out waiting for CRD {} to exist".format(crd))
             else:
                 time.sleep(1)
+
+    # By default, we wait for all CRDs to be ready during the pre-apply phase.
+    if hook_type == "preApply":
+        print("Waiting for all CRDs to be established")
+        time_left = deadline - time.time()
+        res = subprocess.run([_KUBECTL_BINARY, "wait", "--for=condition=established", "--timeout={}s".format(time_left), "--all", "crd"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if res.returncode != 0:
+            sys.exit("Error waiting for CRDs to be established: {}".format(res.stdout))
 
     try:
         wait_for_rollouts = wave_info["spec"]["hooks"][hook_type]["waitForRollouts"]
@@ -127,10 +132,19 @@ def _run_wave_hooks(wave_info, hook_type):
         splat = res.split("/")
         namespace = splat[0]
         deployment = splat[1]
-        time_left = deadline - time.time()
-        res = subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", namespace, "--timeout={}s".format(time_left), "deployment/{}".format(deployment)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if res.returncode != 0:
-            sys.exit("Error waiting for rollout of {}/{}: {}".format(namespace, deployment, res.stdout))
+
+        while True:
+            res = subprocess.run([_KUBECTL_BINARY, "get", "deployment", deployment, "-n", namespace], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            if res.returncode == 0:
+                time_left = deadline - time.time()
+                res = subprocess.run([_KUBECTL_BINARY, "rollout", "status", "-n", namespace, "--timeout={}s".format(time_left), "deployment/{}".format(deployment)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                if res.returncode != 0:
+                    sys.exit("Error waiting for rollout of {}/{}: {}".format(namespace, deployment, res.stdout))
+                break
+            elif time.time() >= deadline:
+                sys.exit("Timed out waiting for deployment {}/{} to exist".format(namespace, deployment))
+            else:
+                time.sleep(1)
 
 
 def _kubectl_apply(dir):

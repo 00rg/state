@@ -5,18 +5,18 @@ load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_python//python:defs.bzl", "py_binary")
 
-def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None, include_crds = False):
+# TODO: Change these rules to take a filegroup rather than a srcs, etc.
+def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None):
     """
-    Generates KRM manifests by performing a Helm template operation.
+    Runs Helm template operation to generate a single output manifest.
 
     Args:
       name: Target name
       chart_dir: Path to chart directory
       release_name: Helm release name
-      srcs: Files to be added to genrule srcs
+      srcs: Files to be added to rule srcs
       namespace: Namespace to be used
       values_file: Label name of the chart values file
-      include_crds: Whether CRDs should also be exported
     """
 
     args = [
@@ -24,6 +24,7 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
         "template",
         release_name,
         chart_dir,
+        "--no-hooks",
     ]
 
     if values_file:
@@ -32,9 +33,6 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
 
     if namespace:
         args.extend(["--namespace", namespace])
-
-    if include_crds:
-        args.append("--include-crds")
 
     # Stderr is silenced due to https://github.com/helm/helm/issues/7019. We could
     # filter it through grep but then the grep binary would need to be a dependency
@@ -46,6 +44,36 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
         srcs = srcs,
         outs = ["{}.yaml".format(name)],
         tools = ["@helm//:helm"],
+        cmd = cmd,
+    )
+
+def helm_chart_crds(name, chart_dir, srcs = []):
+    """
+    Extracts Helm chart CRD manifests into a single output manifest.
+
+    Args:
+      name: Target name
+      chart_dir: Path to chart directory
+      srcs: Files to be added to rule srcs
+    """
+    out = "{}.yaml".format(name)
+
+    cmd = """
+    for f in {chart_dir}/crds/*.y*ml; do
+      cat $$f >> $@
+      if [[ "$$(tail -1 $$f)" != "---" ]]; then
+        printf '\n---\n' >> $@
+      fi
+    done
+
+    # Replace blank lines (in-place, macOS/Linux compatible).
+    sed -i.bak '/^[[:space:]]*$$/d' $@
+    """.format(chart_dir = chart_dir)
+
+    native.genrule(
+        name = name,
+        srcs = srcs,
+        outs = [out],
         cmd = cmd,
     )
 
@@ -186,19 +214,19 @@ def _k3d_cluster_targets(cluster_name):
             ],
         )
 
-def k3d_targets(cluster_dirs):
+def k3d_targets(include_dirs):
     """
     Creates k3d-related targets.
 
     Args:
-      cluster_dirs: Cluster directory glob inclusions
+      include_dirs: Cluster directory glob inclusions
     """
 
     # Names of clusters that are designed to run locally via k3d.
     clusters = [
         paths.basename(d)
         for d in native.glob(
-            include = cluster_dirs,
+            include = include_dirs,
             exclude_directories = 0,
         )
     ]

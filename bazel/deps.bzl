@@ -99,24 +99,14 @@ def org_manifest_dependencies():
         ],
     )
 
-    prometheus_operator_crds_chart_version = "0.1.0"
+    grafana_agent_operator_chart_version = "0.2.8"
     maybe(
         http_archive,
-        name = "prometheus_operator_crds",
-        urls = ["https://github.com/prometheus-community/helm-charts/releases/download/prometheus-operator-crds-{v}/prometheus-operator-crds-{v}.tgz".format(v = prometheus_operator_crds_chart_version)],
-        sha256 = "1ae1b64279ad7db1f413d93357820d7918ddef74eb0bfbeda595d520a5042cc8",
-        strip_prefix = "prometheus-operator-crds",
-        build_file = "//bazel/third_party:BUILD.prometheus_operator_crds.bazel",
-    )
-
-    promtail_chart_version = "6.7.4"
-    maybe(
-        http_archive,
-        name = "promtail",
-        urls = ["https://github.com/grafana/helm-charts/releases/download/promtail-{v}/promtail-{v}.tgz".format(v = promtail_chart_version)],
-        sha256 = "c08d43dfe25a57857c3eaeb1a0b01aca45ccc77a3026e60ba776884e00f34ec7",
-        strip_prefix = "promtail",
-        build_file = "//bazel/third_party:BUILD.promtail.bazel",
+        name = "grafana_agent_operator",
+        urls = ["https://github.com/grafana/helm-charts/releases/download/grafana-agent-operator-{v}/grafana-agent-operator-{v}.tgz".format(v = grafana_agent_operator_chart_version)],
+        sha256 = "9022509c0e9075c9f103a11f5ee3109d0250a3f756d09497f94b15c47fd7ff42",
+        strip_prefix = "grafana-agent-operator",
+        build_file = "//bazel/third_party:BUILD.grafana_agent_operator.bazel",
     )
 
     loki_chart_version = "3.8.0"
