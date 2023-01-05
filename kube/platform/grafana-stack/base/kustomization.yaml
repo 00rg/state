@@ -1,6 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: grafana-stack
+
+# Note: Don't blanket set the namespace across all resources as some such as the
+# Prometheus exporters rely on being placed in other namespaces such as kube-system.
+
 resources:
 - namespace.yaml
 - grafana-agent-operator.gen.yaml
@@ -8,7 +11,26 @@ resources:
 - loki.gen.yaml
 - virtual-services.yaml
 
-# Grafana agent monitoring.
-- grafana-agent.yaml
-- metrics-instance.yaml
-- kubelet-service-monitor.yaml
+# Custom resources reconciled by grafana-agent-operator.
+- default-grafana-agent.yaml
+- default-metrics-instance.yaml
+- test-service-monitor.yaml
+
+patches:
+# Add the grafana-agent-metrics-instance=default label to all ServiceMonitors
+# as this links it to the default MetricsInstance and GrafanaAgent.
+- path: adopt-service-monitor.patch.yaml
+  target:
+    group: monitoring.coreos.com
+    kind: ServiceMonitor
+
+# Inject the grafana-stack namespace into all resources in the grafana-agent-operator
+# and loki charts as they don't template the namespace properly. See following issues:
+# https://github.com/grafana/loki/issues/8044
+# https://github.com/grafana/helm-charts/issues/2098
+- path: set-namespace.patch.yaml
+  target:
+    labelSelector: "app.kubernetes.io/name=grafana-agent-operator"
+- path: set-namespace.patch.yaml
+  target:
+    labelSelector: "app.kubernetes.io/name=loki"

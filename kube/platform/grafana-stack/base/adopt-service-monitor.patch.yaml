@@ -1,0 +1,3 @@
+- op: add
+  path: /metadata/labels/grafana-agent-metrics-instance
+  value: default

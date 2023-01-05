@@ -5,6 +5,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: grafana-office
+  namespace: grafana-stack
 spec:
   hosts:
   - office.00rg.com
@@ -26,6 +27,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: alertmanager-office
+  namespace: grafana-stack
 spec:
   hosts:
   - office.00rg.com
@@ -49,6 +51,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: prometheus-office
+  namespace: grafana-stack
 spec:
   hosts:
   - office.00rg.com

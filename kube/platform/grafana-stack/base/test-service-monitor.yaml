@@ -1,10 +1,10 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  labels:
-    instance: primary
-  name: kubelet-monitor
+  name: test
   namespace: grafana-stack
+  labels:
+    grafana-agent-metrics-instance: default
 spec:
   endpoints:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
