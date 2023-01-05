@@ -8,6 +8,7 @@ metadata:
 spec:
   remoteWrite:
   - url: http://prometheus-operated:9090/api/v1/write
+
   # Reconcile all ServiceMonitors across all namespaces with a matching label.
   serviceMonitorNamespaceSelector: {}
   serviceMonitorSelector:

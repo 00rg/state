@@ -1,0 +1,15 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: PodLogs
+metadata:
+  name: default-pod-logs
+  namespace: grafana-stack
+  labels:
+    grafana-agent-logs-instance: default
+spec:
+  pipelineStages:
+    - docker: {}
+  namespaceSelector:
+    any: true
+    # matchNames: [default]
+  selector:
+    matchLabels: {}
