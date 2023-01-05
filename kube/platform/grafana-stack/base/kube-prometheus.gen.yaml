@@ -202,6 +202,89 @@ data:
     - name: Loki
       type: loki
       url: http://loki:3100
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    - disableDeletion: true
+      editable: false
+      name: default
+      options:
+        path: /var/lib/grafana/dashboards/default
+      type: file
+  download_dashboards.sh: |
+    #!/usr/bin/env sh
+    set -euf
+    mkdir -p /var/lib/grafana/dashboards/default
+  
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/7645/revisions/146/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-control-plane-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/7639/revisions/146/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-mesh-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/11829/revisions/146/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-performance-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/7636/revisions/146/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-service-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/13277/revisions/103/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-wasm-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/7630/revisions/146/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/istio-workload-dashboard.json"
+---
+# Source: kube-prometheus-stack/charts/grafana/templates/dashboards-json-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-prometheus-grafana-dashboards-default
+  namespace: grafana-stack
+  labels:
+    helm.sh/chart: grafana-6.48.0
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: kube-prometheus
+    app.kubernetes.io/version: "9.3.1"
+    app.kubernetes.io/managed-by: Helm
+    dashboard-provider: default
+data:
+  {}
 ---
 # Source: kube-prometheus-stack/templates/grafana/configmaps-datasources.yaml
 apiVersion: v1
@@ -40135,8 +40218,8 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus
       annotations:
-        checksum/config: 783108e26a5a560ebf62320e3f47500ec8fe64df0075507ad03cedfe64230a1e
-        checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+        checksum/config: 2a61d521d75a3b7bae7ed7ada82c26011f781b7cfbce8037ccd7f9d617fc359a
+        checksum/dashboards-json-config: 07c4e3523be3421aab23eac2cd1cbdb6f5a4394bdf1543e4e6ce0c4e04d08de2
         checksum/sc-dashboard-provider-config: d64745cc514746e9d4e87852e5b77c0ce3cf375e2aa53b860bd5ffc967c605a3
         checksum/secret: d60d4022b25a2787ab6e65a9781c5020050ab5a5df4163e4c9a333830ed4814b
     spec:
@@ -40147,6 +40230,19 @@ spec:
         fsGroup: 472
         runAsGroup: 472
         runAsUser: 472
+      initContainers:
+        - name: download-dashboards
+          image: "curlimages/curl:7.85.0"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: [ "-c", "mkdir -p /var/lib/grafana/dashboards/default && /bin/sh -x /etc/grafana/download_dashboards.sh" ]
+          env:
+          volumeMounts:
+            - name: config
+              mountPath: "/etc/grafana/download_dashboards.sh"
+              subPath: download_dashboards.sh
+            - name: storage
+              mountPath: "/var/lib/grafana"
       enableServiceLinks: true
       containers:
         - name: grafana-sc-dashboard
@@ -40223,6 +40319,9 @@ spec:
             - name: config
               mountPath: "/etc/grafana/provisioning/datasources/datasources.yaml"
               subPath: "datasources.yaml"
+            - name: config
+              mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
+              subPath: "dashboardproviders.yaml"
             - name: sc-dashboard-volume
               mountPath: "/tmp/dashboards"
             - name: sc-dashboard-provider
@@ -40268,6 +40367,9 @@ spec:
         - name: config
           configMap:
             name: kube-prometheus-grafana
+        - name: dashboards-default
+          configMap:
+            name: kube-prometheus-grafana-dashboards-default
         - name: storage
           emptyDir: {}
         - name: sc-dashboard-volume

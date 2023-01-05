@@ -3,11 +3,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: envoy-stats-monitor
-  namespace: istio-system
+  namespace: grafana-stack
   labels:
     grafana-agent-metrics-instance: istio
-    monitoring: istio-proxies
-    release: istio
 spec:
   selector:
     matchExpressions:

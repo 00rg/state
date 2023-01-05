@@ -78,6 +78,50 @@ grafana:
         type: loki
         url: http://loki:3100
 
+  dashboardProviders:
+   dashboardproviders.yaml:
+     apiVersion: 1
+     providers:
+     - name: default
+       type: file
+       disableDeletion: true
+       editable: false
+       options:
+         path: /var/lib/grafana/dashboards/default
+
+  dashboards:
+    default:
+      # Istio Control Plane Dashboard for Istio 1.16.1
+      istio-control-plane-dashboard:
+        gnetId: 7645
+        revision: 146
+        datasource: Prometheus
+      # Istio Mesh Dashboard for Istio 1.16.1
+      istio-mesh-dashboard:
+        gnetId: 7639
+        revision: 146
+        datasource: Prometheus
+      # Istio Service Dashboard for Istio 1.16.1
+      istio-service-dashboard:
+        gnetId: 7636
+        revision: 146
+        datasource: Prometheus
+      # Istio Workload Dashboard for Istio 1.16.1
+      istio-workload-dashboard:
+        gnetId: 7630
+        revision: 146
+        datasource: Prometheus
+      # Istio Performance Dashboard for Istio 1.16.1
+      istio-performance-dashboard:
+        gnetId: 11829
+        revision: 146
+        datasource: Prometheus
+      # Istio WASM Extension Dashboard for Istio 1.16.1
+      istio-wasm-dashboard:
+        gnetId: 13277
+        revision: 103
+        datasource: Prometheus
+
 kube-state-metrics:
   namespaceOverride: grafana-stack
 

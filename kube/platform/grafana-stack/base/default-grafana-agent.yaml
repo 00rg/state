@@ -1,7 +1,7 @@
 apiVersion: monitoring.grafana.com/v1alpha1
 kind: GrafanaAgent
 metadata:
-  name: grafana-agent-default
+  name: default-grafana-agent
   namespace: grafana-stack
 spec:
   image: grafana/agent:v0.30.1

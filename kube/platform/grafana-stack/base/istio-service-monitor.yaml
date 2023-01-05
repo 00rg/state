@@ -2,20 +2,18 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: istio-component-monitor
-  namespace: istio-system
+  name: istiod-monitor
+  namespace: grafana-stack
   labels:
     grafana-agent-metrics-instance: istio
-    monitoring: istio-components
-    release: istio
 spec:
-  jobLabel: istio
+  jobLabel: istiod
   targetLabels: [app]
+  namespaceSelector:
+    any: true
   selector:
     matchExpressions:
     - {key: istio, operator: In, values: [pilot]}
-  namespaceSelector:
-    any: true
   endpoints:
   - port: http-monitoring
     interval: 15s
