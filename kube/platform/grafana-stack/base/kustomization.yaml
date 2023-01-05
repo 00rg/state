@@ -14,7 +14,10 @@ resources:
 # Custom resources reconciled by grafana-agent-operator.
 - default-grafana-agent.yaml
 - default-metrics-instance.yaml
-- test-service-monitor.yaml
+- istio-grafana-agent.yaml
+- istio-metrics-instance.yaml
+- istio-service-monitor.yaml
+- istio-pod-monitor.yaml
 
 patches:
 # Add the grafana-agent-metrics-instance=default label to all ServiceMonitors

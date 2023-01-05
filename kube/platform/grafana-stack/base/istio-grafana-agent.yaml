@@ -1,0 +1,19 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: GrafanaAgent
+metadata:
+  name: grafana-agent-istio
+  namespace: grafana-stack
+spec:
+  image: grafana/agent:v0.30.1
+  logLevel: info
+  serviceAccountName: grafana-agent
+  metrics:
+    instanceSelector:
+      matchLabels:
+        grafana-agent: istio
+    externalLabels:
+      test: yes-i-am-a-test2
+  logs:
+    instanceSelector:
+      matchLabels:
+        grafana-agent: istio

@@ -1,0 +1,27 @@
+apiVersion: monitoring.grafana.com/v1alpha1
+kind: MetricsInstance
+metadata:
+  name: metrics-instance-istio
+  namespace: grafana-stack
+  labels:
+    grafana-agent: istio
+spec:
+  remoteWrite:
+  - url: http://prometheus-operated:9090/api/v1/write
+  # Reconcile all ServiceMonitors across all namespaces with a matching label.
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      grafana-agent-metrics-instance: istio
+
+  # Reconcile all PodMonitors across all namespaces with a matching label.
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector:
+    matchLabels:
+      grafana-agent-metrics-instance: istio
+
+  # Reconcile all Probes across all namespaces with a matching label.
+  probeNamespaceSelector: {}
+  probeSelector:
+    matchLabels:
+      grafana-agent-metrics-instance: istio

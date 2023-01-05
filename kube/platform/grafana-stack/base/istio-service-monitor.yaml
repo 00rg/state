@@ -1,0 +1,21 @@
+# Inspired by https://github.com/istio/istio/blob/c48ce2e7777dd268c3aa73e2ce122820da3c52a0/samples/addons/extras/prometheus-operator.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istio-component-monitor
+  namespace: istio-system
+  labels:
+    grafana-agent-metrics-instance: istio
+    monitoring: istio-components
+    release: istio
+spec:
+  jobLabel: istio
+  targetLabels: [app]
+  selector:
+    matchExpressions:
+    - {key: istio, operator: In, values: [pilot]}
+  namespaceSelector:
+    any: true
+  endpoints:
+  - port: http-monitoring
+    interval: 15s
