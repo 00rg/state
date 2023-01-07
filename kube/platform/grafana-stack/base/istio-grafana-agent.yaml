@@ -17,3 +17,7 @@ spec:
     instanceSelector:
       matchLabels:
         grafana-agent: istio
+  podMetadata:
+    annotations:
+      # As with Prometheus, we don't inject the Istio sidecar into grafana-agent.
+      sidecar.istio.io/inject: "false"

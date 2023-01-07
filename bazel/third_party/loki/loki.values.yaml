@@ -4,17 +4,27 @@ loki:
     replication_factor: 1
   storage:
     type: 'filesystem'
+
+  # Enable aggregation of Istio and application metrics.
+  podAnnotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "3100"
+    prometheus.io/scrape: "true"
 test:
   enabled: false
 minio:
   enabled: false
 monitoring:
-  # TODO: We will want to enable this later but it depends on grafana-agent-operator
-  # and at the moment we are just using promtail (grafana-agent wraps promtail and
-  # provides a bunch of other stuff I haven't figured out yet).
+  # Disable the chart's self-monitoring feature as we deploy our own GrafanaAgent,
+  # MetricsInstance, LogsInstance, and PodLogs resources that are configured to forward
+  # logs from the Loki pods. Loki PrometheusRules will be rendered and get picked
+  # up by the prometheus-operator and the ServiceMonitor will be rendered and get picked
+  # up by the grafana-agent-operator.
   selfMonitoring:
     enabled: false
     grafanaAgent:
       installOperator: false
+  serviceMonitor:
+    enabled: false
   lokiCanary:
     enabled: false

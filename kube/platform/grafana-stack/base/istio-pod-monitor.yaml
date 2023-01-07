@@ -1,4 +1,8 @@
-# Inspired by https://github.com/istio/istio/blob/c48ce2e7777dd268c3aa73e2ce122820da3c52a0/samples/addons/extras/prometheus-operator.yaml
+# Inspired by https://github.com/istio/istio/blob/c48ce2e7777dd268c3aa73e2ce122820da3c52a0/samples/addons/extras/prometheus-operator.yaml.
+# The pod metrics endpoint below specifies a path of /metrics rather than /stats/prometheus
+# as Istio seems to support both and /stats/prometheus doesn't work on the istiod pod whereas
+# /metrics works on istiod, sidecars, and gateways. The container name regex has also been
+# modified to include "discovery" which is the name of the istiod container.
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -14,12 +18,12 @@ spec:
     any: true
   jobLabel: envoy-stats
   podMetricsEndpoints:
-  - path: /stats/prometheus
+  - path: /metrics
     interval: 15s
     relabelings:
     - action: keep
       sourceLabels: [__meta_kubernetes_pod_container_name]
-      regex: "istio-proxy"
+      regex: "istio-proxy|discovery"
     - action: keep
       sourceLabels: [__meta_kubernetes_pod_annotationpresent_prometheus_io_scrape]
     - sourceLabels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]

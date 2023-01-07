@@ -20,3 +20,8 @@ spec:
     sidecarInjectorWebhook:
       # Inject by default.
       enableNamespacesByDefault: true
+    meshConfig:
+      # Disable tracing for now.
+      enableTracing: false
+      defaultConfig:
+        tracing: {}

@@ -81,6 +81,10 @@ helm_chart_crds(
 helm_template(
     name = "loki_manifest",
     srcs = ["@loki//:all"],
+    api_versions = [
+        "monitoring.coreos.com/v1/PrometheusRule",
+        "monitoring.coreos.com/v1/ServiceMonitor",
+    ],
     chart_dir = "external/loki",
     namespace = "grafana-stack",
     release_name = "loki",

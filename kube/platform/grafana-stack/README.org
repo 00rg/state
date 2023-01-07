@@ -1,0 +1,14 @@
+* Grafana Stack
+** Prometheus Scraping of Istio Mesh
+There are a quite few options as to how we configure Prometheus (or the "Prometheus-lite" Grafana agents) to scrape the Istio service mesh.
+
+To scrape the Istiod control plane we deploy a ServiceMonitor resource that defines the scrape configuration for the Istiod service (as described [[https://istio.io/latest/docs/ops/integrations/prometheus/#option-2-customized-scraping-configurations][here]]). We are just following the ServiceMonitor-based approach rather than using raw Prometheus config. The Istio project provides Prometheus Operator CRs for configuring scraping [[https://github.com/istio/istio/blob/648e146f7bf8838ae7a4bd802887e71c8922ebdf/samples/addons/extras/prometheus-operator.yaml][here]]. This approach is inline with the approach recommended in [[https://www.manning.com/books/istio-in-action][Istio in Action]].
+
+It would be preferrable to scrape the control plane in the same way that we scrape the data plane. The problem is that Istiod exposes metrics on =/metrics= rather than =/stats/prometheus= which is what our PodMonitor expects. (When I get better at Prometheus I'll update the PodMonitor to work with the control plane - ideally, by respecting the =prometheus.io/path= annotation key.)
+
+In our case, since we are using the Grafana Agent, the Grafana Agent Operator picks up the Istiod ServiceMonitor and scapes the Istiod service. It then remote writes to the central Prometheus instance deployed by Prometheus Operator.
+
+** Links
+- https://discuss.istio.io/t/istio-mtls-and-pod-ip-port/7537/6
+- https://superorbital.io/journal/istio-metrics-merging/
+- https://docs.google.com/document/d/1TTeN4MFmh4aUYYciR4oDBTtJsxl5-T5Tu3m3mGEdSo8/view#

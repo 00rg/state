@@ -6,7 +6,7 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_python//python:defs.bzl", "py_binary")
 
 # TODO: Change these rules to take a filegroup rather than a srcs, etc.
-def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None):
+def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None, api_versions = []):
     """
     Runs Helm template operation to generate a single output manifest.
 
@@ -17,6 +17,7 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
       srcs: Files to be added to rule srcs
       namespace: Namespace to be used
       values_file: Label name of the chart values file
+      api_versions: Additional API versions to be added to Capabilities.APIVersions
     """
 
     args = [
@@ -33,6 +34,9 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
 
     if namespace:
         args.extend(["--namespace", namespace])
+
+    for v in api_versions:
+        args.extend(["--api-versions", v])
 
     # Stderr is silenced due to https://github.com/helm/helm/issues/7019. We could
     # filter it through grep but then the grep binary would need to be a dependency

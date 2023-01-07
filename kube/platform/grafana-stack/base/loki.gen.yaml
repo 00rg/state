@@ -168,6 +168,9 @@ spec:
     metadata:
       annotations:
         checksum/config: 87821bd5c189d36003eeacc677d8a3f4314dc02b2822375a19cb5ae4a16374de
+        prometheus.io/path: /metrics
+        prometheus.io/port: "3100"
+        prometheus.io/scrape: "true"
       labels:
         app.kubernetes.io/name: loki
         app.kubernetes.io/instance: loki
@@ -246,3 +249,168 @@ spec:
         resources:
           requests:
             storage: "10Gi"
+---
+# Source: loki/templates/monitoring/prometheus-alerts.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    helm.sh/chart: loki-3.8.0
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+  name: loki-alerts
+  namespace: grafana-stack
+spec:
+  groups:    
+    - name: loki_alerts
+      rules:
+        - alert: LokiRequestErrors
+          annotations:
+            message: |
+              {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
+          expr: |
+            100 * sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[1m])) by (namespace, job, route)
+              /
+            sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+              > 10
+          for: 15m
+          labels:
+            severity: critical
+        - alert: LokiRequestPanics
+          annotations:
+            message: |
+              {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}% increase of panics.
+          expr: |
+            sum(increase(loki_panic_total[10m])) by (namespace, job) > 0
+          labels:
+            severity: critical
+        - alert: LokiRequestLatency
+          annotations:
+            message: |
+              {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
+          expr: |
+            namespace_job_route:loki_request_duration_seconds:99quantile{route!~"(?i).*tail.*"} > 1
+          for: 15m
+          labels:
+            severity: critical
+        - alert: LokiTooManyCompactorsRunning
+          annotations:
+            message: |
+              {{ $labels.namespace }} has had {{ printf "%.0f" $value }} compactors running for more than 5m. Only one compactor should run at a time.
+          expr: |
+            sum(loki_boltdb_shipper_compactor_running) by (namespace) > 1
+          for: 5m
+          labels:
+            severity: warning
+    - name: loki_canaries_alerts
+      rules:
+        - alert: LokiCanaryLatency
+          annotations:
+            message: |
+              {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
+          expr: |
+            histogram_quantile(0.99, sum(rate(loki_canary_response_latency_seconds_bucket[5m])) by (le, namespace, cluster)) > 5
+          for: 15m
+          labels:
+            severity: warning
+---
+# Source: loki/templates/monitoring/prometheus-rules.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    helm.sh/chart: loki-3.8.0
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+  name: loki-rules
+  namespace: grafana-stack
+spec:
+  groups:    
+    - name: loki_rules
+      rules:
+        - expr: histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, job))
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds:99quantile
+        - expr: histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, job))
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds:50quantile
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (job) / sum(rate(loki_request_duration_seconds_count[1m]))
+            by (job)
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds:avg
+        - expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job)
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds_bucket:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (job)
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds_sum:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_count[1m])) by (job)
+          labels:
+            cluster: loki
+          record: job:loki_request_duration_seconds_count:sum_rate
+        - expr: histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, job, route))
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds:99quantile
+        - expr: histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, job, route))
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds:50quantile
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (job, route) / sum(rate(loki_request_duration_seconds_count[1m]))
+            by (job, route)
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds:avg
+        - expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, job, route)
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds_bucket:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (job, route)
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds_sum:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_count[1m])) by (job, route)
+          labels:
+            cluster: loki
+          record: job_route:loki_request_duration_seconds_count:sum_rate
+        - expr: histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, namespace, job, route))
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds:99quantile
+        - expr: histogram_quantile(0.50, sum(rate(loki_request_duration_seconds_bucket[1m]))
+            by (le, namespace, job, route))
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds:50quantile
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (namespace, job, route)
+            / sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds:avg
+        - expr: sum(rate(loki_request_duration_seconds_bucket[1m])) by (le, namespace, job,
+            route)
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds_bucket:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_sum[1m])) by (namespace, job, route)
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds_sum:sum_rate
+        - expr: sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+          labels:
+            cluster: loki
+          record: namespace_job_route:loki_request_duration_seconds_count:sum_rate

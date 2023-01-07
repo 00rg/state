@@ -18,24 +18,25 @@ resources:
 - default-pod-logs.yaml
 - istio-grafana-agent.yaml
 - istio-metrics-instance.yaml
-- istio-service-monitor.yaml
 - istio-pod-monitor.yaml
+- istio-prometheus-rule.yaml
 
 patches:
-# Add the grafana-agent-metrics-instance=default label to all ServiceMonitors
-# as this links it to the default MetricsInstance and GrafanaAgent.
-- path: adopt-service-monitor.patch.yaml
-  target:
-    group: monitoring.coreos.com
-    kind: ServiceMonitor
-
 # Inject the grafana-stack namespace into all resources in the grafana-agent-operator
 # and loki charts as they don't template the namespace properly. See following issues:
 # https://github.com/grafana/loki/issues/8044
 # https://github.com/grafana/helm-charts/issues/2098
-- path: set-namespace.patch.yaml
+- path: patches/set-namespace.yaml
   target:
     labelSelector: "app.kubernetes.io/name=grafana-agent-operator"
-- path: set-namespace.patch.yaml
+- path: patches/set-namespace.yaml
   target:
     labelSelector: "app.kubernetes.io/name=loki"
+
+# Add the grafana-agent-metrics-instance=default label to all remaining ServiceMonitors
+# (which should just be the single one for the Prometheus instance) as this links it to
+# the default MetricsInstance and GrafanaAgent.
+- path: patches/adopt-service-monitor.yaml
+  target:
+    group: monitoring.coreos.com
+    kind: ServiceMonitor
