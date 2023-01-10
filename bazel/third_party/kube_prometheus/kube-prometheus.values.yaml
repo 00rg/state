@@ -58,18 +58,7 @@ prometheus:
       matchLabels: {}
 
     # Don't inject the Prometheus instance with the Istio sidecar. While this does seem to work,
-    # I've seen quite a bit of advice against it. E.g., in the Istio documentation here
-    # https://istio.io/latest/docs/ops/integrations/prometheus/#tls-settings they mention:
-    #
-    #    However, the sidecar should not intercept requests for Prometheus because Prometheus’s
-    #    model of direct endpoint access is incompatible with Istio’s sidecar proxy model.
-    #
-    # And in https://superorbital.io/journal/istio-metrics-merging they mention:
-    #
-    #    Note: while you can still find people suggesting the use of an Istio sidecar being added
-    #    to Prometheus to enable mTLS scraping, that approach is no longer recommended or necessary,
-    #    do not do this! (read on for a full solution).
-    #
+    # I've seen quite a bit of advice against it. See documentation in grafana-stack/README.org.
     # Note also that we allow the ServiceMonitor for the Prometheus instance to be generated
     # (via grafana-stack/base/kustomization.yaml). Since the Prometheus pods aren't injected with
     # the Istio sidecar, we can't rely on the general Istio PodMonitor to scrape Prometheus itself.

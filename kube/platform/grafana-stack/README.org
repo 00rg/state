@@ -1,12 +1,34 @@
 * Grafana Stack
-** Prometheus Scraping of Istio Mesh
-There are a quite few options as to how we configure Prometheus (or the "Prometheus-lite" Grafana agents) to scrape the Istio service mesh.
+** Prometheus Scraping
+There are many different options when it comes to configuring Prometheus (or the "Prometheus-lite" Grafana agents) scraping when a service mesh is involved.
 
-To scrape the Istiod control plane we deploy a ServiceMonitor resource that defines the scrape configuration for the Istiod service (as described [[https://istio.io/latest/docs/ops/integrations/prometheus/#option-2-customized-scraping-configurations][here]]). We are just following the ServiceMonitor-based approach rather than using raw Prometheus config. The Istio project provides Prometheus Operator CRs for configuring scraping [[https://github.com/istio/istio/blob/648e146f7bf8838ae7a4bd802887e71c8922ebdf/samples/addons/extras/prometheus-operator.yaml][here]]. This approach is inline with the approach recommended in [[https://www.manning.com/books/istio-in-action][Istio in Action]].
+We take the approach described [[https://istio.io/latest/docs/ops/integrations/prometheus/#option-2-customized-scraping-configurations][here]], [[https://docs.google.com/document/d/1TTeN4MFmh4aUYYciR4oDBTtJsxl5-T5Tu3m3mGEdSo8/view][here]] and in the [[https://www.manning.com/books/istio-in-action][Istio in Action]] book where Istio injects Prometheus annotations that inform a PodMonitor on how to scrape the pod. The only difference between our approach and the approach described in these links is that we use the same PodMonitor to scrape both the Istio control plane and the data plan (yet to see why we wouldn't). The annotations look as follows:
 
-It would be preferrable to scrape the control plane in the same way that we scrape the data plane. The problem is that Istiod exposes metrics on =/metrics= rather than =/stats/prometheus= which is what our PodMonitor expects. (When I get better at Prometheus I'll update the PodMonitor to work with the control plane - ideally, by respecting the =prometheus.io/path= annotation key.)
+#+begin_src yaml
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /stats/prometheus
+  prometheus.io/port: "15020"
+#+end_src
 
-In our case, since we are using the Grafana Agent, the Grafana Agent Operator picks up the Istiod ServiceMonitor and scapes the Istiod service. It then remote writes to the central Prometheus instance deployed by Prometheus Operator.
+The annotations injected by Istio will reference a port (typically 15020) and path (typically =/stats/prometheus=) that is handled by the sidecar to return Istio and Envoy metrics. If the Istio webhook notices that a pod already comes with these annotations it configures the sidecar to aggregate and return the application metrics and the Istio/Envoy metrics.
+
+The single PodMonitor resource created by this package configures this scraping to occur across the entire mesh. Any workload injected with an Istio sidecar only needs to expose its application metrics and reference them via Prometheus annotations on its pods. The Istio sidecar injection process will handle the rest. No ServiceMonitors or additional PodMonitors need to be created in this case.
+
+Currently, the only workloads NOT injected with an Istio sidecar are those in the =kube-system= namespace (which Istio ignores by default) and the Prometheus and Grafana agent workloads which the community seems to recommend against being injected. E.g. the [[https://istio.io/latest/docs/ops/integrations/prometheus/#tls-settings][Istio documentation]] mentions:
+
+#+begin_quote
+  However, the sidecar should not intercept requests for Prometheus because Prometheus’s model of direct endpoint access is incompatible with Istio’s sidecar proxy model.
+#+end_quote
+
+And [[https://superorbital.io/journal/istio-metrics-merging][this really good article]] on Istio monitoring with Prometheus mentions:
+
+#+begin_quote
+  Note: while you can still find people suggesting the use of an Istio sidecar being added to Prometheus to enable mTLS scraping, that approach is no longer recommended or necessary, do not do this! (read on for a full solution).
+#+end_quote
+
+In summary, all scraping of Istio-injected workloads is handled by a central PodMonitor that is reconciled by the default Grafana metrics agents which then remote write these metrics to a central Prometheus instance. All scraping of non-Istio-injected workloads is handled by ServiceMonitors that are also reconciled by the default Grafana metrics agents and remote written to the central Prometheus instance.
+
+We could (and may still) take the approach that the entire =grafana-stack= namespace is not injected with Istio sidecars. This would establish a pattern where workloads inside the =grafana-stack= namespace require ServiceMonitors while workloads outside could rely on the central Istio PodMonitor to configure aggregated scraping. Still unsure of what benefits this would have and what impact it would have on eventually enabling strict MTLS, exposing Grafana, etc, to the office ingress gateway, etc.
 
 ** Links
 - https://discuss.istio.io/t/istio-mtls-and-pod-ip-port/7537/6
