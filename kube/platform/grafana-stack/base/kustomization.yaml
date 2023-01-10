@@ -20,6 +20,7 @@ resources:
 - istio-metrics-instance.yaml
 - istio-pod-monitor.yaml
 - istio-prometheus-rule.yaml
+- grafana-agent-monitoring.yaml
 
 patches:
 # Inject the grafana-stack namespace into all resources in the grafana-agent-operator
@@ -33,9 +34,11 @@ patches:
   target:
     labelSelector: "app.kubernetes.io/name=loki"
 
-# Add the grafana-agent-metrics-instance=default label to all remaining ServiceMonitors
-# (which should just be the single one for the Prometheus instance) as this links it to
-# the default MetricsInstance and GrafanaAgent.
+# Add the grafana-agent-metrics-instance=default label to all remaining ServiceMonitors.
+# The remaining ServiceMonitors will be associated with workloads that are specifically NOT
+# injected with an Istio sidecar. These workloads will be: Prometheus/Grafana agents,
+# kube-system workloads, and things like node-exporter which use host networking and so
+# are also not injected.
 - path: patches/adopt-service-monitor.yaml
   target:
     group: monitoring.coreos.com

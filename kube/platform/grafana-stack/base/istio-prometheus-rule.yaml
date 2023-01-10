@@ -1,4 +1,4 @@
-# Taken from https://istio.io/latest/docs/ops/best-practices/observability/
+# Taken from: https://istio.io/latest/docs/ops/best-practices/observability/#workload-level-aggregation-via-recording-rules
 # See also https://karlstoney.com/2020/02/25/federated-prometheus-to-reduce-metric-cardinality/
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule

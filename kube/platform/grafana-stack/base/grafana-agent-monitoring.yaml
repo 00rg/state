@@ -1,0 +1,43 @@
+# Headless service used by ServiceMonitor below to scrape the default Grafana logs agents.
+# The Grafana agent operator unfortunately doesn't create a headless service for the logs
+# agents like it does for the metrics agents.
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-grafana-agent-logs-headless
+  namespace: grafana-stack
+  labels:
+    app: default-grafana-agent-logs
+    variant: headless
+    # Fake the operated-agent label so the ServiceMonitor below picks up this service along
+    # with those provisioned by Grafana agent operator for metrics agents.
+    operated-agent: "true"
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 8080
+      targetPort: http-metrics
+      protocol: TCP
+  selector:
+    operator.agent.grafana.com/name: default-grafana-agent
+    operator.agent.grafana.com/type: logs
+---
+# ServiceMonitor for all Grafana agents.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: grafana-agent
+  namespace: grafana-stack
+  labels:
+    grafana-agent-metrics-instance: default
+spec:
+  selector:
+    matchLabels:
+      operated-agent: "true"
+  namespaceSelector:
+    matchNames:
+      - "grafana-stack"
+  endpoints:
+  - port: http-metrics
+    path: "/metrics"
