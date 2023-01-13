@@ -11,8 +11,8 @@ spec:
     instanceSelector:
       matchLabels:
         grafana-agent: istio
-    externalLabels:
-      test: yes-i-am-a-test2
+    # Additional Prom labels can be applied to scaped metrics.
+    externalLabels: {}
   logs:
     instanceSelector:
       matchLabels:

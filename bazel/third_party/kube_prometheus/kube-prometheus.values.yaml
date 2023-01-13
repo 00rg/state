@@ -132,6 +132,7 @@ grafana:
   grafana.ini:
     server:
       root_url: http://office.00rg.com:8082/grafana
+
   datasources:
     datasources.yaml:
       apiVersion: 1
@@ -153,50 +154,69 @@ grafana:
 
   dashboards:
     default:
-      # Istio Control Plane Dashboard for Istio 1.16.1
+      # Community Kubernetes dashboards from https://grafana.com/orgs/imrtfm.
+      # See also: https://github.com/dotdc/grafana-dashboards-kubernetes
+      # And: https://grafana.com/blog/2023/01/06/how-to-monitor-kubernetes-with-grafana-and-prometheus-inside-powders-observability-stack
+      kubernetes-namespaces-dashboard:
+        gnetId: 15758
+        revision: 15
+        datasource: Prometheus
+      kubernetes-global-dashboard:
+        gnetId: 15757
+        revision: 22
+        datasource: Prometheus
+      kubernetes-pods-dashboard:
+        gnetId: 15760
+        revision: 15
+        datasource: Prometheus
+      kubernetes-nodes-dashboard:
+        gnetId: 15759
+        revision: 14
+        datasource: Prometheus
+      kubernetes-apiserver-dashboard:
+        gnetId: 15761
+        revision: 11
+        datasource: Prometheus
+      kubernetes-coredns-dashboard:
+        gnetId: 15762
+        revision: 10
+        datasource: Prometheus
+
+      # Istio community dashboards from https://grafana.com/orgs/istio.
+      # All dashboard revisions below are for Istio 1.16.1.
       istio-control-plane-dashboard:
         gnetId: 7645
         revision: 146
         datasource: Prometheus
-      # Istio Mesh Dashboard for Istio 1.16.1
       istio-mesh-dashboard:
         gnetId: 7639
         revision: 146
         datasource: Prometheus
-      # Istio Service Dashboard for Istio 1.16.1
       istio-service-dashboard:
         gnetId: 7636
         revision: 146
         datasource: Prometheus
-      # Istio Workload Dashboard for Istio 1.16.1
       istio-workload-dashboard:
         gnetId: 7630
         revision: 146
         datasource: Prometheus
-      # Istio Performance Dashboard for Istio 1.16.1
       istio-performance-dashboard:
         gnetId: 11829
         revision: 146
         datasource: Prometheus
-      # Istio WASM Extension Dashboard for Istio 1.16.1
       istio-wasm-dashboard:
         gnetId: 13277
         revision: 103
         datasource: Prometheus
 
 kube-state-metrics:
+  # kube-state-metrics uses ServiceMonitor scraping rather than leveraging the Istio PodMonitor
+  # aggregated scraping due to the fact that it exports metrics for other namespaces. The current
+  # configuration of the Istio PodMonitor overrides the namespace label to always be "grafana-stack"
+  # which is obviously not helpful.
   namespaceOverride: grafana-stack
 
-  # Disable ServiceMonitor as we use the Istio PodMonitor instead.
-  prometheus:
-    monitor:
-      enabled: false
-
-  # Enable aggregation of Istio and application metrics.
-  podAnnotations:
-    prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
-    prometheus.io/scrape: "true"
-
 prometheus-node-exporter:
+  # The node-exporter is not injected with an Istio sidecar since it shares the network
+  # namespace with the host. It will be monitored using its packaged ServiceMonitor.
   namespaceOverride: grafana-stack

@@ -269,6 +269,60 @@ data:
       "https://grafana.com/api/dashboards/7630/revisions/146/download" \
       | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
     > "/var/lib/grafana/dashboards/default/istio-workload-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15761/revisions/11/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-apiserver-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15762/revisions/10/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-coredns-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15757/revisions/22/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-global-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15758/revisions/15/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-namespaces-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15759/revisions/14/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-nodes-dashboard.json"
+      
+    curl -skf \
+    --connect-timeout 60 \
+    --max-time 60 \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/json;charset=UTF-8" \
+      "https://grafana.com/api/dashboards/15760/revisions/15/download" \
+      | sed '/-- .* --/! s/"datasource":.*,/"datasource": "Prometheus",/g' \
+    > "/var/lib/grafana/dashboards/default/kubernetes-pods-dashboard.json"
 ---
 # Source: kube-prometheus-stack/charts/grafana/templates/dashboards-json-configmap.yaml
 apiVersion: v1
@@ -40218,7 +40272,7 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus
       annotations:
-        checksum/config: 2a61d521d75a3b7bae7ed7ada82c26011f781b7cfbce8037ccd7f9d617fc359a
+        checksum/config: 731d31c3a0fb314c45a6ec9a353ce1f8eda8c43b88bdcb57d9218feee0939b69
         checksum/dashboards-json-config: 07c4e3523be3421aab23eac2cd1cbdb6f5a4394bdf1543e4e6ce0c4e04d08de2
         checksum/sc-dashboard-provider-config: d64745cc514746e9d4e87852e5b77c0ce3cf375e2aa53b860bd5ffc967c605a3
         checksum/secret: d60d4022b25a2787ab6e65a9781c5020050ab5a5df4163e4c9a333830ed4814b
@@ -40417,10 +40471,6 @@ spec:
         app.kubernetes.io/instance: kube-prometheus
         app.kubernetes.io/version: "2.7.0"
         release: kube-prometheus
-      annotations:
-        prometheus.io/path: /metrics
-        prometheus.io/port: "8080"
-        prometheus.io/scrape: "true"
     spec:
       hostNetwork: false
       serviceAccountName: kube-prometheus-kube-state-metrics
@@ -43589,6 +43639,31 @@ spec:
       for: 15m
       labels:
         severity: critical
+---
+# Source: kube-prometheus-stack/charts/kube-state-metrics/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kube-prometheus-kube-state-metrics
+  namespace: grafana-stack
+  labels:    
+    helm.sh/chart: kube-state-metrics-4.24.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: kube-prometheus
+    app.kubernetes.io/version: "2.7.0"
+    release: kube-prometheus
+spec:
+  jobLabel: app.kubernetes.io/name  
+  selector:
+    matchLabels:      
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/instance: kube-prometheus
+  endpoints:
+    - port: http
+      honorLabels: true
 ---
 # Source: kube-prometheus-stack/charts/prometheus-node-exporter/templates/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
