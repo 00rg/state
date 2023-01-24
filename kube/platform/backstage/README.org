@@ -1,0 +1,8 @@
+* Backstage
+
+See:
+- https://backstage.io/docs/getting-started/
+- https://roadie.io/backstage-spotify/
+- https://www.youtube.com/watch?v=1XtJ5FAOjPk
+- https://engineering.atspotify.com/2020/04/how-we-use-backstage-at-spotify/
+- https://hub.docker.com/r/spotify/backstage-cookiecutter
