@@ -1,0 +1,12 @@
+tempo:
+  searchEnabled: true
+  # Don't send usage statistics to Grafana Labs for now.
+  reportingEnabled: false
+  receivers:
+    zipkin: null
+
+# Enable aggregation of Istio and application metrics.
+podAnnotations:
+  prometheus.io/path: /metrics
+  prometheus.io/port: "3100"
+  prometheus.io/scrape: "true"

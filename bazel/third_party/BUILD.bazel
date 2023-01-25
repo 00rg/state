@@ -18,6 +18,7 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:kube_prometheus_manifest": "kube/platform/grafana-stack/base/kube-prometheus.gen.yaml",
     "//bazel/third_party:kube_prometheus_crds_manifest": "kube/platform/grafana-stack-crds/base/kube-prometheus-crds.gen.yaml",
     "//bazel/third_party:loki_manifest": "kube/platform/grafana-stack/base/loki.gen.yaml",
+    "//bazel/third_party:tempo_manifest": "kube/platform/grafana-stack/base/tempo.gen.yaml",
 }
 
 istio_operator(
@@ -89,6 +90,15 @@ helm_template(
     namespace = "grafana-stack",
     release_name = "loki",
     values_file = "//bazel/third_party/loki:loki.values.yaml",
+)
+
+helm_template(
+    name = "tempo_manifest",
+    srcs = ["@tempo//:all"],
+    chart_dir = "external/tempo",
+    namespace = "grafana-stack",
+    release_name = "tempo",
+    values_file = "//bazel/third_party/tempo:tempo.values.yaml",
 )
 
 update_third_party_manifests(

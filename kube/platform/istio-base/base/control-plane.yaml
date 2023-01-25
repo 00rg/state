@@ -21,7 +21,14 @@ spec:
       # Inject by default.
       enableNamespacesByDefault: true
     meshConfig:
-      # Disable tracing for now.
-      enableTracing: false
+      # Forward traces to directly to Tempo. Grafana Operator doesn't support tracing
+      # yet so if we don't forward directly to Tempo we'll need to install a Grafana Agent
+      # using another mechanism or install an OTLP collector or similar.
+      # See: https://github.com/grafana/agent/issues/1044
+      enableTracing: true
       defaultConfig:
-        tracing: {}
+        tracing:
+          sampling: 100
+          max_path_tag_length: 99999
+          zipkin:
+            address: tempo.grafana-stack:9411

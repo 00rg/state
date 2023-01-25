@@ -119,6 +119,16 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.loki.bazel",
     )
 
+    tempo_chart_version = "0.16.9"
+    maybe(
+        http_archive,
+        name = "tempo",
+        urls = ["https://github.com/grafana/helm-charts/releases/download/tempo-{v}/tempo-{v}.tgz".format(v = tempo_chart_version)],
+        sha256 = "3ef3a6501f9c79a7e3b13524ffcea8806991c60829ed41ef2c5e786920c1efbd",
+        strip_prefix = "tempo",
+        build_file = "//bazel/third_party:BUILD.tempo.bazel",
+    )
+
 def org_python_dependencies():
     """Declare Python dependencies."""
 

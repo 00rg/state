@@ -9,6 +9,7 @@ resources:
 - grafana-agent-operator.gen.yaml
 - kube-prometheus.gen.yaml
 - loki.gen.yaml
+- tempo.gen.yaml
 - virtual-services.yaml
 
 # Custom resources reconciled by grafana-agent-operator.
