@@ -5,5 +5,3 @@ metadata:
 spec:
   hooks:
     preApply: {}
-      # waitForCRDs:
-      # - istiooperators.install.istio.io
