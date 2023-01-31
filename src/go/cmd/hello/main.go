@@ -1,59 +1,153 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 
-	"github.com/00rg/org/src/go/pkg/greet"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
-// The following variables are updated by -ldflags at build time.
 var (
-	Version     = "unknown"
-	Port        = "8080"
-	ExternalUrl = "https://httpbin.org/get"
+	port        = "8080"
+	externalURL = "https://httpbin.org/get"
+	version     = "v0.0.1"
+
+	tracer         trace.Tracer
+	tracerProvider sdktrace.TracerProvider
 )
 
 func init() {
-	if externalUrl := os.Getenv("EXTERNAL_URL"); externalUrl != "" {
-		ExternalUrl = externalUrl
+	p, ok := os.LookupEnv("PORT")
+	if ok {
+		port = p
 	}
+
+	url, ok := os.LookupEnv("EXTERNAL_URL")
+	if ok {
+		externalURL = url
+	}
+
+	ctx := context.Background()
+
+	exporter, err := newExporter(ctx)
+	if err != nil {
+		fmt.Printf("Error creating trace exporter: %v", err)
+		os.Exit(1)
+	}
+
+	tracerProvider, err := newTraceProvider(exporter)
+	if err != nil {
+		fmt.Printf("Error creating trace provider: %v", err)
+		os.Exit(1)
+	}
+
+	otel.SetTracerProvider(tracerProvider)
+
+	tracer = tracerProvider.Tracer("hello")
 }
 
 func main() {
-	e := echo.New()
+	if err := realMain(); err != nil {
+		panic(err)
+	}
+}
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
+func realMain() error {
+	defer shutdown()
 
-	e.GET("/", func(c echo.Context) error {
-		greet := greet.New("Ash")
-		return c.String(http.StatusOK, greet.Say())
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/version", func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, version)
 	})
 
-	e.GET("/version", func(c echo.Context) error {
-		return c.String(http.StatusOK, Version)
-	})
-
-	e.GET("/external", func(c echo.Context) error {
-		resp, err := http.Get(ExternalUrl)
-		if err != nil {
-			return err
+	mux.HandleFunc("/external", func(w http.ResponseWriter, r *http.Request) {
+		client := http.Client{
+			Transport: otelhttp.NewTransport(http.DefaultTransport),
 		}
 
-		defer resp.Body.Close()
+		ctx := r.Context()
 
-		body, err := io.ReadAll(resp.Body)
+		req, err := http.NewRequestWithContext(ctx, "GET", externalURL, nil)
 		if err != nil {
-			return err
+			writeResponse(w, http.StatusInternalServerError, err.Error())
+			return
 		}
 
-		return c.String(resp.StatusCode, string(body))
+		res, err := client.Do(req)
+		if err != nil {
+			writeResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		defer res.Body.Close()
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			writeResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		writeResponse(w, res.StatusCode, string(body))
 	})
 
-	e.Logger.Fatal(e.Start(":" + Port))
+	handler := otelhttp.NewHandler(mux, "hello-http-middleware")
+
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: handler,
+	}
+
+	fmt.Println("HTTP server listening on port " + port)
+
+	return server.ListenAndServe()
+}
+
+func newExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
+	return stdouttrace.New(
+		stdouttrace.WithPrettyPrint(),
+		stdouttrace.WithoutTimestamps(),
+	)
+}
+
+func newTraceProvider(exp sdktrace.SpanExporter) (*sdktrace.TracerProvider, error) {
+	r, err := resource.Merge(
+		resource.Default(),
+		resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String("hello"),
+			semconv.ServiceVersionKey.String("v0.1.0"),
+			semconv.DeploymentEnvironmentKey.String("development"),
+		),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exp),
+		sdktrace.WithResource(r),
+	), nil
+}
+
+func writeResponse(w http.ResponseWriter, status int, body string) {
+	w.WriteHeader(status)
+	io.WriteString(w, body)
+}
+
+func shutdown() {
+	if err := tracerProvider.Shutdown(context.Background()); err != nil {
+		fmt.Printf("Error shutting down tracer provider: %v", err)
+		os.Exit(1)
+	}
 }

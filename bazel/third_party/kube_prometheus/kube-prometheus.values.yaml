@@ -143,6 +143,11 @@ grafana:
       - name: Tempo
         type: tempo
         url: http://tempo:3100
+        # TODO: This needs more changes to work properly.
+        jsonData:
+          httpMethod: GET
+          serviceMap:
+            datasourceUid: prometheus
 
   dashboardProviders:
    dashboardproviders.yaml:
