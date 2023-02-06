@@ -23,3 +23,5 @@ spec:
         env:
         - name: EXTERNAL_URL
           value: http://httpbin.httpbin.svc.cluster.local/get
+        - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+          value: http://tempo.grafana-stack:4318

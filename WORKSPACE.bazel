@@ -6,6 +6,7 @@ load(
     "org_container_dependencies",
     "org_go_dependencies",
     "org_manifest_dependencies",
+    "org_protobuf_dependencies",
     "org_python_dependencies",
     "org_rust_dependencies",
     "org_util_dependencies",
@@ -62,16 +63,15 @@ go_rules_dependencies()
 
 go_register_toolchains(version = "1.19.3")
 
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+###############################################################################
+# P R O T O B U F   D E P E N D E N C I E S
+###############################################################################
 
-# The following Gazelle annotation is required since we pull in bazel_gazelle
-# via a macro rather than directly within this file.
-# gazelle:repo bazel_gazelle
-gazelle_dependencies(
-    # By default, Gazelle only looks for WORKSPACE.
-    # See https://github.com/bazelbuild/bazel-gazelle/issues/678.
-    go_repository_default_config = "@//:WORKSPACE.bazel",
-)
+org_protobuf_dependencies()
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()
 
 ###############################################################################
 # G O   L I B R A R Y   D E P E N D E N C I E S
@@ -81,6 +81,23 @@ load("//bazel:go_lib_deps.bzl", "org_go_lib_dependencies")
 
 # gazelle:repository_macro bazel/go_lib_deps.bzl%org_go_lib_dependencies
 org_go_lib_dependencies()
+
+###############################################################################
+# G A Z E L L E   D E P E N D E N C I E S
+###############################################################################
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+
+# The following Gazelle annotation is required since we pull in bazel_gazelle
+# via a macro rather than directly within this file. This call to gazell_dependencies
+# must take place after the call to org_go_lib_dependencies to prevent issues
+# like https://github.com/bazelbuild/bazel-gazelle/issues/1233#issuecomment-1094334092.
+# gazelle:repo bazel_gazelle
+gazelle_dependencies(
+    # By default, Gazelle only looks for WORKSPACE.
+    # See https://github.com/bazelbuild/bazel-gazelle/issues/678.
+    go_repository_default_config = "@//:WORKSPACE.bazel",
+)
 
 ###############################################################################
 # R U S T  T O O L C H A I N  D E P E N D E N C I E S

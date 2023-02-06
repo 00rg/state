@@ -1,5 +1,13 @@
 * Naming Schemes
 
+TODO: "production" should not be the name of an environment but rather a class of environment. Either that or "production" is an environment but there is the separate concept of an environment-target?
+
+Accounts could be named numerically after their type/OU:
+- workload-dev-01 + workload-prd-01
+- workload-dev-02 + workload-prd-02
+- sandbox-dev-01 + sandbox-prd-01
+- shared-services-dev-01 + shared-services-dev-01
+
 ** Cluster Naming
 
 | Cluster Type | Environment | Cloud  | Region         | Variant | Cluster Name            | Comment                                                                        |

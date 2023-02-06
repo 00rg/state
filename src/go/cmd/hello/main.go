@@ -9,7 +9,10 @@ import (
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
@@ -38,7 +41,7 @@ func init() {
 
 	ctx := context.Background()
 
-	exporter, err := newExporter(ctx)
+	exporter, err := newOTLPExporter(ctx)
 	if err != nil {
 		fmt.Printf("Error creating trace exporter: %v", err)
 		os.Exit(1)
@@ -53,6 +56,8 @@ func init() {
 	otel.SetTracerProvider(tracerProvider)
 
 	tracer = tracerProvider.Tracer("hello")
+
+	otel.SetTextMapPropagator(propagation.TraceContext{})
 }
 
 func main() {
@@ -112,18 +117,24 @@ func realMain() error {
 	return server.ListenAndServe()
 }
 
-func newExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
+func newStdoutExporter(ctx context.Context) (sdktrace.SpanExporter, error) {
 	return stdouttrace.New(
 		stdouttrace.WithPrettyPrint(),
 		stdouttrace.WithoutTimestamps(),
 	)
 }
 
+func newOTLPExporter(ctx context.Context) (*otlptrace.Exporter, error) {
+	client := otlptracehttp.NewClient()
+	return otlptrace.New(ctx, client)
+}
+
 func newTraceProvider(exp sdktrace.SpanExporter) (*sdktrace.TracerProvider, error) {
 	r, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
-			semconv.SchemaURL,
+			"",
+			// semconv.SchemaURL,
 			semconv.ServiceNameKey.String("hello"),
 			semconv.ServiceVersionKey.String("v0.1.0"),
 			semconv.DeploymentEnvironmentKey.String("development"),

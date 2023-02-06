@@ -15,9 +15,16 @@ go_library(
     importpath = "github.com/00rg/org/src/go/cmd/hello",
     visibility = ["//visibility:private"],
     deps = [
-        "//src/go/pkg/greet",
-        "@com_github_labstack_echo_v4//:echo",
-        "@com_github_labstack_echo_v4//middleware",
+        "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",
+        "@io_opentelemetry_go_otel//:otel",
+        "@io_opentelemetry_go_otel//propagation",
+        "@io_opentelemetry_go_otel//semconv/v1.12.0:v1_12_0",
+        "@io_opentelemetry_go_otel_exporters_otlp_otlptrace//:otlptrace",
+        "@io_opentelemetry_go_otel_exporters_otlp_otlptrace_otlptracehttp//:otlptracehttp",
+        "@io_opentelemetry_go_otel_exporters_stdout_stdouttrace//:stdouttrace",
+        "@io_opentelemetry_go_otel_sdk//resource",
+        "@io_opentelemetry_go_otel_sdk//trace",
+        "@io_opentelemetry_go_otel_trace//:trace",
     ],
 )
 

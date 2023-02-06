@@ -169,6 +169,20 @@ def org_go_dependencies():
         sha256 = "efbbba6ac1a4fd342d5122cbdfdb82aeb2cf2862e35022c752eaddffada7c3f3",
     )
 
+def org_protobuf_dependencies():
+    """Declare protobuf dependencies."""
+
+    # Both Protobuf and Grpc need to be managed separately from rules_go. See:
+    # https://github.com/bazelbuild/rules_go#protobuf-and-grpc.
+
+    maybe(
+        http_archive,
+        name = "com_google_protobuf",
+        sha256 = "22fdaf641b31655d4b2297f9981fa5203b2866f8332d3c6333f6b0107bb320de",
+        strip_prefix = "protobuf-21.12",
+        urls = ["https://github.com/protocolbuffers/protobuf/archive/v21.12.tar.gz"],
+    )
+
 def org_rust_dependencies():
     """Declare Rust dependencies."""
 
