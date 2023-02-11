@@ -15,16 +15,14 @@ test:
 minio:
   enabled: false
 monitoring:
-  # Disable the chart's self-monitoring feature as we deploy our own GrafanaAgent,
-  # MetricsInstance, LogsInstance, and PodLogs resources that are configured to forward
-  # logs from the Loki pods. Loki PrometheusRules will be rendered and get picked
-  # up by the prometheus-operator and the ServiceMonitor will be rendered and get picked
-  # up by the grafana-agent-operator.
+  # Disable the chart's self-monitoring feature (which deploys dedicated grafana-agent-operator
+  # CRs) as we deploy our own GrafanaAgent, MetricsInstance, LogsInstance, and PodLogs resources
+  # that are configured to forward telemetry from the Loki pods. Loki PrometheusRules will be
+  # rendered and get picked up by the prometheus-operator and the ServiceMonitor will be rendered
+  # and get picked up by the grafana-agent-operator.
   selfMonitoring:
     enabled: false
     grafanaAgent:
       installOperator: false
-  serviceMonitor:
-    enabled: false
   lokiCanary:
     enabled: false

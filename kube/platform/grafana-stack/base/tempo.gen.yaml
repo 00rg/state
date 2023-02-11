@@ -186,9 +186,6 @@ spec:
         app.kubernetes.io/instance: tempo
       annotations:
         checksum/config: 0265198dc394caa43d55d3387fb7ebc9ddb73b4bbed7889d1645d3100a41da4c
-        prometheus.io/path: /metrics
-        prometheus.io/port: "3100"
-        prometheus.io/scrape: "true"
     spec:
       serviceAccountName: tempo
       automountServiceAccountToken: true
@@ -255,3 +252,28 @@ spec:
   updateStrategy:
     type:
       RollingUpdate
+---
+# Source: tempo/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tempo
+  labels:
+    app: tempo
+    chart: tempo-0.16.9
+    release: tempo
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:
+      helm.sh/chart: tempo-0.16.9
+      app.kubernetes.io/name: tempo
+      app.kubernetes.io/instance: tempo
+      app.kubernetes.io/version: "1.5.0"
+      app.kubernetes.io/managed-by: Helm
+  namespaceSelector:
+    matchNames:
+      - "grafana-stack"
+  endpoints:
+    - port: tempo-prom-metrics
+    - port: jaeger-metrics

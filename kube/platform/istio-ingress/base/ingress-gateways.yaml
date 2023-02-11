@@ -61,6 +61,12 @@ spec:
             port: 80
             targetPort: 8080
             nodePort: 31002
+        podAnnotations:
+          # Disable tracing for the office gateway as it just makes noise.
+          proxy.istio.io/config: |
+            tracing:
+              enabled: false
+
   values:
     # Enable gateway injection. See:
     # https://github.com/istio/istio/issues/36670 and

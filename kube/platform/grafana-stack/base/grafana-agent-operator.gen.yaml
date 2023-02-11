@@ -116,10 +116,6 @@ spec:
       labels:
         app.kubernetes.io/name: grafana-agent-operator
         app.kubernetes.io/instance: grafana-agent-operator
-      annotations:
-        prometheus.io/path: /metrics
-        prometheus.io/port: "8080"
-        prometheus.io/scrape: "true"
     spec:
       serviceAccountName: grafana-agent-operator
       containers:

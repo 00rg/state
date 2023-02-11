@@ -5,8 +5,5 @@ tempo:
   receivers:
     zipkin: null
 
-# Enable aggregation of Istio and application metrics.
-podAnnotations:
-  prometheus.io/path: /metrics
-  prometheus.io/port: "3100"
-  prometheus.io/scrape: "true"
+serviceMonitor:
+  enabled: true

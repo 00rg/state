@@ -414,3 +414,35 @@ spec:
           labels:
             cluster: loki
           record: namespace_job_route:loki_request_duration_seconds_count:sum_rate
+---
+# Source: loki/templates/monitoring/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki
+  labels:
+    helm.sh/chart: loki-3.8.0
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/instance: loki
+    matchExpressions:
+      - key: prometheus.io/service-monitor
+        operator: NotIn
+        values:
+          - "false"
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      relabelings:
+        - sourceLabels: [job]
+          replacement: "grafana-stack/$1"
+          targetLabel: job
+        - replacement: "loki"
+          targetLabel: cluster
+      scheme: http

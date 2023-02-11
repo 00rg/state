@@ -1,6 +1,0 @@
-# Enable aggregation of Istio and application metrics.
-podAnnotations:
-  prometheus.io/path: /metrics
-  prometheus.io/port: "8080"
-  prometheus.io/scrape: "true"
-

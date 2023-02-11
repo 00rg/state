@@ -14,7 +14,9 @@ The annotations injected by Istio will reference a port (typically 15020) and pa
 
 The single PodMonitor resource created by this package configures this scraping to occur across the entire mesh. Any workload injected with an Istio sidecar only needs to expose its application metrics and reference them via Prometheus annotations on its pods. The Istio sidecar injection process will handle the rest. No ServiceMonitors or additional PodMonitors need to be created in this case.
 
-Currently, the only workloads NOT injected with an Istio sidecar are those in the =kube-system= namespace (which Istio ignores by default) and the Prometheus and Grafana agent workloads which the community seems to recommend against being injected. E.g. the [[https://istio.io/latest/docs/ops/integrations/prometheus/#tls-settings][Istio documentation]] mentions:
+It's hard to find concrete advice on what should or shouldn't be injected within a cluster. But articles like the [[https://tanzu.vmware.com/developer/guides/service-routing-istio-refarch/][Tanzu Istio Reference Architecture]] give the impression that the =enableNamespacesByDefault= setting on the IstioOperator resource should be left as =false= and injection should be enabled on a per-namespace basis for namespaces that contain business services. Originally, I injected everything except for workloads like Prometheus and Grafana Agent which seem to recommend against injection; besides the auto-scaping benefits offered by the mesh PodMonitor described above this just generated a lot of noise (who really cares about Envoy metrics and traces for non-business workloads?) and made things harder to reason about in general.
+
+Regarding the general recommendation not to inject Prometheus-type workloads, the [[https://istio.io/latest/docs/ops/integrations/prometheus/#tls-settings][Istio documentation]] mentions:
 
 #+begin_quote
   However, the sidecar should not intercept requests for Prometheus because Prometheus’s model of direct endpoint access is incompatible with Istio’s sidecar proxy model.
@@ -27,8 +29,6 @@ And [[https://superorbital.io/journal/istio-metrics-merging][this really good ar
 #+end_quote
 
 In summary, all scraping of Istio-injected workloads is handled by a central PodMonitor that is reconciled by the default Grafana metrics agents which then remote write these metrics to a central Prometheus instance. All scraping of non-Istio-injected workloads is handled by ServiceMonitors that are also reconciled by the default Grafana metrics agents and remote written to the central Prometheus instance.
-
-We could (and may still) take the approach that the entire =grafana-stack= namespace is not injected with Istio sidecars. This would establish a pattern where workloads inside the =grafana-stack= namespace require ServiceMonitors while workloads outside could rely on the central Istio PodMonitor to configure aggregated scraping. Still unsure of what benefits this would have and what impact it would have on eventually enabling strict MTLS, exposing Grafana, etc, to the office ingress gateway, etc.
 
 ** Links
 - https://discuss.istio.io/t/istio-mtls-and-pod-ip-port/7537/6

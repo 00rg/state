@@ -18,8 +18,10 @@ spec:
       # TODO: overlay this locally - doesn't seem to work with k3d.
       enabled: false
     sidecarInjectorWebhook:
-      # Inject by default.
-      enableNamespacesByDefault: true
+      # Don't inject by default as non-business workloads (e.g. Prometheus, Grafana, operators
+      # in general, etc) don't seem to benefit from the overhead of injection. A little bit of
+      # advice here: https://tanzu.vmware.com/developer/guides/service-routing-istio-refarch
+      enableNamespacesByDefault: false
     meshConfig:
       # Forward traces to directly to Tempo. Grafana Operator doesn't support tracing
       # yet so if we don't forward directly to Tempo we'll need to install a Grafana Agent
