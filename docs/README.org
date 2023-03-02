@@ -1,8 +1,10 @@
-* org
+* Borgorg
 
-Welcome to the 00rg monorepo.
+Welcome to the Borgorg monorepo.
 
-** Basics
+This repo is for the fictional organization Borgorg. It aims to model a large organization's full technical estate using cloud native tooling in a monorepo format.
+
+** Working with this Repository
 
 *** Running Kubernetes Clusters Locally
 
