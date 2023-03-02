@@ -4,7 +4,11 @@ Welcome to the Borgorg monorepo.
 
 This repo is for the fictional organization Borgorg. It aims to model a large organization's full technical estate using cloud native tooling in a monorepo format.
 
+/More doco coming soon.../
+
 ** Working with this Repository
+
+One of the aims of this repository is that every Kubernetes cluster can be run locally on k3d using a few simple commands. The source code for all "business" services is also maintained and built out of this repository.
 
 *** Running Kubernetes Clusters Locally
 
@@ -18,6 +22,8 @@ The following series of commands creates a local container registry, builds the 
 #+end_src
 
 *** Managing Source Code
+
+This repository demonstrates a multi-service, multi-language setup. Services are written in either Go or Rust and are built and published as container images using Bazel.
 
 **** Go
 
