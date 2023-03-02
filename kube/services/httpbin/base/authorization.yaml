@@ -23,6 +23,9 @@ spec:
         - cluster.local/ns/istio-ingress/sa/external-ingress-gateway-service-account
         - cluster.local/ns/istio-ingress/sa/internal-ingress-gateway-service-account
         - cluster.local/ns/hello/sa/hello
+        - cluster.local/ns/foo/sa/foo
+        - cluster.local/ns/bar/sa/bar
+        - cluster.local/ns/baz/sa/baz
     to:
     - operation:
         paths:

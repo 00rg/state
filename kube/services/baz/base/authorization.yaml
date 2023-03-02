@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-only-bar
+spec:
+  selector:
+    matchLabels:
+      app: baz
+  action: DENY
+  rules:
+  - from:
+    - source:
+        notPrincipals:
+        - cluster.local/ns/bar/sa/bar

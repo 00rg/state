@@ -4,8 +4,8 @@ metadata:
   name: wave1
 spec:
   hooks:
-    preApply:
-      # Before proceeding with the wave apply, wait until the metrics-server
+    postApply:
+      # Before proceeding with the next wave, wait until the metrics-server
       # is ready. If we don't do this, kubectl 1.26.0+ will produce a warning.
       waitForRollouts:
       - kube-system/metrics-server

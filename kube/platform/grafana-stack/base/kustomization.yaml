@@ -21,6 +21,7 @@ resources:
 - istio-metrics-instance.yaml
 - istio-pod-monitor.yaml
 - istio-prometheus-rule.yaml
+- tracing-grafana-agent.yaml
 - grafana-agent-monitoring.yaml
 
 patches:

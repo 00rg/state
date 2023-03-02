@@ -4,6 +4,9 @@ resources:
 - ../../../platform/istio-ingress/overlays/local
 - ../../../platform/grafana-stack/overlays/local
 - ../../../services/hello/overlays/local
+- ../../../services/foo/overlays/local
+- ../../../services/bar/overlays/local
+- ../../../services/baz/overlays/local
 - ../../../services/httpbin/overlays/local
 
 # TODO: Add back when cross-compilation is working (see links in src/rust/BUILD.bazel).

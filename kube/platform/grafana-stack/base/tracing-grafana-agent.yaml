@@ -1,0 +1,197 @@
+# This file has been adapted from:
+# https://github.com/grafana/agent/blob/main/production/kubernetes/agent-traces.yaml
+# Ideally, trace configuration could be done via the GrafanaAgent CR but not yet:
+# https://github.com/grafana/agent/issues/1044
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tracing-grafana-agent
+  namespace: grafana-stack
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tracing-grafana-agent
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  - events
+  verbs:
+  - get
+  - list
+  - watch
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tracing-grafana-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tracing-grafana-agent
+subjects:
+- kind: ServiceAccount
+  name: tracing-grafana-agent
+  namespace: grafana-stack
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: tracing
+    # TODO: Can we find another label rather than hijack this one?
+    operated-agent: "true"
+  name: tracing
+  namespace: grafana-stack
+spec:
+  ports:
+  - name: http-metrics
+    port: 80
+    targetPort: 80
+  - name: thrift-compact
+    port: 6831
+    protocol: UDP
+    targetPort: 6831
+  - name: thrift-binary
+    port: 6832
+    protocol: UDP
+    targetPort: 6832
+  - name: thrift-http
+    port: 14268
+    protocol: TCP
+    targetPort: 14268
+  - name: thrift-grpc
+    port: 14250
+    protocol: TCP
+    targetPort: 14250
+  - name: zipkin
+    port: 9411
+    protocol: TCP
+    targetPort: 9411
+  - name: otlp-grpc
+    port: 4317
+    protocol: TCP
+    targetPort: 4317
+  - name: otlp-http
+    port: 4318
+    protocol: TCP
+    targetPort: 4318
+  - name: opencensus
+    port: 55678
+    protocol: TCP
+    targetPort: 55678
+  selector:
+    name: tracing-grafana-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracing-grafana-agent
+  namespace: grafana-stack
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: tracing-grafana-agent
+  template:
+    metadata:
+      labels:
+        name: tracing-grafana-agent
+    spec:
+      containers:
+      - args:
+        - -config.expand-env=true
+        - -config.file=/etc/agent/agent.yaml
+        - -server.http.address=0.0.0.0:80
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        image: grafana/agent:v0.31.3
+        imagePullPolicy: IfNotPresent
+        name: tracing-grafana-agent
+        ports:
+        - containerPort: 80
+          name: http-metrics
+        - containerPort: 6831
+          name: thrift-compact
+          protocol: UDP
+        - containerPort: 6832
+          name: thrift-binary
+          protocol: UDP
+        - containerPort: 14268
+          name: thrift-http
+          protocol: TCP
+        - containerPort: 14250
+          name: thrift-grpc
+          protocol: TCP
+        - containerPort: 9411
+          name: zipkin
+          protocol: TCP
+        - containerPort: 4317
+          name: otlp-grpc
+          protocol: TCP
+        - containerPort: 4318
+          name: otlp-http
+          protocol: TCP
+        - containerPort: 55678
+          name: opencensus
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/agent
+          name: tracing-grafana-agent
+      serviceAccountName: tracing-grafana-agent
+      volumes:
+      - configMap:
+          name: tracing-grafana-agent
+        name: tracing-grafana-agent
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tracing-grafana-agent
+  namespace: grafana-stack  
+data:
+  agent.yaml: |
+    traces:
+      configs:
+      - name: default
+        service_graphs:
+          enabled: true
+        remote_write:
+        - endpoint: tempo.grafana-stack:4317
+          protocol: grpc
+          format: otlp
+          insecure: true
+        receivers:
+          otlp:
+            protocols:
+              grpc:
+              http:
+    metrics:
+      global:
+        scrape_interval: 60s
+        remote_write:
+        - url: http://prometheus-operated.grafana-stack:9090/api/v1/write
+      configs:
+      - name: default
+        scrape_configs:
+        - job_name: local_scrape
+          static_configs:
+          - targets: ['127.0.0.1:80']
+        remote_write:
+        - url: http://prometheus-operated.grafana-stack:9090/api/v1/write

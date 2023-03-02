@@ -30,6 +30,6 @@ env:
 options:
   k3s:
     extraArgs:
-    - arg: --disable=traefik
+    - arg: --disable=traefik,metrics-server
       nodeFilters:
       - "server:*"

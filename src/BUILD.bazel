@@ -6,7 +6,9 @@ multirun(
         # These should be wrapped in a command rule but since we don't require environment
         # variables I don't think there's a need. See https://github.com/keith/rules_multirun/issues/3.
         "//src/go/cmd/hello:push_local_image",
-        "//src/rust/crates/goodbye:push_local_image",
+
+        # Not much point pushing the Rust image until I sort out cross-compilation.
+        # "//src/rust/crates/goodbye:push_local_image",
     ],
     visibility = ["//visibility:public"],
 )

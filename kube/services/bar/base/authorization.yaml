@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-only-foo
+spec:
+  selector:
+    matchLabels:
+      app: bar
+  action: DENY
+  rules:
+  - from:
+    - source:
+        notPrincipals:
+        - cluster.local/ns/foo/sa/foo

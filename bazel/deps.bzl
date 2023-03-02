@@ -14,12 +14,12 @@ def org_util_dependencies():
         sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
     )
 
-    multirun_version = "0.2.0"
+    multirun_version = "0.4.1"
     maybe(
         http_archive,
         name = "rules_multirun",
         urls = ["https://github.com/keith/rules_multirun/archive/refs/tags/{}.tar.gz".format(multirun_version)],
-        sha256 = "fdaed317c259c5eee82e48261437466238aff3f997e890366ca9356238344899",
+        sha256 = "a08f77a490b7f88a9f641df0344373e83763eb92cf502c699fb641db84e5d3ba",
         strip_prefix = "rules_multirun-{}".format(multirun_version),
     )
 

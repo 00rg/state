@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello
+  name: bar
   labels:
-    app: hello
+    app: bar
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hello
+      app: bar
   template:
     metadata:
       labels:
-        app: hello
+        app: bar
     spec:
-      serviceAccountName: hello
+      serviceAccountName: bar
       containers:
       - name: hello
         image: k3d-local-registry:5555/hello:0.0.1
         imagePullPolicy: Always
         env:
         - name: EXTERNAL_URL
-          value: http://httpbin.httpbin.svc.cluster.local/get
+          value: http://baz.baz.svc.cluster.local/external
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
           value: http://tracing.grafana-stack:4318/v1/traces

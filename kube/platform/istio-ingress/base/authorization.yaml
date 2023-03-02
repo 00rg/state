@@ -17,4 +17,5 @@ spec:
         # Purely for testing purposes, the following paths do not require
         # authentication - all other paths do.
         notPaths:
-        - /hello/external
+        - /foo/*
+        - /hello/*

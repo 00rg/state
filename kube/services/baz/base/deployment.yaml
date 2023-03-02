@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello
+  name: baz
   labels:
-    app: hello
+    app: baz
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hello
+      app: baz
   template:
     metadata:
       labels:
-        app: hello
+        app: baz
     spec:
-      serviceAccountName: hello
+      serviceAccountName: baz
       containers:
       - name: hello
         image: k3d-local-registry:5555/hello:0.0.1

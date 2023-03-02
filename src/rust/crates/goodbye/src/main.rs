@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use farewell::{self, Farewell};
 
+static HTTP_PORT: u16 = 8080;
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
@@ -15,7 +17,7 @@ async fn main() {
         .route("/", get(root))
         .route("/users", post(create_user));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let addr = SocketAddr::from(([127, 0, 0, 1], HTTP_PORT));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
