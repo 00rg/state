@@ -4,11 +4,13 @@ Welcome to the Borgorg monorepo.
 
 This repo is for the fictional organization Borgorg. It aims to model a large organization's full technical estate using cloud native tooling in a monorepo format.
 
-/More doco coming soon.../
+/More doco coming at some point.../
 
 ** Working with this Repository
 
 One of the aims of this repository is that every Kubernetes cluster can be run locally on k3d using a few simple commands. The source code for all "business" services is also maintained and built out of this repository.
+
+The only requirement for working with this repository is [[https://github.com/bazelbuild/bazelisk][Bazelisk]]. It will download the appropriate version of Bazel and Bazel will do its Bazel thing and download everything else.
 
 *** Running Kubernetes Clusters Locally
 
