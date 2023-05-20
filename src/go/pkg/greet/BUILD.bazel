@@ -1,7 +1,7 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
-# gazelle:prefix github.com/00rg/org/src/go/pkg/greet
+# gazelle:prefix github.com/ashlineldridge/borgorg/src/go/pkg/greet
 
 gazelle(
     name = "gazelle_generate_targets",
@@ -10,7 +10,7 @@ gazelle(
 go_library(
     name = "greet",
     srcs = ["greet.go"],
-    importpath = "github.com/00rg/org/src/go/pkg/greet",
+    importpath = "github.com/ashlineldridge/borgorg/src/go/pkg/greet",
     visibility = ["//visibility:public"],
     deps = ["@com_github_thanhpk_randstr//:randstr"],
 )

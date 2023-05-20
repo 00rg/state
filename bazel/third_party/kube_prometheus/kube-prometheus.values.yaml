@@ -18,7 +18,7 @@ prometheusOperator:
 # This section configures the Prometheus CR that provisions the central Prometheus instance.
 prometheus:
   prometheusSpec:
-    externalUrl: http://office.00rg.com:8082/prometheus
+    externalUrl: http://office.borgorg.com:8082/prometheus
     enableRemoteWriteReceiver: true
 
     # By default, don't use the prometheus-operator to manage ServiceMonitors, PodMonitors or
@@ -47,7 +47,7 @@ alertmanager:
   # to specify the non-secret parts of the config as raw YAML in this repo (see
   # https://github.com/machinezone/configmapsecrets).
   alertmanagerSpec:
-    externalUrl: http://office.00rg.com:8082/alertmanager
+    externalUrl: http://office.borgorg.com:8082/alertmanager
 
   # Alertmanager configuration. See:
   # - https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md
@@ -81,7 +81,7 @@ grafana:
 
   grafana.ini:
     server:
-      root_url: http://office.00rg.com:8082/grafana
+      root_url: http://office.borgorg.com:8082/grafana
 
   datasources:
     datasources.yaml:

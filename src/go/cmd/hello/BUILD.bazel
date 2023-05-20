@@ -3,7 +3,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
-# gazelle:prefix github.com/00rg/org/src/go/cmd/hello
+# gazelle:prefix github.com/ashlineldridge/borgorg/src/go/cmd/hello
 
 gazelle(
     name = "gazelle_generate_targets",
@@ -12,7 +12,7 @@ gazelle(
 go_library(
     name = "hello_lib",
     srcs = ["main.go"],
-    importpath = "github.com/00rg/org/src/go/cmd/hello",
+    importpath = "github.com/ashlineldridge/borgorg/src/go/cmd/hello",
     visibility = ["//visibility:private"],
     deps = [
         "@io_opentelemetry_go_contrib_instrumentation_net_http_otelhttp//:otelhttp",

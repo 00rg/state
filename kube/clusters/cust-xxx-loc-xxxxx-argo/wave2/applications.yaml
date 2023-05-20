@@ -6,7 +6,7 @@ metadata:
 spec:
   generators:
   - git:
-      repoURL: https://github.com/00rg/state.git
+      repoURL: https://github.com/ashlineldridge/borgorg.git
       revision: HEAD
       directories:
       # - path: config/platform/istio-operator/overlays/local
@@ -20,7 +20,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/00rg/state.git
+        repoURL: https://github.com/ashlineldridge/borgorg.git
         targetRevision: HEAD
         path: '{{path}}'
       destination:

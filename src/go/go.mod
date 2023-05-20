@@ -1,4 +1,4 @@
-module github.com/00rg/org/src/go
+module github.com/ashlineldridge/borgorg/src/go
 
 go 1.19
 

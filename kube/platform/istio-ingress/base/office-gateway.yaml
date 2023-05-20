@@ -13,4 +13,4 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - office.00rg.com
+    - office.borgorg.com

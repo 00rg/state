@@ -195,7 +195,7 @@ data:
     provisioning = /etc/grafana/provisioning
     [server]
     domain = ''
-    root_url = http://office.00rg.com:8082/grafana
+    root_url = http://office.borgorg.com:8082/grafana
   datasources.yaml: |
     apiVersion: 1
     datasources:
@@ -40590,7 +40590,7 @@ spec:
   replicas: 1
   listenLocal: false
   serviceAccountName: kube-prometheus-kube-prome-alertmanager
-  externalUrl: "http://office.00rg.com:8082/alertmanager"
+  externalUrl: "http://office.borgorg.com:8082/alertmanager"
   paused: false
   logFormat: "logfmt"
   logLevel:  "info"
@@ -40632,7 +40632,7 @@ spec:
   image: "quay.io/prometheus/prometheus:v2.40.5"
   version: v2.40.5
   enableRemoteWriteReceiver: true
-  externalUrl: "http://office.00rg.com:8082/prometheus"
+  externalUrl: "http://office.borgorg.com:8082/prometheus"
   paused: false
   replicas: 1
   shards: 1

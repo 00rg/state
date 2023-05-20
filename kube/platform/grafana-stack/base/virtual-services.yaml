@@ -1,4 +1,4 @@
-# When running locally, this routes require a "127.0.0.1 office.00rg.com" entry in /etc/hosts.
+# When running locally, this routes require a "127.0.0.1 office.borgorg.com" entry in /etc/hosts.
 # The URI prefix matches seem to require both /abc/ and /abc so that redirects work (e.g.
 # redirecting from /abc to /abc/xyz which is pretty common with these UI apps).
 apiVersion: networking.istio.io/v1beta1
@@ -8,7 +8,7 @@ metadata:
   namespace: grafana-stack
 spec:
   hosts:
-  - office.00rg.com
+  - office.borgorg.com
   gateways:
   - istio-ingress/office-gateway
   http:
@@ -30,7 +30,7 @@ metadata:
   namespace: grafana-stack
 spec:
   hosts:
-  - office.00rg.com
+  - office.borgorg.com
   gateways:
   - istio-ingress/office-gateway
   http:
@@ -54,7 +54,7 @@ metadata:
   namespace: grafana-stack
 spec:
   hosts:
-  - office.00rg.com
+  - office.borgorg.com
   gateways:
   - istio-ingress/office-gateway
   http:

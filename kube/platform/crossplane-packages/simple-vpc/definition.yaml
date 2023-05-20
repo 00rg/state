@@ -1,9 +1,9 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: simplevpcs.api.00rg.com
+  name: simplevpcs.api.borgorg.com
 spec:
-  group: api.00rg.com
+  group: api.borgorg.com
   names:
     kind: SimpleVPC
     plural: simplevpcs

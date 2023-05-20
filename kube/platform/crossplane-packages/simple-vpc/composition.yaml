@@ -5,7 +5,7 @@ metadata:
 spec:
   # writeConnectionSecretsToNamespace: crossplane-system
   compositeTypeRef:
-    apiVersion: api.00rg.com/v1alpha1
+    apiVersion: api.borgorg.com/v1alpha1
     kind: SimpleVPC
   patchSets:
   - name: region-patch

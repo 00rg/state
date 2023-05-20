@@ -19,7 +19,7 @@ metadata:
   name: goodbye-external
 spec:
   hosts:
-  - api.00rg.com
+  - api.borgorg.com
   gateways:
   - istio-ingress/external-gateway
   http:
@@ -38,7 +38,7 @@ metadata:
   name: goodbye-internal
 spec:
   hosts:
-  - api.internal.00rg.com
+  - api.internal.borgorg.com
   gateways:
   - istio-ingress/internal-gateway
   http:
