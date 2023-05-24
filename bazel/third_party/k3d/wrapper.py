@@ -25,7 +25,7 @@ def _get_clusters():
     """Get all k3d clusters managed by this repository."""
     res = subprocess.run([_K3D_BINARY, "cluster", "list", "-o=json"], stdout=subprocess.PIPE)
     clusters = json.loads(res.stdout)
-    return [c for c in clusters if any("ORG_MANAGED=1" in n["env"] for n in c["nodes"])]
+    return [c for c in clusters if any("BORGORG_MANAGED=1" in n["env"] for n in c["nodes"])]
 
 
 def _cluster_exists():

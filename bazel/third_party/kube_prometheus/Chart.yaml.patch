@@ -1,23 +1,23 @@
 diff --git a/Chart.yaml b/Chart.yaml
-index 36c0633..0279119 100644
+index 135f2e9..d459422 100644
 --- a/Chart.yaml
 +++ b/Chart.yaml
-@@ -10,15 +10,15 @@ appVersion: 0.61.1
+@@ -11,15 +11,15 @@ appVersion: v0.65.1
  dependencies:
  - condition: kubeStateMetrics.enabled
    name: kube-state-metrics
 -  repository: https://prometheus-community.github.io/helm-charts
 +  repository: file://charts
-   version: 4.24.*
+   version: 5.6.*
  - condition: nodeExporter.enabled
    name: prometheus-node-exporter
 -  repository: https://prometheus-community.github.io/helm-charts
 +  repository: file://charts
-   version: 4.8.*
+   version: 4.16.*
  - condition: grafana.enabled
    name: grafana
 -  repository: https://grafana.github.io/helm-charts
 +  repository: file://charts
-   version: 6.48.*
+   version: 6.56.*
  description: kube-prometheus-stack collects Kubernetes manifests, Grafana dashboards,
    and Prometheus rules combined with documentation and scripts to provide easy to

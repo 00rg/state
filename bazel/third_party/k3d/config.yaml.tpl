@@ -1,4 +1,4 @@
-apiVersion: k3d.io/v1alpha4
+apiVersion: k3d.io/v1alpha5
 kind: Simple
 metadata:
   name: "{cluster}"
@@ -23,7 +23,7 @@ registries:
 env:
 # The Bazel code will only touch clusters that it created. The env var below
 # is used to mark the cluster as having been created by this repository.
-- envVar: ORG_MANAGED=1
+- envVar: BORGORG_MANAGED=1
   nodeFilters:
   - "agent:*"
   - "server:*"

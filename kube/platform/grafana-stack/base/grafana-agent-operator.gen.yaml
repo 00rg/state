@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: grafana-agent-operator
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: operator
-    helm.sh/chart: grafana-agent-operator-0.2.8
-    app.kubernetes.io/version: "0.28.0"
+    helm.sh/chart: grafana-agent-operator-0.2.15
+    app.kubernetes.io/version: "0.32.1"
 ---
 # Source: grafana-agent-operator/templates/operator-clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -22,8 +22,8 @@ metadata:
     app.kubernetes.io/instance: grafana-agent-operator
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: operator
-    helm.sh/chart: grafana-agent-operator-0.2.8
-    app.kubernetes.io/version: "0.28.0"
+    helm.sh/chart: grafana-agent-operator-0.2.15
+    app.kubernetes.io/version: "0.32.1"
 rules:
 - apiGroups: [monitoring.grafana.com]
   resources:
@@ -82,8 +82,8 @@ metadata:
     app.kubernetes.io/instance: grafana-agent-operator
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: operator
-    helm.sh/chart: grafana-agent-operator-0.2.8
-    app.kubernetes.io/version: "0.28.0"
+    helm.sh/chart: grafana-agent-operator-0.2.15
+    app.kubernetes.io/version: "0.32.1"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -103,8 +103,8 @@ metadata:
     app.kubernetes.io/instance: grafana-agent-operator
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: operator
-    helm.sh/chart: grafana-agent-operator-0.2.8
-    app.kubernetes.io/version: "0.28.0"
+    helm.sh/chart: grafana-agent-operator-0.2.15
+    app.kubernetes.io/version: "0.32.1"
 spec:
   replicas: 1
   selector:
@@ -120,7 +120,7 @@ spec:
       serviceAccountName: grafana-agent-operator
       containers:
       - name: grafana-agent-operator
-        image: "docker.io/grafana/agent-operator:v0.28.0"
+        image: "docker.io/grafana/agent-operator:v0.32.1"
         imagePullPolicy: IfNotPresent
         args:
           - --kubelet-service=default/kubelet

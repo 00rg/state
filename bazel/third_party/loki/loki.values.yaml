@@ -3,13 +3,15 @@ loki:
   commonConfig:
     replication_factor: 1
   storage:
-    type: 'filesystem'
+    type: "filesystem"
 
   # Enable aggregation of Istio and application metrics.
   podAnnotations:
     prometheus.io/path: /metrics
     prometheus.io/port: "3100"
     prometheus.io/scrape: "true"
+singleBinary:
+  replicas: 1
 test:
   enabled: false
 minio:

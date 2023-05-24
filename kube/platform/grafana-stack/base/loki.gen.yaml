@@ -4,11 +4,12 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: loki
+  namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
 automountServiceAccountToken: true
 ---
@@ -17,22 +18,30 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki
+  namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
 data:
   config.yaml: |
     auth_enabled: false
     common:
+      compactor_address: 'loki'
       path_prefix: /var/loki
       replication_factor: 1
       storage:
         filesystem:
           chunks_directory: /var/loki/chunks
           rules_directory: /var/loki/rules
+    frontend:
+      scheduler_address: ""
+    frontend_worker:
+      scheduler_address: ""
+    index_gateway:
+      mode: ring
     limits_config:
       enforce_metric_name: false
       max_cache_freshness_per_query: 10m
@@ -44,6 +53,11 @@ data:
       - loki-memberlist
     query_range:
       align_queries_with_step: true
+    ruler:
+      storage:
+        type: local
+    runtime_config:
+      file: /etc/loki/runtime-config/runtime-config.yaml
     schema_config:
       configs:
       - from: "2022-01-11"
@@ -61,17 +75,226 @@ data:
         at: 250ms
         max_per_second: 20
         up_to: 3
+    table_manager:
+      retention_deletes_enabled: false
+      retention_period: 0
+---
+# Source: loki/templates/gateway/configmap-gateway.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-gateway
+  namespace: grafana-stack
+  labels:
+    helm.sh/chart: loki-5.5.3
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.8.2"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: gateway
+data:
+  nginx.conf: |    
+    worker_processes  5;  ## Default: 1
+    error_log  /dev/stderr;
+    pid        /tmp/nginx.pid;
+    worker_rlimit_nofile 8192;
+    
+    events {
+      worker_connections  4096;  ## Default: 1024
+    }
+    
+    http {
+      client_body_temp_path /tmp/client_temp;
+      proxy_temp_path       /tmp/proxy_temp_path;
+      fastcgi_temp_path     /tmp/fastcgi_temp;
+      uwsgi_temp_path       /tmp/uwsgi_temp;
+      scgi_temp_path        /tmp/scgi_temp;
+    
+      client_max_body_size 4M;
+    
+      proxy_read_timeout    600; ## 6 minutes
+      proxy_send_timeout    600;
+      proxy_connect_timeout 600;
+    
+      proxy_http_version    1.1;
+    
+      default_type application/octet-stream;
+      log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+            '"$request" $body_bytes_sent "$http_referer" '
+            '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log   /dev/stderr  main;
+    
+      sendfile     on;
+      tcp_nopush   on;
+      resolver kube-dns.kube-system.svc.cluster.local.;
+      
+    
+      server {
+        listen             8080;
+    
+        location = / {
+          return 200 'OK';
+          auth_basic off;
+        }
+    
+    
+        # Distributor
+        location = /api/prom/push {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /loki/api/v1/push {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /distributor/ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+        # Ingester
+        location = /flush {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location ^~ /ingester/ {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /ingester {
+          internal;        # to suppress 301
+        }
+    
+        # Ring
+        location = /ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+        # MemberListKV
+        location = /memberlist {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+    
+        # Ruler
+        location = /ruler/ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /api/prom/rules {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location ^~ /api/prom/rules/ {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /loki/api/v1/rules {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location ^~ /loki/api/v1/rules/ {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /prometheus/api/v1/alerts {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /prometheus/api/v1/rules {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+        # Compactor
+        location = /compactor/ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /loki/api/v1/delete {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /loki/api/v1/cache/generation_numbers {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+        # IndexGateway
+        location = /indexgateway/ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+        # QueryScheduler
+        location = /scheduler/ring {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+    
+    
+        # QueryFrontend, Querier
+        location = /api/prom/tail {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+        }
+        location = /loki/api/v1/tail {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection "upgrade";
+        }
+        location ^~ /api/prom/ {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /api/prom {
+          internal;        # to suppress 301
+        }
+        location ^~ /loki/api/v1/ {
+          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+        }
+        location = /loki/api/v1 {
+          internal;        # to suppress 301
+        }
+      }
+    }
+---
+# Source: loki/templates/runtime-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-runtime
+  namespace: grafana-stack
+  labels:
+    helm.sh/chart: loki-5.5.3
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.8.2"
+    app.kubernetes.io/managed-by: Helm
+data:
+  runtime-config.yaml: |
+    
+    {}
+---
+# Source: loki/templates/gateway/service-gateway.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki-gateway
+  namespace: grafana-stack
+  labels:
+    helm.sh/chart: loki-5.5.3
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.8.2"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: gateway
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/component: gateway
 ---
 # Source: loki/templates/service-memberlist.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: loki-memberlist
+  namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -93,10 +316,10 @@ metadata:
   name: loki-headless
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
     variant: headless
     prometheus.io/service-monitor: "false"
@@ -116,11 +339,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: loki
+  namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   type: ClusterIP
@@ -138,16 +362,109 @@ spec:
     app.kubernetes.io/instance: loki
     app.kubernetes.io/component: single-binary
 ---
+# Source: loki/templates/gateway/deployment-gateway.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki-gateway
+  namespace: grafana-stack
+  labels:
+    helm.sh/chart: loki-5.5.3
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
+    app.kubernetes.io/version: "2.8.2"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: gateway
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/instance: loki
+      app.kubernetes.io/component: gateway
+  template:
+    metadata:
+      annotations:
+        checksum/config: 0bd0eb707891f352718322c3079276aa68631b7adf86f115ae7dd6091e2092f9
+        prometheus.io/path: /metrics
+        prometheus.io/port: "3100"
+        prometheus.io/scrape: "true"
+      labels:
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/instance: loki
+        app.kubernetes.io/component: gateway
+    spec:
+      serviceAccountName: loki
+      enableServiceLinks: true
+      
+      securityContext:
+        fsGroup: 101
+        runAsGroup: 101
+        runAsNonRoot: true
+        runAsUser: 101
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: nginx
+          image: docker.io/nginxinc/nginx-unprivileged:1.19-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx
+            - name: tmp
+              mountPath: /tmp
+            - name: docker-entrypoint-d-override
+              mountPath: /docker-entrypoint.d
+          resources:
+            {}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: loki
+                  app.kubernetes.io/instance: loki
+                  app.kubernetes.io/component: gateway
+              topologyKey: kubernetes.io/hostname
+        
+      volumes:
+        - name: config
+          configMap:
+            name: loki-gateway
+        - name: tmp
+          emptyDir: {}
+        - name: docker-entrypoint-d-override
+          emptyDir: {}
+---
 # Source: loki/templates/single-binary/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: loki
+  namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: single-binary
     app.kubernetes.io/part-of: memberlist
@@ -159,6 +476,10 @@ spec:
       partition: 0
   serviceName: loki-headless
   revisionHistoryLimit: 10
+  
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
   selector:
     matchLabels:
       app.kubernetes.io/name: loki
@@ -167,7 +488,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 87821bd5c189d36003eeacc677d8a3f4314dc02b2822375a19cb5ae4a16374de
+        checksum/config: d2d08950eb5393ee351af8bc9726bb8b3942d4b19174d33b65d7691209064b2c
         prometheus.io/path: /metrics
         prometheus.io/port: "3100"
         prometheus.io/scrape: "true"
@@ -179,6 +500,7 @@ spec:
     spec:
       serviceAccountName: loki
       automountServiceAccountToken: true
+      enableServiceLinks: true
       
       securityContext:
         fsGroup: 10001
@@ -187,8 +509,8 @@ spec:
         runAsUser: 10001
       terminationGracePeriodSeconds: 30
       containers:
-        - name: single-binary
-          image: docker.io/grafana/loki:2.7.0
+        - name: loki
+          image: docker.io/grafana/loki:2.8.2
           imagePullPolicy: IfNotPresent
           args:
             - -config.file=/etc/loki/config/config.yaml
@@ -220,6 +542,8 @@ spec:
               mountPath: /tmp
             - name: config
               mountPath: /etc/loki/config
+            - name: runtime-config
+              mountPath: /etc/loki/runtime-config
             - name: storage
               mountPath: /var/loki
           resources:
@@ -240,6 +564,9 @@ spec:
         - name: config
           configMap:
             name: loki
+        - name: runtime-config
+          configMap:
+            name: loki-runtime
   volumeClaimTemplates:
     - metadata:
         name: storage
@@ -250,17 +577,17 @@ spec:
           requests:
             storage: "10Gi"
 ---
-# Source: loki/templates/monitoring/prometheus-alerts.yaml
+# Source: loki/templates/monitoring/loki-alerts.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
-  name: loki-alerts
+  name: loki-loki-alerts
   namespace: grafana-stack
 spec:
   groups:    
@@ -271,9 +598,9 @@ spec:
             message: |
               {{ $labels.job }} {{ $labels.route }} is experiencing {{ printf "%.2f" $value }}% errors.
           expr: |
-            100 * sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[1m])) by (namespace, job, route)
+            100 * sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[2m])) by (namespace, job, route)
               /
-            sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job, route)
+            sum(rate(loki_request_duration_seconds_count[2m])) by (namespace, job, route)
               > 10
           for: 15m
           labels:
@@ -298,9 +625,9 @@ spec:
         - alert: LokiTooManyCompactorsRunning
           annotations:
             message: |
-              {{ $labels.namespace }} has had {{ printf "%.0f" $value }} compactors running for more than 5m. Only one compactor should run at a time.
+              {{ $labels.cluster }} {{ $labels.namespace }} has had {{ printf "%.0f" $value }} compactors running for more than 5m. Only one compactor should run at a time.
           expr: |
-            sum(loki_boltdb_shipper_compactor_running) by (namespace) > 1
+            sum(loki_boltdb_shipper_compactor_running) by (namespace, cluster) > 1
           for: 5m
           labels:
             severity: warning
@@ -311,22 +638,22 @@ spec:
             message: |
               {{ $labels.job }} is experiencing {{ printf "%.2f" $value }}s 99th percentile latency.
           expr: |
-            histogram_quantile(0.99, sum(rate(loki_canary_response_latency_seconds_bucket[5m])) by (le, namespace, cluster)) > 5
+            histogram_quantile(0.99, sum(rate(loki_canary_response_latency_seconds_bucket[5m])) by (le, namespace, job)) > 5
           for: 15m
           labels:
             severity: warning
 ---
-# Source: loki/templates/monitoring/prometheus-rules.yaml
+# Source: loki/templates/monitoring/loki-rules.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
-  name: loki-rules
+  name: loki-loki-rules
   namespace: grafana-stack
 spec:
   groups:    
@@ -421,10 +748,10 @@ kind: ServiceMonitor
 metadata:
   name: loki
   labels:
-    helm.sh/chart: loki-3.8.0
+    helm.sh/chart: loki-5.5.3
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
-    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   selector:
@@ -439,6 +766,7 @@ spec:
   endpoints:
     - port: http-metrics
       path: /metrics
+      interval: 15s
       relabelings:
         - sourceLabels: [job]
           replacement: "grafana-stack/$1"

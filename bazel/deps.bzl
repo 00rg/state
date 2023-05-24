@@ -26,50 +26,50 @@ def org_util_dependencies():
 def org_binary_dependencies():
     """Declare binary tool dependencies."""
 
-    helm_version = "3.10.3"
+    helm_version = "3.12.0"
     maybe(
         http_archive,
         name = "helm",
         urls = ["https://get.helm.sh/helm-v{}-darwin-arm64.tar.gz".format(helm_version)],
-        sha256 = "4f3490654349d6fee8d4055862efdaaf9422eca1ffd2a15393394fd948ae3377",
+        sha256 = "879f61d2ad245cb3f5018ab8b66a87619f195904a4df3b077c98ec0780e36c37",
         strip_prefix = "darwin-arm64",
         build_file = "//bazel/third_party:BUILD.helm.bazel",
     )
 
-    istio_version = "1.16.1"
+    istio_version = "1.17.2"
     maybe(
         http_archive,
         name = "istioctl",
         urls = ["https://github.com/istio/istio/releases/download/{v}/istioctl-{v}-osx-arm64.tar.gz".format(v = istio_version)],
-        sha256 = "119cccb9398bb78ad34f3db1dbda778b3e88ac0dbbd089f1f6353d2caf07955b",
+        sha256 = "717595a9f3527f4e6af64378dd79e4cd0f8240501da4b2431102ba8bd48588a9",
         build_file = "//bazel/third_party:BUILD.istioctl.bazel",
     )
 
-    k3d_version = "5.4.6"
+    k3d_version = "5.5.1"
     http_file(
         name = "k3d",
         urls = ["https://github.com/k3d-io/k3d/releases/download/v{}/k3d-darwin-arm64".format(k3d_version)],
-        sha256 = "486baa195157183fb6e32b781dd0a638f662ed5f9c4d80510287ce9630a80081",
+        sha256 = "891161cd18f5505c8d3eff08344c00ca76f807dfb3d019d119fc1013fe3616ef",
         executable = True,
     )
 
-    kubectl_version = "1.26.0"
+    kubectl_version = "1.27.2"
     http_file(
         name = "kubectl",
         urls = ["https://dl.k8s.io/release/v{}/bin/darwin/arm64/kubectl".format(kubectl_version)],
-        sha256 = "cc7542dfe67df1982ea457cc6e15c171e7ff604a93b41796a4f3fa66bd151f76",
+        sha256 = "d2b045b1a0804d4c46f646aeb6dcd278202b9da12c773d5e462b1b857d1f37d7",
         executable = True,
     )
 
 def org_manifest_dependencies():
     """Declare Kubernetes manifest dependencies."""
 
-    argocd_version = "2.5.5"
+    argocd_version = "2.7.2"
     maybe(
         http_archive,
         name = "argocd",
         urls = ["https://github.com/argoproj/argo-cd/archive/refs/tags/v{}.tar.gz".format(argocd_version)],
-        sha256 = "f8611c4934079662b0465f17c070838d7ac51fd953b8812099d50b62051770d8",
+        sha256 = "caf989c4a444f514ddb1a4f5307c39d2750c929d9e8dfed8200c35dc2994e403",
         strip_prefix = "argo-cd-{}/manifests".format(argocd_version),
         build_file = "//bazel/third_party:BUILD.argocd.bazel",
     )
@@ -84,12 +84,12 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.crossplane.bazel",
     )
 
-    kube_prometheus_chart_version = "43.1.2"
+    kube_prometheus_chart_version = "45.31.0"
     maybe(
         http_archive,
         name = "kube_prometheus",
         urls = ["https://github.com/prometheus-community/helm-charts/releases/download/kube-prometheus-stack-{v}/kube-prometheus-stack-{v}.tgz".format(v = kube_prometheus_chart_version)],
-        sha256 = "59e49de5da26c095276ce344ffab0038fed91f198da9ca14c78f8f4fb40c5c9b",
+        sha256 = "9f86ce4894f923acd0d90e15b2d1dbfd65dcb1ddbe322440d6ea4f7517172015",
         strip_prefix = "kube-prometheus-stack",
         build_file = "//bazel/third_party:BUILD.kube_prometheus.bazel",
         patch_args = ["-p1"],
@@ -99,32 +99,32 @@ def org_manifest_dependencies():
         ],
     )
 
-    grafana_agent_operator_chart_version = "0.2.8"
+    grafana_agent_operator_chart_version = "0.2.15"
     maybe(
         http_archive,
         name = "grafana_agent_operator",
         urls = ["https://github.com/grafana/helm-charts/releases/download/grafana-agent-operator-{v}/grafana-agent-operator-{v}.tgz".format(v = grafana_agent_operator_chart_version)],
-        sha256 = "9022509c0e9075c9f103a11f5ee3109d0250a3f756d09497f94b15c47fd7ff42",
+        sha256 = "f0c525d884fb0a42f0dfad48fc4cf54f07910eec7dbeea7dfadb40b6922a5d50",
         strip_prefix = "grafana-agent-operator",
         build_file = "//bazel/third_party:BUILD.grafana_agent_operator.bazel",
     )
 
-    loki_chart_version = "3.8.0"
+    loki_chart_version = "5.5.3"
     maybe(
         http_archive,
         name = "loki",
         urls = ["https://github.com/grafana/helm-charts/releases/download/helm-loki-{v}/loki-{v}.tgz".format(v = loki_chart_version)],
-        sha256 = "81fcfe9bfc7334f5feeefb0b2ff7ba489135d82da3f77a0076d650ef2c5aba6f",
+        sha256 = "dd9517b15ba4a19d9ca5ea57124f858f4af439db92a6951c9656e148e39bcba0",
         strip_prefix = "loki",
         build_file = "//bazel/third_party:BUILD.loki.bazel",
     )
 
-    tempo_chart_version = "0.16.9"
+    tempo_chart_version = "1.3.0"
     maybe(
         http_archive,
         name = "tempo",
         urls = ["https://github.com/grafana/helm-charts/releases/download/tempo-{v}/tempo-{v}.tgz".format(v = tempo_chart_version)],
-        sha256 = "3ef3a6501f9c79a7e3b13524ffcea8806991c60829ed41ef2c5e786920c1efbd",
+        sha256 = "b430cbad238a97280a8942c74fa2d9489ad0899beeeac6b0e6f065d472fbc4c3",
         strip_prefix = "tempo",
         build_file = "//bazel/third_party:BUILD.tempo.bazel",
     )
