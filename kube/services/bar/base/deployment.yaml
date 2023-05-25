@@ -23,4 +23,4 @@ spec:
         - name: EXTERNAL_URL
           value: http://baz.baz.svc.cluster.local/external
         - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
-          value: http://tracing.grafana-stack:4318/v1/traces
+          value: http://tracing.monitoring:4318/v1/traces

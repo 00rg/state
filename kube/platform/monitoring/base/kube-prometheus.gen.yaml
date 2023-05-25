@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/version: "9.5.2"
     app.kubernetes.io/managed-by: Helm
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: kube-prometheus-stack/charts/kube-state-metrics/templates/serviceaccount.yaml
 apiVersion: v1
@@ -26,7 +26,7 @@ metadata:
     app.kubernetes.io/version: "2.8.2"
     release: kube-prometheus
   name: kube-prometheus-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
 imagePullSecrets:
 ---
 # Source: kube-prometheus-stack/charts/prometheus-node-exporter/templates/serviceaccount.yaml
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kube-prometheus-prometheus-node-exporter
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: prometheus-node-exporter-4.16.0
     app.kubernetes.io/managed-by: Helm
@@ -51,7 +51,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kube-prometheus-kube-prome-alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-alertmanager
     app.kubernetes.io/name: kube-prometheus-stack-alertmanager
@@ -71,7 +71,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kube-prometheus-kube-prome-operator
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-operator
     app.kubernetes.io/name: kube-prometheus-stack-prometheus-operator
@@ -90,7 +90,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kube-prometheus-kube-prome-prometheus
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-prometheus
     app.kubernetes.io/name: kube-prometheus-stack-prometheus
@@ -109,7 +109,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -127,7 +127,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: alertmanager-kube-prometheus-kube-prome-alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-alertmanager
     
@@ -152,7 +152,7 @@ metadata:
     app.kubernetes.io/version: "9.5.2"
     app.kubernetes.io/managed-by: Helm
   name: kube-prometheus-grafana-config-dashboards
-  namespace: grafana-stack
+  namespace: monitoring
 data:
   provider.yaml: |-
     apiVersion: 1
@@ -173,7 +173,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -336,7 +336,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kube-prometheus-grafana-dashboards-default
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -352,7 +352,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kube-prometheus-kube-prome-grafana-datasource
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     grafana_datasource: "1"
     app: kube-prometheus-stack-grafana
@@ -371,7 +371,7 @@ data:
     - name: Prometheus
       type: prometheus
       uid: prometheus
-      url: http://kube-prometheus-kube-prome-prometheus.grafana-stack:9090/
+      url: http://kube-prometheus-kube-prome-prometheus.monitoring:9090/
       access: proxy
       isDefault: true
       jsonData:
@@ -382,7 +382,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-alertmanager-overview
   annotations:
     {}
@@ -995,7 +995,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-apiserver
   annotations:
     {}
@@ -2766,7 +2766,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-cluster-total
   annotations:
     {}
@@ -4647,7 +4647,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-controller-manager
   annotations:
     {}
@@ -5836,7 +5836,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-etcd
   annotations:
     {}
@@ -7062,7 +7062,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-grafana-overview
   annotations:
     {}
@@ -7697,7 +7697,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-coredns
   annotations:
     {}
@@ -9231,7 +9231,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-cluster
   annotations:
     {}
@@ -12318,7 +12318,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-namespace
   annotations:
     {}
@@ -15114,7 +15114,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-node
   annotations:
     {}
@@ -16139,7 +16139,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-pod
   annotations:
     {}
@@ -18607,7 +18607,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-workload
   annotations:
     {}
@@ -20630,7 +20630,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-k8s-resources-workloads-namespace
   annotations:
     {}
@@ -22818,7 +22818,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-kubelet
   annotations:
     {}
@@ -25071,7 +25071,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-namespace-by-pod
   annotations:
     {}
@@ -26534,7 +26534,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-namespace-by-workload
   annotations:
     {}
@@ -28269,7 +28269,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-node-cluster-rsrc-use
   annotations:
     {}
@@ -29331,7 +29331,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-node-rsrc-use
   annotations:
     {}
@@ -30419,7 +30419,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-nodes-darwin
   annotations:
     {}
@@ -31491,7 +31491,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-nodes
   annotations:
     {}
@@ -32556,7 +32556,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-persistentvolumesusage
   annotations:
     {}
@@ -33142,7 +33142,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-pod-total
   annotations:
     {}
@@ -34369,7 +34369,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-prometheus
   annotations:
     {}
@@ -35603,7 +35603,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-proxy
   annotations:
     {}
@@ -36873,7 +36873,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-scheduler
   annotations:
     {}
@@ -37984,7 +37984,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: grafana-stack
+  namespace: monitoring
   name: kube-prometheus-kube-prome-workload-total
   annotations:
     {}
@@ -39726,7 +39726,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: kube-prometheus-grafana
-    namespace: grafana-stack
+    namespace: monitoring
 roleRef:
   kind: ClusterRole
   name: kube-prometheus-grafana-clusterrole
@@ -39753,7 +39753,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: kube-prometheus-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: kube-prometheus-stack/templates/prometheus-operator/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -39777,7 +39777,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: kube-prometheus-kube-prome-operator
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: kube-prometheus-stack/templates/prometheus/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -39801,14 +39801,14 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: kube-prometheus-kube-prome-prometheus
-    namespace: grafana-stack
+    namespace: monitoring
 ---
 # Source: kube-prometheus-stack/charts/grafana/templates/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -39822,7 +39822,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -39836,14 +39836,14 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: kube-prometheus-stack/charts/grafana/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -39866,7 +39866,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
   labels:    
     helm.sh/chart: kube-state-metrics-5.6.2
     app.kubernetes.io/managed-by: Helm
@@ -39895,7 +39895,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-prometheus-node-exporter
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: prometheus-node-exporter-4.16.0
     app.kubernetes.io/managed-by: Helm
@@ -39924,7 +39924,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-kube-prome-alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-alertmanager
     self-monitor: "true"
@@ -40091,7 +40091,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-kube-prome-operator
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-operator
     
@@ -40117,7 +40117,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kube-prometheus-kube-prome-prometheus
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-prometheus
     self-monitor: "true"
@@ -40145,7 +40145,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: kube-prometheus-prometheus-node-exporter
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: prometheus-node-exporter-4.16.0
     app.kubernetes.io/managed-by: Helm
@@ -40260,7 +40260,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -40282,10 +40282,10 @@ spec:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: kube-prometheus
       annotations:
-        checksum/config: 836c57c6e1c5c54adc53b80033571a2ae89015f979e99b09afbf8a5896b81c3e
-        checksum/dashboards-json-config: afa3b7c51e6ca6696d894dadb7c27e500c1b42f5ea5c3d17c07ba5d1da3d1baa
-        checksum/sc-dashboard-provider-config: d2132397757ad844d862bae53224e37edb30d2c5522f54302524b886dc698a97
-        checksum/secret: e0bccf055331b601b190fb3243de633f498894b18c3d27e8f5a780c7dbc3f549
+        checksum/config: 40353c1c06817f839c6a4781c661f8654e39d6ab2da7f4f35358e88e1b2c9533
+        checksum/dashboards-json-config: 01ac1d72b6f30f83f79d6a06060232848936dd82b06a29326f1b06414bd3869b
+        checksum/sc-dashboard-provider-config: 0ff11e62c8943ba95ad70a80b60de7824df53e4c961b54f5bce2b307701109f0
+        checksum/secret: 2e527f61c7afbd25429c2412a7b9f9e1b3da1cdf3410280a069d1fa00ccf10eb
         kubectl.kubernetes.io/default-container: grafana
     spec:
       
@@ -40493,7 +40493,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-prometheus-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
   labels:    
     helm.sh/chart: kube-state-metrics-5.6.2
     app.kubernetes.io/managed-by: Helm
@@ -40563,7 +40563,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kube-prometheus-kube-prome-operator
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-operator
     
@@ -40626,7 +40626,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
   name: kube-prometheus-kube-prome-alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-alertmanager
     
@@ -40663,7 +40663,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
   name: kube-prometheus-kube-prome-prometheus
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-prometheus
     
@@ -40677,7 +40677,7 @@ metadata:
 spec:
   alerting:
     alertmanagers:
-      - namespace: grafana-stack
+      - namespace: monitoring
         name: kube-prometheus-kube-prome-alertmanager
         port: http-web
         pathPrefix: "/"
@@ -40730,7 +40730,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-alertmanager.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -40753,7 +40753,7 @@ spec:
       expr: |-
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
-        max_over_time(alertmanager_config_last_reload_successful{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m]) == 0
+        max_over_time(alertmanager_config_last_reload_successful{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m]) == 0
       for: 10m
       labels:
         severity: critical
@@ -40765,9 +40765,9 @@ spec:
       expr: |-
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
-          max_over_time(alertmanager_cluster_members{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m])
+          max_over_time(alertmanager_cluster_members{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m])
         < on (namespace,service) group_left
-          count by (namespace,service) (max_over_time(alertmanager_cluster_members{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m]))
+          count by (namespace,service) (max_over_time(alertmanager_cluster_members{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m]))
       for: 15m
       labels:
         severity: critical
@@ -40778,9 +40778,9 @@ spec:
         summary: An Alertmanager instance failed to send notifications.
       expr: |-
         (
-          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m])
+          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m])
         /
-          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m])
+          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m])
         )
         > 0.01
       for: 5m
@@ -40793,9 +40793,9 @@ spec:
         summary: All Alertmanager instances in a cluster failed to send notifications to a critical integration.
       expr: |-
         min by (namespace,service, integration) (
-          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack", integration=~`.*`}[5m])
+          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring", integration=~`.*`}[5m])
         /
-          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack", integration=~`.*`}[5m])
+          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring", integration=~`.*`}[5m])
         )
         > 0.01
       for: 5m
@@ -40808,9 +40808,9 @@ spec:
         summary: All Alertmanager instances in a cluster failed to send notifications to a non-critical integration.
       expr: |-
         min by (namespace,service, integration) (
-          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack", integration!~`.*`}[5m])
+          rate(alertmanager_notifications_failed_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring", integration!~`.*`}[5m])
         /
-          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack", integration!~`.*`}[5m])
+          rate(alertmanager_notifications_total{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring", integration!~`.*`}[5m])
         )
         > 0.01
       for: 5m
@@ -40823,7 +40823,7 @@ spec:
         summary: Alertmanager instances within the same cluster have different configurations.
       expr: |-
         count by (namespace,service) (
-          count_values by (namespace,service) ("config_hash", alertmanager_config_hash{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"})
+          count_values by (namespace,service) ("config_hash", alertmanager_config_hash{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"})
         )
         != 1
       for: 20m
@@ -40837,11 +40837,11 @@ spec:
       expr: |-
         (
           count by (namespace,service) (
-            avg_over_time(up{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[5m]) < 0.5
+            avg_over_time(up{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[5m]) < 0.5
           )
         /
           count by (namespace,service) (
-            up{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}
+            up{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}
           )
         )
         >= 0.5
@@ -40856,11 +40856,11 @@ spec:
       expr: |-
         (
           count by (namespace,service) (
-            changes(process_start_time_seconds{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}[10m]) > 4
+            changes(process_start_time_seconds{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}[10m]) > 4
           )
         /
           count by (namespace,service) (
-            up{job="kube-prometheus-kube-prome-alertmanager",namespace="grafana-stack"}
+            up{job="kube-prometheus-kube-prome-alertmanager",namespace="monitoring"}
           )
         )
         >= 0.5
@@ -40873,7 +40873,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-config-reloaders
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -40905,7 +40905,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-etcd
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41073,7 +41073,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-general.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41141,7 +41141,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-k8s.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41308,7 +41308,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-apiserver-availability.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41438,7 +41438,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-apiserver-burnrate.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41760,7 +41760,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-apiserver-histogram.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41791,7 +41791,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-apiserver-slos
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41868,7 +41868,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-prometheus-general.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41893,7 +41893,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-prometheus-node-recording.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41926,7 +41926,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-scheduler.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -41983,7 +41983,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42052,7 +42052,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubelet.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42085,7 +42085,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-apps
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42333,7 +42333,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-resources
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42456,7 +42456,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-storage
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42570,7 +42570,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system-apiserver
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42644,7 +42644,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system-controller-manager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42674,7 +42674,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system-kube-proxy
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42704,7 +42704,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system-kubelet
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42845,7 +42845,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system-scheduler
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42875,7 +42875,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-kubernetes-system
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -42918,7 +42918,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-node-exporter.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43001,7 +43001,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-node-exporter
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43249,7 +43249,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-node-network
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43279,7 +43279,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-node.rules
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43336,7 +43336,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-prometheus-operator
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43356,7 +43356,7 @@ spec:
         description: Errors while performing List operations in controller {{$labels.controller}} in {{$labels.namespace}} namespace.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatorlisterrors
         summary: Errors while performing list operations in controller.
-      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_list_operations_failed_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[10m])) / sum by (controller,namespace,cluster) (rate(prometheus_operator_list_operations_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[10m]))) > 0.4
+      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_list_operations_failed_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[10m])) / sum by (controller,namespace,cluster) (rate(prometheus_operator_list_operations_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[10m]))) > 0.4
       for: 15m
       labels:
         severity: warning
@@ -43365,7 +43365,7 @@ spec:
         description: Errors while performing watch operations in controller {{$labels.controller}} in {{$labels.namespace}} namespace.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatorwatcherrors
         summary: Errors while performing watch operations in controller.
-      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_watch_operations_failed_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m])) / sum by (controller,namespace,cluster) (rate(prometheus_operator_watch_operations_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]))) > 0.4
+      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_watch_operations_failed_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m])) / sum by (controller,namespace,cluster) (rate(prometheus_operator_watch_operations_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]))) > 0.4
       for: 15m
       labels:
         severity: warning
@@ -43374,7 +43374,7 @@ spec:
         description: Controller {{ $labels.controller }} in {{ $labels.namespace }} namespace fails to reconcile {{ $value }} objects.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatorsyncfailed
         summary: Last controller reconciliation failed
-      expr: min_over_time(prometheus_operator_syncs{status="failed",job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]) > 0
+      expr: min_over_time(prometheus_operator_syncs{status="failed",job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]) > 0
       for: 10m
       labels:
         severity: warning
@@ -43383,7 +43383,7 @@ spec:
         description: '{{ $value | humanizePercentage }} of reconciling operations failed for {{ $labels.controller }} controller in {{ $labels.namespace }} namespace.'
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatorreconcileerrors
         summary: Errors while reconciling controller.
-      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_reconcile_errors_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]))) / (sum by (controller,namespace,cluster) (rate(prometheus_operator_reconcile_operations_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]))) > 0.1
+      expr: (sum by (controller,namespace,cluster) (rate(prometheus_operator_reconcile_errors_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]))) / (sum by (controller,namespace,cluster) (rate(prometheus_operator_reconcile_operations_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]))) > 0.1
       for: 10m
       labels:
         severity: warning
@@ -43392,7 +43392,7 @@ spec:
         description: Errors while reconciling Prometheus in {{ $labels.namespace }} Namespace.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatornodelookuperrors
         summary: Errors while reconciling Prometheus.
-      expr: rate(prometheus_operator_node_address_lookup_errors_total{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]) > 0.1
+      expr: rate(prometheus_operator_node_address_lookup_errors_total{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]) > 0.1
       for: 10m
       labels:
         severity: warning
@@ -43401,7 +43401,7 @@ spec:
         description: Prometheus operator in {{ $labels.namespace }} namespace isn't ready to reconcile {{ $labels.controller }} resources.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatornotready
         summary: Prometheus operator not ready
-      expr: min by (controller,namespace,cluster) (max_over_time(prometheus_operator_ready{job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]) == 0)
+      expr: min by (controller,namespace,cluster) (max_over_time(prometheus_operator_ready{job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]) == 0)
       for: 5m
       labels:
         severity: warning
@@ -43410,7 +43410,7 @@ spec:
         description: Prometheus operator in {{ $labels.namespace }} namespace rejected {{ printf "%0.0f" $value }} {{ $labels.controller }}/{{ $labels.resource }} resources.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus-operator/prometheusoperatorrejectedresources
         summary: Resources rejected by Prometheus operator
-      expr: min_over_time(prometheus_operator_managed_resources{state="rejected",job="kube-prometheus-kube-prome-operator",namespace="grafana-stack"}[5m]) > 0
+      expr: min_over_time(prometheus_operator_managed_resources{state="rejected",job="kube-prometheus-kube-prome-operator",namespace="monitoring"}[5m]) > 0
       for: 5m
       labels:
         severity: warning
@@ -43420,7 +43420,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: kube-prometheus-kube-prome-prometheus
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack
     
@@ -43443,7 +43443,7 @@ spec:
       expr: |-
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
-        max_over_time(prometheus_config_last_reload_successful{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) == 0
+        max_over_time(prometheus_config_last_reload_successful{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) == 0
       for: 10m
       labels:
         severity: critical
@@ -43456,9 +43456,9 @@ spec:
         # Without min_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
         (
-          predict_linear(prometheus_notifications_queue_length{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m], 60 * 30)
+          predict_linear(prometheus_notifications_queue_length{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m], 60 * 30)
         >
-          min_over_time(prometheus_notifications_queue_capacity{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          min_over_time(prometheus_notifications_queue_capacity{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         )
       for: 15m
       labels:
@@ -43470,9 +43470,9 @@ spec:
         summary: Prometheus has encountered more than 1% errors sending alerts to a specific Alertmanager.
       expr: |-
         (
-          rate(prometheus_notifications_errors_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          rate(prometheus_notifications_errors_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         /
-          rate(prometheus_notifications_sent_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          rate(prometheus_notifications_sent_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         )
         * 100
         > 1
@@ -43487,7 +43487,7 @@ spec:
       expr: |-
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
-        max_over_time(prometheus_notifications_alertmanagers_discovered{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) < 1
+        max_over_time(prometheus_notifications_alertmanagers_discovered{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) < 1
       for: 10m
       labels:
         severity: warning
@@ -43496,7 +43496,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected {{$value | humanize}} reload failures over the last 3h.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheustsdbreloadsfailing
         summary: Prometheus has issues reloading blocks from disk.
-      expr: increase(prometheus_tsdb_reloads_failures_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[3h]) > 0
+      expr: increase(prometheus_tsdb_reloads_failures_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[3h]) > 0
       for: 4h
       labels:
         severity: warning
@@ -43505,7 +43505,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has detected {{$value | humanize}} compaction failures over the last 3h.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheustsdbcompactionsfailing
         summary: Prometheus has issues compacting blocks.
-      expr: increase(prometheus_tsdb_compactions_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[3h]) > 0
+      expr: increase(prometheus_tsdb_compactions_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[3h]) > 0
       for: 4h
       labels:
         severity: warning
@@ -43516,12 +43516,12 @@ spec:
         summary: Prometheus is not ingesting samples.
       expr: |-
         (
-          rate(prometheus_tsdb_head_samples_appended_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) <= 0
+          rate(prometheus_tsdb_head_samples_appended_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) <= 0
         and
           (
-            sum without(scrape_job) (prometheus_target_metadata_cache_entries{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}) > 0
+            sum without(scrape_job) (prometheus_target_metadata_cache_entries{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}) > 0
           or
-            sum without(rule_group) (prometheus_rule_group_rules{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}) > 0
+            sum without(rule_group) (prometheus_rule_group_rules{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}) > 0
           )
         )
       for: 10m
@@ -43532,7 +43532,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping {{ printf "%.4g" $value  }} samples/s with different values but duplicated timestamp.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusduplicatetimestamps
         summary: Prometheus is dropping samples with duplicate timestamps.
-      expr: rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 10m
       labels:
         severity: warning
@@ -43541,7 +43541,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} is dropping {{ printf "%.4g" $value  }} samples/s with timestamps arriving out of order.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusoutofordertimestamps
         summary: Prometheus drops samples with out-of-order timestamps.
-      expr: rate(prometheus_target_scrapes_sample_out_of_order_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: rate(prometheus_target_scrapes_sample_out_of_order_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 10m
       labels:
         severity: warning
@@ -43552,12 +43552,12 @@ spec:
         summary: Prometheus fails to send samples to remote storage.
       expr: |-
         (
-          (rate(prometheus_remote_storage_failed_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]))
+          (rate(prometheus_remote_storage_failed_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]))
         /
           (
-            (rate(prometheus_remote_storage_failed_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]))
+            (rate(prometheus_remote_storage_failed_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]))
           +
-            (rate(prometheus_remote_storage_succeeded_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) or rate(prometheus_remote_storage_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]))
+            (rate(prometheus_remote_storage_succeeded_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]))
           )
         )
         * 100
@@ -43574,9 +43574,9 @@ spec:
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
         (
-          max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         - ignoring(remote_name, url) group_right
-          max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         )
         > 120
       for: 15m
@@ -43584,16 +43584,16 @@ spec:
         severity: critical
     - alert: PrometheusRemoteWriteDesiredShards
       annotations:
-        description: Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write desired shards calculation wants to run {{ $value }} shards for queue {{ $labels.remote_name}}:{{ $labels.url }}, which is more than the max of {{ printf `prometheus_remote_storage_shards_max{instance="%s",job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}` $labels.instance | query | first | value }}.
+        description: Prometheus {{$labels.namespace}}/{{$labels.pod}} remote write desired shards calculation wants to run {{ $value }} shards for queue {{ $labels.remote_name}}:{{ $labels.url }}, which is more than the max of {{ printf `prometheus_remote_storage_shards_max{instance="%s",job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}` $labels.instance | query | first | value }}.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusremotewritedesiredshards
         summary: Prometheus remote write desired shards calculation wants to run more than configured max shards.
       expr: |-
         # Without max_over_time, failed scrapes could create false negatives, see
         # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.
         (
-          max_over_time(prometheus_remote_storage_shards_desired{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          max_over_time(prometheus_remote_storage_shards_desired{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         >
-          max_over_time(prometheus_remote_storage_shards_max{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m])
+          max_over_time(prometheus_remote_storage_shards_max{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m])
         )
       for: 15m
       labels:
@@ -43603,7 +43603,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed to evaluate {{ printf "%.0f" $value }} rules in the last 5m.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusrulefailures
         summary: Prometheus is failing rule evaluations.
-      expr: increase(prometheus_rule_evaluation_failures_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_rule_evaluation_failures_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: critical
@@ -43612,7 +43612,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has missed {{ printf "%.0f" $value }} rule group evaluations in the last 5m.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusmissingruleevaluations
         summary: Prometheus is missing rule evaluations due to slow rule group evaluation.
-      expr: increase(prometheus_rule_group_iterations_missed_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_rule_group_iterations_missed_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: warning
@@ -43621,7 +43621,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped {{ printf "%.0f" $value }} targets because the number of targets exceeded the configured target_limit.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheustargetlimithit
         summary: Prometheus has dropped targets because some scrape configs have exceeded the targets limit.
-      expr: increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: warning
@@ -43630,7 +43630,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has dropped {{ printf "%.0f" $value }} targets because some samples exceeded the configured label_limit, label_name_length_limit or label_value_length_limit.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheuslabellimithit
         summary: Prometheus has dropped targets because some scrape configs have exceeded the labels limit.
-      expr: increase(prometheus_target_scrape_pool_exceeded_label_limits_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_target_scrape_pool_exceeded_label_limits_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: warning
@@ -43639,7 +43639,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{ printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded the configured body_size_limit.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusscrapebodysizelimithit
         summary: Prometheus has dropped some targets that exceeded body size limit.
-      expr: increase(prometheus_target_scrapes_exceeded_body_size_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_target_scrapes_exceeded_body_size_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: warning
@@ -43648,7 +43648,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} has failed {{ printf "%.0f" $value }} scrapes in the last 5m because some targets exceeded the configured sample_limit.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheusscrapesamplelimithit
         summary: Prometheus has failed scrapes that have exceeded the configured sample limit.
-      expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0
+      expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0
       for: 15m
       labels:
         severity: warning
@@ -43657,7 +43657,7 @@ spec:
         description: '{{ printf "%.0f" $value }} targets in Prometheus {{$labels.namespace}}/{{$labels.pod}} have failed to sync because invalid configuration was supplied.'
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheustargetsyncfailure
         summary: Prometheus has failed to sync targets.
-      expr: increase(prometheus_target_sync_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[30m]) > 0
+      expr: increase(prometheus_target_sync_failed_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[30m]) > 0
       for: 5m
       labels:
         severity: critical
@@ -43666,7 +43666,7 @@ spec:
         description: Prometheus {{$labels.namespace}}/{{$labels.pod}} query API has less than 20% available capacity in its query engine for the last 15 minutes.
         runbook_url: https://runbooks.prometheus-operator.dev/runbooks/prometheus/prometheushighqueryload
         summary: Prometheus is reaching its maximum capacity serving concurrent requests.
-      expr: avg_over_time(prometheus_engine_queries{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) / max_over_time(prometheus_engine_queries_concurrent_max{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack"}[5m]) > 0.8
+      expr: avg_over_time(prometheus_engine_queries{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) / max_over_time(prometheus_engine_queries_concurrent_max{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring"}[5m]) > 0.8
       for: 15m
       labels:
         severity: warning
@@ -43677,9 +43677,9 @@ spec:
         summary: Prometheus encounters more than 3% errors sending alerts to any Alertmanager.
       expr: |-
         min without (alertmanager) (
-          rate(prometheus_notifications_errors_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack",alertmanager!~``}[5m])
+          rate(prometheus_notifications_errors_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring",alertmanager!~``}[5m])
         /
-          rate(prometheus_notifications_sent_total{job="kube-prometheus-kube-prome-prometheus",namespace="grafana-stack",alertmanager!~``}[5m])
+          rate(prometheus_notifications_sent_total{job="kube-prometheus-kube-prome-prometheus",namespace="monitoring",alertmanager!~``}[5m])
         )
         * 100
         > 3
@@ -43692,7 +43692,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-grafana
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: grafana-6.56.5
     app.kubernetes.io/name: grafana
@@ -43713,14 +43713,14 @@ spec:
       app.kubernetes.io/instance: kube-prometheus
   namespaceSelector:
     matchNames:
-      - grafana-stack
+      - monitoring
 ---
 # Source: kube-prometheus-stack/charts/kube-state-metrics/templates/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-state-metrics
-  namespace: grafana-stack
+  namespace: monitoring
   labels:    
     helm.sh/chart: kube-state-metrics-5.6.2
     app.kubernetes.io/managed-by: Helm
@@ -43745,7 +43745,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-prometheus-node-exporter
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: prometheus-node-exporter-4.16.0
     app.kubernetes.io/managed-by: Helm
@@ -43774,7 +43774,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-alertmanager
     
@@ -43794,7 +43794,7 @@ spec:
       self-monitor: "true"
   namespaceSelector:
     matchNames:
-      - "grafana-stack"
+      - "monitoring"
   endpoints:
   - port: http-web
     enableHttp2: true
@@ -43805,7 +43805,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-coredns
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-coredns
     
@@ -43835,7 +43835,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-apiserver
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-apiserver
     
@@ -43876,7 +43876,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-kube-controller-manager
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-kube-controller-manager
     
@@ -43910,7 +43910,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-kube-etcd
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-kube-etcd
     
@@ -43940,7 +43940,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-kube-proxy
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-kube-proxy
     
@@ -43970,7 +43970,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-kube-scheduler
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-kube-scheduler
     
@@ -44004,7 +44004,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-kubelet
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-kubelet    
     app.kubernetes.io/managed-by: Helm
@@ -44095,7 +44095,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-operator
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-operator
     
@@ -44117,14 +44117,14 @@ spec:
       release: "kube-prometheus"
   namespaceSelector:
     matchNames:
-      - "grafana-stack"
+      - "monitoring"
 ---
 # Source: kube-prometheus-stack/templates/prometheus/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kube-prometheus-kube-prome-prometheus
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: kube-prometheus-stack-prometheus
     
@@ -44144,7 +44144,7 @@ spec:
       self-monitor: "true"
   namespaceSelector:
     matchNames:
-      - "grafana-stack"
+      - "monitoring"
   endpoints:
   - port: http-web
     path: "/metrics"

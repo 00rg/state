@@ -34,6 +34,6 @@ spec:
           # Using OpenCensus instead of Zipkin for compatability with OTEL?
           # See https://github.com/istio/istio/issues/23960
           openCensusAgent:
-            address: tempo.grafana-stack:55678
+            address: tempo.monitoring:55678
           # zipkin:
-          #   address: tempo.grafana-stack:9411
+          #   address: tempo.monitoring:9411

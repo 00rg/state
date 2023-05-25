@@ -5,7 +5,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: default-grafana-agent-logs-headless
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     app: default-grafana-agent-logs
     variant: headless
@@ -28,7 +28,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: grafana-agent
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     grafana-agent-metrics-instance: default
 spec:
@@ -37,7 +37,7 @@ spec:
       operated-agent: "true"
   namespaceSelector:
     matchNames:
-      - "grafana-stack"
+      - "monitoring"
   endpoints:
   - port: http-metrics
     path: "/metrics"

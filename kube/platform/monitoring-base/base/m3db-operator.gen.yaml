@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: m3db-operator
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: m3db-operator/templates/00_operator.m3db.io_m3dbclusters.yaml
 apiVersion: apiextensions.k8s.io/v1
@@ -6759,14 +6759,14 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: m3db-operator
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: m3db-operator/templates/stateful_set.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: m3db-operator
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   serviceName: m3db-operator
   replicas: 1

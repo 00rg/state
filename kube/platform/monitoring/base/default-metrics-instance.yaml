@@ -2,7 +2,7 @@ apiVersion: monitoring.grafana.com/v1alpha1
 kind: MetricsInstance
 metadata:
   name: default-metrics-instance
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     grafana-agent: default
 spec:

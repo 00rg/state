@@ -7,7 +7,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tracing-grafana-agent
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -43,7 +43,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: tracing-grafana-agent
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 apiVersion: v1
 kind: Service
@@ -53,7 +53,7 @@ metadata:
     # TODO: Can we find another label rather than hijack this one?
     operated-agent: "true"
   name: tracing
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   ports:
   - name: http-metrics
@@ -98,7 +98,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tracing-grafana-agent
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   minReadySeconds: 10
   replicas: 1
@@ -164,7 +164,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tracing-grafana-agent
-  namespace: grafana-stack  
+  namespace: monitoring  
 data:
   agent.yaml: |
     traces:
@@ -173,7 +173,7 @@ data:
         service_graphs:
           enabled: true
         remote_write:
-        - endpoint: tempo.grafana-stack:4317
+        - endpoint: tempo.monitoring:4317
           protocol: grpc
           format: otlp
           insecure: true
@@ -186,7 +186,7 @@ data:
       global:
         scrape_interval: 60s
         remote_write:
-        - url: http://prometheus-operated.grafana-stack:9090/api/v1/write
+        - url: http://prometheus-operated.monitoring:9090/api/v1/write
       configs:
       - name: default
         scrape_configs:
@@ -194,4 +194,4 @@ data:
           static_configs:
           - targets: ['127.0.0.1:80']
         remote_write:
-        - url: http://prometheus-operated.grafana-stack:9090/api/v1/write
+        - url: http://prometheus-operated.monitoring:9090/api/v1/write

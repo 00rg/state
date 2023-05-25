@@ -5,7 +5,7 @@ kind: Kustomization
 # in this wave as this wave provisions Istiod, the mutating webhook configuration, etc.
 resources:
 - ../../../platform/istio-base/overlays/local
-- ../../../platform/grafana-stack-crds/overlays/local
+- ../../../platform/monitoring-base/overlays/local
 
 components:
 - ../../../components/common-labels

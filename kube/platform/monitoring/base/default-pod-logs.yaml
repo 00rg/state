@@ -2,7 +2,7 @@ apiVersion: monitoring.grafana.com/v1alpha1
 kind: PodLogs
 metadata:
   name: default-pod-logs
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     grafana-agent-logs-instance: default
 spec:

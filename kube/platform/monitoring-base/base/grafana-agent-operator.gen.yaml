@@ -11006,7 +11006,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: grafana-agent-operator
-  namespace: grafana-stack
+  namespace: monitoring
 ---
 # Source: grafana-agent-operator/templates/operator-deployment.yaml
 apiVersion: apps/v1

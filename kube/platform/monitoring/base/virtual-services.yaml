@@ -5,7 +5,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: grafana
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   hosts:
   - office.borgorg.com
@@ -27,7 +27,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: alertmanager
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   hosts:
   - office.borgorg.com
@@ -51,7 +51,7 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: prometheus
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   hosts:
   - office.borgorg.com

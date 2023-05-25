@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tempo
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
@@ -18,7 +18,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tempo
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
@@ -79,7 +79,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tempo
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
@@ -141,7 +141,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: tempo
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
@@ -161,7 +161,7 @@ spec:
         app.kubernetes.io/name: tempo
         app.kubernetes.io/instance: tempo
       annotations:
-        checksum/config: e5277c35c39f506a4af6d58aaae5271b3a361a62fea6c44cec0107320957aef0
+        checksum/config: ee4aaca460ad45ad143381fab2966dd09c2363bb930b4f6d2fcaf21c9e501e89
     spec:
       serviceAccountName: tempo
       automountServiceAccountToken: true
@@ -231,7 +231,7 @@ spec:
       app.kubernetes.io/managed-by: Helm
   namespaceSelector:
     matchNames:
-      - "grafana-stack"
+      - "monitoring"
   endpoints:
     - port: tempo-prom-metrics
     - port: jaeger-metrics

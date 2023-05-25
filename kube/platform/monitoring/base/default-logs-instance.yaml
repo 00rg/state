@@ -2,12 +2,12 @@ apiVersion: monitoring.grafana.com/v1alpha1
 kind: LogsInstance
 metadata:
   name: default-logs-instance
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     grafana-agent: default
 spec:
   clients:
-  - url: http://loki.grafana-stack:3100/loki/api/v1/push
+  - url: http://loki.monitoring:3100/loki/api/v1/push
 
   # Reconcile all PodLogs resources across all namespaces with a matching label.
   podLogsNamespaceSelector: {}

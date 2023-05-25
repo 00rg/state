@@ -13,12 +13,12 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:argocd_non_ha_manifest": "kube/platform/argocd/overlays/local/argocd.gen.yaml",
     "//bazel/third_party:crossplane_manifest": "kube/platform/crossplane-base/base/crossplane.gen.yaml",
     "//bazel/third_party:istio_operator_manifest": "kube/platform/istio-operator/base/istio-operator.gen.yaml",
-    "//bazel/third_party:grafana_agent_operator_manifest": "kube/platform/grafana-stack-crds/base/grafana-agent-operator.gen.yaml",
-    "//bazel/third_party:m3db_operator_manifest": "kube/platform/grafana-stack-crds/base/m3db-operator.gen.yaml",
-    "//bazel/third_party:kube_prometheus_manifest": "kube/platform/grafana-stack/base/kube-prometheus.gen.yaml",
-    "//bazel/third_party:kube_prometheus_crds_manifest": "kube/platform/grafana-stack-crds/base/kube-prometheus-crds.gen.yaml",
-    "//bazel/third_party:loki_manifest": "kube/platform/grafana-stack/base/loki.gen.yaml",
-    "//bazel/third_party:tempo_manifest": "kube/platform/grafana-stack/base/tempo.gen.yaml",
+    "//bazel/third_party:grafana_agent_operator_manifest": "kube/platform/monitoring-base/base/grafana-agent-operator.gen.yaml",
+    "//bazel/third_party:m3db_operator_manifest": "kube/platform/monitoring-base/base/m3db-operator.gen.yaml",
+    "//bazel/third_party:kube_prometheus_manifest": "kube/platform/monitoring/base/kube-prometheus.gen.yaml",
+    "//bazel/third_party:kube_prometheus_crds_manifest": "kube/platform/monitoring-base/base/kube-prometheus-crds.gen.yaml",
+    "//bazel/third_party:loki_manifest": "kube/platform/monitoring/base/loki.gen.yaml",
+    "//bazel/third_party:tempo_manifest": "kube/platform/monitoring/base/tempo.gen.yaml",
 }
 
 istio_operator(
@@ -53,7 +53,7 @@ helm_template(
     name = "grafana_agent_operator_manifest",
     srcs = ["@grafana_agent_operator//:all"],
     chart_dir = "external/grafana_agent_operator",
-    namespace = "grafana-stack",
+    namespace = "monitoring",
     release_name = "grafana-agent-operator",
     values_file = "//bazel/third_party/grafana_agent_operator:grafana-agent-operator.values.yaml",
 )
@@ -62,7 +62,7 @@ helm_template(
     name = "m3db_operator_manifest",
     srcs = ["@m3db_operator//:all"],
     chart_dir = "external/m3db_operator",
-    namespace = "grafana-stack",
+    namespace = "monitoring",
     release_name = "m3db-operator",
     values_file = "//bazel/third_party/m3db_operator:m3db_operator.values.yaml",
 )
@@ -71,7 +71,7 @@ helm_template(
     name = "kube_prometheus_manifest",
     srcs = ["@kube_prometheus//:all"],
     chart_dir = "external/kube_prometheus",
-    namespace = "grafana-stack",
+    namespace = "monitoring",
     release_name = "kube-prometheus",
     values_file = "//bazel/third_party/kube_prometheus:kube-prometheus.values.yaml",
     # CRDs are installed separately so that they are ready by the time we
@@ -93,7 +93,7 @@ helm_template(
         "monitoring.coreos.com/v1/ServiceMonitor",
     ],
     chart_dir = "external/loki",
-    namespace = "grafana-stack",
+    namespace = "monitoring",
     release_name = "loki",
     values_file = "//bazel/third_party/loki:loki.values.yaml",
 )
@@ -102,7 +102,7 @@ helm_template(
     name = "tempo_manifest",
     srcs = ["@tempo//:all"],
     chart_dir = "external/tempo",
-    namespace = "grafana-stack",
+    namespace = "monitoring",
     release_name = "tempo",
     values_file = "//bazel/third_party/tempo:tempo.values.yaml",
 )

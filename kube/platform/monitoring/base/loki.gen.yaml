@@ -4,7 +4,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: loki
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -18,7 +18,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -84,7 +84,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-gateway
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -140,21 +140,21 @@ data:
     
         # Distributor
         location = /api/prom/push {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /loki/api/v1/push {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /distributor/ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
         # Ingester
         location = /flush {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location ^~ /ingester/ {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /ingester {
           internal;        # to suppress 301
@@ -162,79 +162,79 @@ data:
     
         # Ring
         location = /ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
         # MemberListKV
         location = /memberlist {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
     
         # Ruler
         location = /ruler/ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /api/prom/rules {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location ^~ /api/prom/rules/ {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /loki/api/v1/rules {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location ^~ /loki/api/v1/rules/ {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /prometheus/api/v1/alerts {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /prometheus/api/v1/rules {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
         # Compactor
         location = /compactor/ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /loki/api/v1/delete {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /loki/api/v1/cache/generation_numbers {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
         # IndexGateway
         location = /indexgateway/ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
         # QueryScheduler
         location = /scheduler/ring {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
     
     
         # QueryFrontend, Querier
         location = /api/prom/tail {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
         }
         location = /loki/api/v1/tail {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
         }
         location ^~ /api/prom/ {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /api/prom {
           internal;        # to suppress 301
         }
         location ^~ /loki/api/v1/ {
-          proxy_pass       http://loki.grafana-stack.svc.cluster.local:3100$request_uri;
+          proxy_pass       http://loki.monitoring.svc.cluster.local:3100$request_uri;
         }
         location = /loki/api/v1 {
           internal;        # to suppress 301
@@ -247,7 +247,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: loki-runtime
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -264,7 +264,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: loki-gateway
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -289,7 +289,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: loki-memberlist
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -314,7 +314,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: loki-headless
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -339,7 +339,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: loki
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -367,7 +367,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: loki-gateway
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -388,7 +388,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 65fb13a48aaa1c87cc954588bc0aa3cb97c2f6e93770dd831f3bde7cc9ff4b9d
+        checksum/config: b3415e274ec1d4db2c571686da24552bd3776cae16e1a6bc5cf34dc16a66cd23
         prometheus.io/path: /metrics
         prometheus.io/port: "3100"
         prometheus.io/scrape: "true"
@@ -459,7 +459,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: loki
-  namespace: grafana-stack
+  namespace: monitoring
   labels:
     helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
@@ -488,7 +488,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 278486552fb22e49d9c2821b2b2b97f51fd6ab32d2aa3e3bf22d870fc23b8553
+        checksum/config: 36f9c65f6ebcaac7816978639eada501bdc5f26dcff328c83bedb27c70d42c51
         prometheus.io/path: /metrics
         prometheus.io/port: "3100"
         prometheus.io/scrape: "true"
@@ -588,7 +588,7 @@ metadata:
     app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
   name: loki-loki-alerts
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   groups:    
     - name: loki_alerts
@@ -654,7 +654,7 @@ metadata:
     app.kubernetes.io/version: "2.8.2"
     app.kubernetes.io/managed-by: Helm
   name: loki-loki-rules
-  namespace: grafana-stack
+  namespace: monitoring
 spec:
   groups:    
     - name: loki_rules
@@ -769,7 +769,7 @@ spec:
       interval: 15s
       relabelings:
         - sourceLabels: [job]
-          replacement: "grafana-stack/$1"
+          replacement: "monitoring/$1"
           targetLabel: job
         - replacement: "loki"
           targetLabel: cluster
