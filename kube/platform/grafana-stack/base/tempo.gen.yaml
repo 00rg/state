@@ -6,7 +6,7 @@ metadata:
   name: tempo
   namespace: grafana-stack
   labels:
-    helm.sh/chart: tempo-1.3.0
+    helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
     app.kubernetes.io/instance: tempo
     app.kubernetes.io/version: "2.1.1"
@@ -20,7 +20,7 @@ metadata:
   name: tempo
   namespace: grafana-stack
   labels:
-    helm.sh/chart: tempo-1.3.0
+    helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
     app.kubernetes.io/instance: tempo
     app.kubernetes.io/version: "2.1.1"
@@ -81,7 +81,7 @@ metadata:
   name: tempo
   namespace: grafana-stack
   labels:
-    helm.sh/chart: tempo-1.3.0
+    helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
     app.kubernetes.io/instance: tempo
     app.kubernetes.io/version: "2.1.1"
@@ -143,7 +143,7 @@ metadata:
   name: tempo
   namespace: grafana-stack
   labels:
-    helm.sh/chart: tempo-1.3.0
+    helm.sh/chart: tempo-1.3.1
     app.kubernetes.io/name: tempo
     app.kubernetes.io/instance: tempo
     app.kubernetes.io/version: "2.1.1"
@@ -161,7 +161,7 @@ spec:
         app.kubernetes.io/name: tempo
         app.kubernetes.io/instance: tempo
       annotations:
-        checksum/config: cb9499ad416d4dd1479a3a50bd1eab29e88c3ae3fdc56368b36afec28965c467
+        checksum/config: e5277c35c39f506a4af6d58aaae5271b3a361a62fea6c44cec0107320957aef0
     spec:
       serviceAccountName: tempo
       automountServiceAccountToken: true
@@ -192,6 +192,8 @@ spec:
         - containerPort: 4317
           name: otlp-grpc
         - containerPort: 55681
+          name: otlp-httplegacy
+        - containerPort: 4318
           name: otlp-http
         - containerPort: 55678
           name: opencensus
@@ -216,13 +218,13 @@ metadata:
   name: tempo
   labels:
     app: tempo
-    chart: tempo-1.3.0
+    chart: tempo-1.3.1
     release: tempo
     heritage: Helm
 spec:
   selector:
     matchLabels:
-      helm.sh/chart: tempo-1.3.0
+      helm.sh/chart: tempo-1.3.1
       app.kubernetes.io/name: tempo
       app.kubernetes.io/instance: tempo
       app.kubernetes.io/version: "2.1.1"

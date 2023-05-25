@@ -6,7 +6,7 @@ load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@rules_python//python:defs.bzl", "py_binary")
 
 # TODO: Change these rules to take a filegroup rather than a srcs, etc.
-def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None, api_versions = []):
+def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, values_file = None, include_crds = True, api_versions = []):
     """
     Runs Helm template operation to generate a single output manifest.
 
@@ -31,6 +31,9 @@ def helm_template(name, chart_dir, release_name, srcs = [], namespace = None, va
     if values_file:
         args.extend(["--values", "$(location {})".format(values_file)])
         srcs.append(values_file)
+
+    if include_crds:
+        args.extend(["--include-crds"])
 
     if namespace:
         args.extend(["--namespace", namespace])

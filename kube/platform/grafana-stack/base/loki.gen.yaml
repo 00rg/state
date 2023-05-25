@@ -6,7 +6,7 @@ metadata:
   name: loki
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -20,7 +20,7 @@ metadata:
   name: loki
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -86,7 +86,7 @@ metadata:
   name: loki-gateway
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -249,7 +249,7 @@ metadata:
   name: loki-runtime
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -266,7 +266,7 @@ metadata:
   name: loki-gateway
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -291,7 +291,7 @@ metadata:
   name: loki-memberlist
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -316,7 +316,7 @@ metadata:
   name: loki-headless
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -341,7 +341,7 @@ metadata:
   name: loki
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -369,7 +369,7 @@ metadata:
   name: loki-gateway
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -388,7 +388,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 0bd0eb707891f352718322c3079276aa68631b7adf86f115ae7dd6091e2092f9
+        checksum/config: 65fb13a48aaa1c87cc954588bc0aa3cb97c2f6e93770dd831f3bde7cc9ff4b9d
         prometheus.io/path: /metrics
         prometheus.io/port: "3100"
         prometheus.io/scrape: "true"
@@ -461,7 +461,7 @@ metadata:
   name: loki
   namespace: grafana-stack
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -488,7 +488,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: d2d08950eb5393ee351af8bc9726bb8b3942d4b19174d33b65d7691209064b2c
+        checksum/config: 278486552fb22e49d9c2821b2b2b97f51fd6ab32d2aa3e3bf22d870fc23b8553
         prometheus.io/path: /metrics
         prometheus.io/port: "3100"
         prometheus.io/scrape: "true"
@@ -582,7 +582,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -648,7 +648,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"
@@ -748,7 +748,7 @@ kind: ServiceMonitor
 metadata:
   name: loki
   labels:
-    helm.sh/chart: loki-5.5.3
+    helm.sh/chart: loki-5.5.4
     app.kubernetes.io/name: loki
     app.kubernetes.io/instance: loki
     app.kubernetes.io/version: "2.8.2"

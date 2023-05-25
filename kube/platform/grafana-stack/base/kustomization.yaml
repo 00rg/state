@@ -5,8 +5,6 @@ kind: Kustomization
 # Prometheus exporters rely on being placed in other namespaces such as kube-system.
 
 resources:
-- namespace.yaml
-- grafana-agent-operator.gen.yaml
 - kube-prometheus.gen.yaml
 - loki.gen.yaml
 - tempo.gen.yaml
@@ -25,23 +23,15 @@ resources:
 - grafana-agent-monitoring.yaml
 
 patches:
-# Inject the grafana-stack namespace into all resources in the grafana-agent-operator
-# and loki charts as they don't template the namespace properly. See following issues:
-# https://github.com/grafana/loki/issues/8044
-# https://github.com/grafana/helm-charts/issues/2098
-- path: patches/set-namespace.yaml
-  target:
-    labelSelector: "app.kubernetes.io/name=grafana-agent-operator"
-- path: patches/set-namespace.yaml
-  target:
-    labelSelector: "app.kubernetes.io/name=loki"
-
 # Add the grafana-agent-metrics-instance=default label to all remaining ServiceMonitors.
 # The remaining ServiceMonitors will be associated with workloads that are specifically NOT
 # injected with an Istio sidecar. These workloads will be: Prometheus/Grafana agents,
 # kube-system workloads, and things like node-exporter which use host networking and so
 # are also not injected.
-- path: patches/adopt-service-monitor.yaml
+- patch: |-
+    - op: add
+      path: /metadata/labels/grafana-agent-metrics-instance
+      value: default
   target:
     group: monitoring.coreos.com
     kind: ServiceMonitor

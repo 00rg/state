@@ -109,24 +109,34 @@ def org_manifest_dependencies():
         build_file = "//bazel/third_party:BUILD.grafana_agent_operator.bazel",
     )
 
-    loki_chart_version = "5.5.3"
+    loki_chart_version = "5.5.4"
     maybe(
         http_archive,
         name = "loki",
         urls = ["https://github.com/grafana/helm-charts/releases/download/helm-loki-{v}/loki-{v}.tgz".format(v = loki_chart_version)],
-        sha256 = "dd9517b15ba4a19d9ca5ea57124f858f4af439db92a6951c9656e148e39bcba0",
+        sha256 = "46aeb02b13096a1b282ba549580ece32541c1011e46218f1adcc681c4e8dd522",
         strip_prefix = "loki",
         build_file = "//bazel/third_party:BUILD.loki.bazel",
     )
 
-    tempo_chart_version = "1.3.0"
+    tempo_chart_version = "1.3.1"
     maybe(
         http_archive,
         name = "tempo",
         urls = ["https://github.com/grafana/helm-charts/releases/download/tempo-{v}/tempo-{v}.tgz".format(v = tempo_chart_version)],
-        sha256 = "b430cbad238a97280a8942c74fa2d9489ad0899beeeac6b0e6f065d472fbc4c3",
+        sha256 = "82d1a955f7a7b63867eacfead139da702aa59912c99cf5b6988f42ae12749949",
         strip_prefix = "tempo",
         build_file = "//bazel/third_party:BUILD.tempo.bazel",
+    )
+
+    m3db_operator_chart_version = "0.14.0"
+    maybe(
+        http_archive,
+        name = "m3db_operator",
+        urls = ["https://github.com/m3db/m3db-operator/archive/refs/tags/v{}.tar.gz".format(m3db_operator_chart_version)],
+        sha256 = "8ea2e29dc659a1eba2fab4aec5466c314a6f174d0b1dab436595fb6c73f8b5c7",
+        strip_prefix = "m3db-operator-{}/helm/m3db-operator".format(m3db_operator_chart_version),
+        build_file = "//bazel/third_party:BUILD.m3db_operator.bazel",
     )
 
 def org_python_dependencies():

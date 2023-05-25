@@ -13,8 +13,8 @@ _THIRD_PARTY_MANIFESTS = {
     "//bazel/third_party:argocd_non_ha_manifest": "kube/platform/argocd/overlays/local/argocd.gen.yaml",
     "//bazel/third_party:crossplane_manifest": "kube/platform/crossplane-base/base/crossplane.gen.yaml",
     "//bazel/third_party:istio_operator_manifest": "kube/platform/istio-operator/base/istio-operator.gen.yaml",
-    "//bazel/third_party:grafana_agent_operator_manifest": "kube/platform/grafana-stack/base/grafana-agent-operator.gen.yaml",
-    "//bazel/third_party:grafana_agent_operator_crds_manifest": "kube/platform/grafana-stack-crds/base/grafana-agent-operator-crds.gen.yaml",
+    "//bazel/third_party:grafana_agent_operator_manifest": "kube/platform/grafana-stack-crds/base/grafana-agent-operator.gen.yaml",
+    "//bazel/third_party:m3db_operator_manifest": "kube/platform/grafana-stack-crds/base/m3db-operator.gen.yaml",
     "//bazel/third_party:kube_prometheus_manifest": "kube/platform/grafana-stack/base/kube-prometheus.gen.yaml",
     "//bazel/third_party:kube_prometheus_crds_manifest": "kube/platform/grafana-stack-crds/base/kube-prometheus-crds.gen.yaml",
     "//bazel/third_party:loki_manifest": "kube/platform/grafana-stack/base/loki.gen.yaml",
@@ -58,10 +58,13 @@ helm_template(
     values_file = "//bazel/third_party/grafana_agent_operator:grafana-agent-operator.values.yaml",
 )
 
-helm_chart_crds(
-    name = "grafana_agent_operator_crds_manifest",
-    srcs = ["@grafana_agent_operator//:all"],
-    chart_dir = "external/grafana_agent_operator",
+helm_template(
+    name = "m3db_operator_manifest",
+    srcs = ["@m3db_operator//:all"],
+    chart_dir = "external/m3db_operator",
+    namespace = "grafana-stack",
+    release_name = "m3db-operator",
+    values_file = "//bazel/third_party/m3db_operator:m3db_operator.values.yaml",
 )
 
 helm_template(
@@ -71,6 +74,9 @@ helm_template(
     namespace = "grafana-stack",
     release_name = "kube-prometheus",
     values_file = "//bazel/third_party/kube_prometheus:kube-prometheus.values.yaml",
+    # CRDs are installed separately so that they are ready by the time we
+    # install the CRs from this chart.
+    include_crds = False,
 )
 
 helm_chart_crds(
